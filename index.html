@@ -1,0 +1,3462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChemExam Assistant</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* ===== БАЗОВЫЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg-gradient-start: #0a0a0a;
+            --bg-gradient-end: #1a1a2e;
+            --text-color: white;
+            --text-secondary: #b0b0b0;
+            --card-bg: rgba(26, 26, 26, 0.6);
+            --header-bg: rgba(26, 26, 26, 0.8);
+            --border-color: rgba(0, 212, 255, 0.1);
+            --progress-bg: rgba(51, 51, 51, 0.5);
+            --base-font-size: 16px;
+            --success: #00ff88;
+            --danger: #ff4444;
+            --warning: #ffaa00;
+            --info: #00d4ff;
+        }
+
+        body.light-theme {
+            --bg-gradient-start: #f5f7fa;
+            --bg-gradient-end: #e6e9f0;
+            --text-color: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --header-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 212, 255, 0.3);
+            --progress-bg: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-color);
+            overflow-x: hidden;
+            height: 100vh;
+            height: -webkit-fill-available;
+            position: relative;
+            transition: background 0.3s ease;
+            font-size: var(--base-font-size);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 212, 255, 0.03) 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, rgba(155, 89, 182, 0.03) 0%, transparent 30%),
+                repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 10px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #app {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            height: -webkit-fill-available;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-color);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 212, 255, 0.1);
+            border-top: 3px solid var(--info);
+            border-right: 3px solid #9b59b6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--info), #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--info);
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 4px 8px;
+        }
+
+        .global-progress {
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+        .global-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--info), #9b59b6);
+            transition: width 0.3s;
+        }
+
+        .main-content {
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 70px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--info), #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--text-color);
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--info), transparent);
+            border-radius: 2px;
+        }
+
+        h3 {
+            color: var(--text-color);
+            font-size: 1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+            touch-action: manipulation;
+            min-height: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--info), #0099cc);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(42, 42, 42, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: white;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .light-theme .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #1a1a2e;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #00cc6a);
+            color: black;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #cc0000);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #cc8800);
+            color: black;
+            box-shadow: 0 4px 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .btn-icon {
+            padding: 12px;
+            width: auto;
+            min-height: auto;
+        }
+
+        .grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 16px 10px;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--info), #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.6875rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 212, 255, 0.2);
+            padding: 8px 12px;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .nav-content {
+            display: flex;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+            gap: 4px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+
+        .nav-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.6875rem;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            flex: 0 0 auto;
+            border-radius: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--info);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(42, 42, 42, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        .light-theme .form-input {
+            background: rgba(255, 255, 255, 0.8);
+            color: #1a1a2e;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--info);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+        }
+
+        textarea.form-input {
+            resize: none;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .ticket-item {
+            display: flex;
+            flex-direction: column;
+            padding: 18px;
+            background: rgba(42, 42, 42, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideInRight 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .light-theme .ticket-item {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .ticket-item:nth-child(1) { animation-delay: 0.1s; }
+        .ticket-item:nth-child(2) { animation-delay: 0.2s; }
+        .ticket-item:nth-child(3) { animation-delay: 0.3s; }
+        .ticket-item:nth-child(4) { animation-delay: 0.4s; }
+        .ticket-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .ticket-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--info);
+            background: rgba(42, 42, 42, 0.8);
+        }
+
+        .ticket-item.completed {
+            border-left-color: var(--success);
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.1), rgba(42, 42, 42, 0.6));
+        }
+
+        .ticket-item.in-progress {
+            border-left-color: var(--warning);
+            background: linear-gradient(90deg, rgba(255, 170, 0, 0.1), rgba(42, 42, 42, 0.6));
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-number {
+            font-size: 1.125rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--info), #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .ticket-status {
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .ticket-status.completed {
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .ticket-status.in-progress {
+            background: rgba(255, 170, 0, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
+        .ticket-status.pending {
+            background: rgba(102, 102, 102, 0.15);
+            color: #888;
+            border: 1px solid rgba(102, 102, 102, 0.3);
+        }
+
+        .ticket-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--progress-bg);
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--info), #9b59b6);
+            transition: width 0.5s ease;
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.2) 50%,
+                rgba(255,255,255,0.1) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .question-card {
+            background: rgba(42, 42, 42, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .light-theme .question-card {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .question-card:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .question-card.practical {
+            opacity: 0.7;
+            background: rgba(26, 26, 26, 0.6);
+            border-color: rgba(255, 68, 68, 0.2);
+        }
+
+        .light-theme .question-card.practical {
+            background: rgba(255, 240, 240, 0.8);
+        }
+
+        .question-header {
+            padding: 16px 20px;
+            background: rgba(51, 51, 51, 0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .light-theme .question-header {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .question-header:hover {
+            background: rgba(51, 51, 51, 0.6);
+        }
+
+        .question-number {
+            font-weight: bold;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.875rem;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .practical-badge {
+            color: var(--danger);
+            background: rgba(255, 68, 68, 0.15);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 68, 68, 0.3);
+        }
+
+        .question-text {
+            padding: 20px;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            color: #e0e0e0;
+        }
+
+        .light-theme .question-text {
+            color: #1a1a2e;
+        }
+
+        .answer-container {
+            padding: 0 20px 20px 20px;
+        }
+
+        .answer-content {
+            background: rgba(26, 26, 26, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 3px solid var(--info);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #d0d0d0;
+            margin-top: 16px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .light-theme .answer-content {
+            background: rgba(240, 240, 255, 0.8);
+            color: #1a1a2e;
+        }
+
+        .quiz-option {
+            background: rgba(42, 42, 42, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .light-theme .quiz-option {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .quiz-option:hover {
+            border-color: var(--info);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--info);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--danger);
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .quiz-marker {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
+        .quiz-marker.selected {
+            background: var(--info);
+            border-color: var(--info);
+            color: white;
+        }
+
+        .formula-block {
+            background: rgba(30, 30, 63, 0.8);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-family: 'Courier New', monospace;
+            color: var(--warning);
+            text-align: center;
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .key-term {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--info);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            margin: 4px;
+            border: 1px dashed rgba(0, 212, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .key-term:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, var(--warning), #ff6600);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bookmark-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #888;
+            transition: all 0.3s ease;
+        }
+
+        .bookmark-btn.active {
+            color: var(--warning);
+            transform: scale(1.1);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+        .search-input:not(:placeholder-shown) + .search-clear {
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: rgba(42, 42, 42, 0.8);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 30px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .light-theme .search-input {
+            background: rgba(255, 255, 255, 0.8);
+            color: #1a1a2e;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: rgba(42, 42, 42, 0.6);
+            border-radius: 30px;
+            font-size: 0.8125rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(135deg, var(--info), #0099cc);
+            color: white;
+            border-color: transparent;
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 20px 0;
+            touch-action: pan-y pinch-zoom;
+        }
+        .flashcard {
+            width: 100%;
+            min-height: 250px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s, background 0.2s;
+            cursor: grab;
+            user-select: none;
+        }
+        .flashcard.dragging {
+            transition: none;
+            cursor: grabbing;
+        }
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            border: 2px solid rgba(0,212,255,0.3);
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        .flashcard.swipe-left {
+            background: rgba(255,68,68,0.3);
+            border-color: var(--danger);
+        }
+        .flashcard.swipe-right {
+            background: rgba(0,255,136,0.3);
+            border-color: var(--success);
+        }
+
+        .note-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            margin-top: 12px;
+        }
+        .note-input:invalid {
+            border-color: var(--danger);
+        }
+
+        .settings-slider {
+            width: 100%;
+            margin: 16px 0;
+        }
+
+        .achievement {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .achievement-progress {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .achievement.locked {
+            opacity: 0.5;
+        }
+
+        .theme-toggle {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: rgba(42, 42, 42, 0.6);
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .theme-option.active {
+            background: linear-gradient(135deg, var(--info), #0099cc);
+            color: white;
+        }
+
+        .export-btn {
+            margin-top: 16px;
+        }
+
+        .quiz-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 30px;
+        }
+
+        .quiz-score {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--info);
+        }
+
+        .timer {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--warning);
+        }
+        .timer.warning {
+            color: var(--danger);
+        }
+
+        .section-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .section-tab {
+            padding: 10px 20px;
+            background: rgba(42, 42, 42, 0.6);
+            border-radius: 30px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .section-tab.active {
+            background: linear-gradient(135deg, var(--info), #0099cc);
+            color: white;
+        }
+
+        .highlight {
+            background: rgba(255,255,0,0.3);
+            border-radius: 4px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Стили для таблицы Менделеева */
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .periodic-element {
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 4px;
+            padding: 2px;
+            text-align: center;
+            font-size: 0.7rem;
+            min-width: 40px;
+        }
+        .periodic-element-symbol {
+            font-weight: bold;
+            color: var(--info);
+            font-size: 0.9rem;
+        }
+        .periodic-element-number {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+        }
+        .lanthanide-row, .actinide-row {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 2px;
+            margin-top: 8px;
+        }
+
+        .activity-series {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .metal {
+            background: rgba(255,170,0,0.1);
+            border: 1px solid var(--warning);
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        .solubility-table {
+            width: 100%;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        .solubility-table table {
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .solubility-table th, .solubility-table td {
+            border: 1px solid #333;
+            padding: 4px;
+            text-align: center;
+            min-width: 30px;
+        }
+        .solubility-table th {
+            background: rgba(0,212,255,0.2);
+        }
+        .solubility-R { color: var(--info); font-weight: bold; }
+        .solubility-M { color: var(--warning); font-weight: bold; }
+        .solubility-N { color: var(--danger); font-weight: bold; }
+        .solubility-unknown { color: #888; }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .recent-item:hover {
+            background: rgba(0,212,255,0.1);
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .note-actions .btn {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 375px) {
+            .header { padding: 10px 12px; }
+            .main-content { padding: 12px; padding-bottom: 70px; }
+            .card { padding: 16px; }
+            .btn { padding: 12px 14px; font-size: 0.875rem; }
+            .nav-item { font-size: 0.625rem; }
+            .nav-icon { font-size: 1.125rem; }
+            .stat-value { font-size: 1.25rem; }
+        }
+
+        @supports (-webkit-touch-callout: none) {
+            body { height: -webkit-fill-available; }
+            #app { min-height: -webkit-fill-available; }
+            input, textarea { font-size: 16px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="loading">
+            <div class="spinner"></div>
+            <h2 style="margin-top: 16px; color: var(--info); font-size: 1.125rem;">ChemExam Assistant</h2>
+            <p style="color: #666; margin-top: 8px; font-size: 0.875rem;">Загрузка...</p>
+        </div>
+    </div>
+
+    <script>
+        alert('Скрипт запущен');
+        console.log('Скрипт стартовал');
+        window.onerror = function(msg, url, line) {
+           alert('Ошибка: ' + msg + ' на строке ' + line);
+        };
+        // =====================================================
+        // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
+        // =====================================================
+        const STORAGE_KEY = 'chemExamData_v7';
+        const PROGRESS_KEY = 'chemExamProgress_v7';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v7';
+        const NOTES_KEY = 'chemExamNotes_v7';
+        const SETTINGS_KEY = 'chemExamSettings_v7';
+        const STATS_KEY = 'chemExamStats_v7';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v7';
+
+        const TOTAL_QUESTIONS = 35;
+        const TOTAL_TICKETS = 17;
+        // =====================================================
+        // ГЛОБАЛЬНЫЕ ДАННЫЕ
+        // =====================================================
+        let allQuestions = [];
+        let tickets = [];
+        let theoryQuestions = [];
+        let practiceQuestions = [];
+
+        let userProgress = {
+            questions: {},        // id -> true/false
+            lastViewed: {},       // id -> ISO date
+            streak: 0,
+            lastActive: null,
+            studyTime: 0,
+            achievements: {},
+            recentlyViewed: []    // { id, date }
+        };
+
+        let bookmarks = [];
+        let notes = {};
+
+        let settings = {
+            theme: 'dark',
+            fontSize: 16,
+            reminders: false,
+            reminderTime: '20:00'
+        };
+
+        let stats = {
+            dailyActivity: {},
+            totalStudyTime: 0,
+            quizResults: []
+        };
+
+        const achievements = [
+            { id: 'novice', title: 'Новичок', desc: 'Изучил 5 вопросов', icon: '🌱', target: 5 },
+            { id: 'expert', title: 'Знаток', desc: 'Изучил 15 вопросов', icon: '📚', target: 15 },
+            { id: 'master', title: 'Профи', desc: 'Изучил 30 вопросов', icon: '🏆', target: 30 },
+            { id: 'practice', title: 'Первая практика', desc: 'Решил первую задачу', icon: '⚗️', target: 1 },
+            { id: 'streak7', title: 'Неделя без перерыва', desc: '7 дней подряд', icon: '🔥', target: 7 },
+            { id: 'streak30', title: 'Месяц без перерыва', desc: '30 дней подряд', icon: '⚡', target: 30 },
+            { id: 'quizMaster', title: 'Мастер тестов', desc: '50 правильных ответов', icon: '🧪', target: 50 }
+        ];
+
+        let quizQuestions = [
+            { id: 1001, question: "Какая общая формула у алканов?", options: ["CₙH₂ₙ₊₂", "CₙH₂ₙ", "CₙH₂ₙ₋₂", "CₙHₙ"], correct: 0 },
+            { id: 1002, question: "Какой тип гибридизации у атома углерода в молекуле метана?", options: ["sp³", "sp²", "sp", "не гибридизирован"], correct: 0 },
+            { id: 1003, question: "Какая реакция характерна для алкенов?", options: ["Присоединения", "Замещения", "Разложения", "Обмена"], correct: 0 },
+            { id: 1004, question: "Что такое изомеры?", options: ["Вещества с одинаковым составом, но разным строением", "Вещества с разным составом и строением", "Вещества с одинаковым строением", "Вещества с одинаковыми свойствами"], correct: 0 },
+            { id: 1005, question: "Какая формула у бензола?", options: ["C₆H₆", "C₆H₁₂", "C₆H₁₀", "C₆H₁₄"], correct: 0 },
+            { id: 1006, question: "Какой газ выделяется при взаимодействии карбида кальция с водой?", options: ["Метан", "Этилен", "Ацетилен", "Водород"], correct: 2 },
+            { id: 1007, question: "Какая кислота образуется при окислении уксусного альдегида?", options: ["Муравьиная", "Уксусная", "Пропионовая", "Масляная"], correct: 1 },
+            { id: 1008, question: "Какой тип связи в молекуле хлороводорода?", options: ["Ионная", "Ковалентная полярная", "Ковалентная неполярная", "Металлическая"], correct: 1 },
+            { id: 1009, question: "Что такое гидролиз?", options: ["Разложение водой", "Присоединение воды", "Отщепление воды", "Окисление водой"], correct: 0 },
+            { id: 1010, question: "Какая формула у глюкозы?", options: ["C₆H₁₂O₆", "C₁₂H₂₂O₁₁", "C₆H₁₀O₅", "C₆H₆"], correct: 0 }
+        ];
+
+        // Состояние текущей страницы
+        let currentPageState = { name: 'main', params: {} };
+        let openedAnswers = new Set();
+
+        // Кеши для фильтров
+        let cachedTheoryFiltered = null;
+        let cachedPracticeFiltered = null;
+        let lastFilterParams = { theory: null, practice: null };
+
+        // =====================================================
+        // ИНИЦИАЛИЗАЦИЯ ДАННЫХ (35 вопросов) — ИСПРАВЛЕНО: строки в обратных кавычках
+        // =====================================================
+        function initData() {
+            allQuestions = [
+                // Вопрос 1 (теория)
+                { id: 1, number: 1, type: 'theory',
+                  text: "Периодический закон и периодическая система химических элементов Д.И. Менделеева. Значение для науки.",
+                  answer: `📌 Суть закона: Свойства химических элементов и образованных ими веществ находятся в периодической зависимости от заряда их атомных ядер.
+
+📌 Таблица: графическое отображение закона. Элементы расположены по периодам и группам, показывая повторяемость свойств.
+
+📌 Значение:
+1️⃣ Систематизировал все известные элементы.
+2️⃣ Предсказал открытие новых элементов (германий, галлий), описав их свойства.
+3️⃣ Сыграл главную роль в понимании строения атома.` },
+                // Вопрос 2 (практика)
+                { id: 2, number: 2, type: 'practice',
+                  text: "Напишите структурные формулы веществ: 2-метилпропановая кислота, 3,4-диметилпентановая кислота",
+                  answer: `📌 2-метилпропановая кислота:
+CH₃-CH-COOH
+     |
+     CH₃
+
+📌 3,4-диметилпентановая кислота:
+CH₃-CH-CH-CH₂-COOH
+     |   |
+     CH₃ CH₃` },
+                // Вопрос 3 (теория)
+                { id: 3, number: 3, type: 'theory',
+                  text: "Предельные углеводороды (Алканы). Общая формула, строение. Химические свойства метана. Применение.",
+                  answer: `📌 Общая формула: CₙH₂ₙ₊₂ (метан CH₄, пропан C₃H₈).
+📌 Строение: простые связи, sp³-гибридизация.
+📌 Свойства метана: галогенирование, горение, пиролиз.
+📌 Применение: топливо, растворители, пластмассы.` },
+                // Вопрос 4 (практика)
+                { id: 4, number: 4, type: 'practice',
+                  text: "Как получить из карбида кальция 1,2-дихлорэтан?",
+                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (ацетилен) + Ca(OH)₂
+2) C₂H₂ + H₂ (катализатор) → C₂H₄ (этилен)
+3) C₂H₄ + Cl₂ → C₂H₄Cl₂ (1,2-дихлорэтан)` },
+                // Вопрос 5 (теория)
+                { id: 5, number: 5, type: 'theory',
+                  text: "Строение атомов химических элементов. Закономерности изменения свойств в зависимости от строения.",
+                  answer: `📌 Строение: ядро (протоны, нейтроны) и электроны по слоям.
+📌 В периоде (→): радиус уменьшается, металлич. свойства слабеют.
+📌 В группе (↓): радиус растёт, металлич. свойства усиливаются.` },
+                // Вопрос 6 (практика)
+                { id: 6, number: 6, type: 'practice',
+                  text: "Напишите структурные формулы: 2-метилбутан, 2,2-дихлорпентан, 3,3-диметилпентан",
+                  answer: `📌 2-метилбутан: CH₃-CH(CH₃)-CH₂-CH₃
+📌 2,2-дихлорпентан: CH₃-CCl₂-CH₂-CH₂-CH₃
+📌 3,3-диметилпентан: CH₃-CH₂-C(CH₃)₂-CH₂-CH₃` },
+                // Вопрос 7 (теория)
+                { id: 7, number: 7, type: 'theory',
+                  text: "Непредельные углеводороды ряда этилена. Строение, свойства этилена. Применение.",
+                  answer: `📌 Общая формула: CₙH₂ₙ. Двойная связь (σ и π).
+📌 Свойства: присоединение (галогенирование, гидратация, полимеризация).
+📌 Применение: полиэтилен, трубы, плёнка, краски.` },
+                // Вопрос 8 (практика)
+                { id: 8, number: 8, type: 'practice',
+                  text: "Осуществите превращения: AlCl₃ → X → Y → Cu₂O",
+                  answer: `1) AlCl₃ → Al (электролиз расплава или вытеснение более активным металлом)
+2) 4Al + 3O₂ → 2Al₂O₃ (X=Al, Y=Al₂O₃)
+3) 2Al + 3CuO → Al₂O₃ + 3Cu, затем 4Cu + O₂ → 2Cu₂O (недостаток кислорода)` },
+                // Вопрос 9 (теория)
+                { id: 9, number: 9, type: 'theory',
+                  text: "Виды химической связи.",
+                  answer: `1️⃣ Ковалентная неполярная (H₂, O₂)
+2️⃣ Ковалентная полярная (HCl, H₂O)
+3️⃣ Ионная (NaCl)
+4️⃣ Металлическая
+5️⃣ Водородная` },
+                // Вопрос 10 (практика)
+                { id: 10, number: 10, type: 'practice',
+                  text: "Напишите структурные формулы: 3-метилпентен-1, 2-метил-4-изопропилгексен-1",
+                  answer: `📌 3-метилпентен-1: CH₂=CH-CH(CH₃)-CH₂-CH₃
+📌 2-метил-4-изопропилгексен-1: CH₂=C(CH₃)-CH₂-CH(CH(CH₃)₂)-CH₂-CH₃` },
+                // Вопрос 11 (теория)
+                { id: 11, number: 11, type: 'theory',
+                  text: "Аминокислоты, их строение, свойства, роль, применение.",
+                  answer: `📌 Строение: NH₂ и COOH группы.
+📌 Свойства: амфотерность, образование полипептидов.
+📌 Роль: строительные блоки белков.
+📌 Применение: пищевые добавки, лекарства.` },
+                // Вопрос 12 (практика)
+                { id: 12, number: 12, type: 'practice',
+                  text: "Осуществите превращения: метан → X → Y → уксусная кислота",
+                  answer: `1) 2CH₄ → C₂H₂ + 3H₂ (пиролиз) (X = ацетилен)
+2) C₂H₂ + H₂O → CH₃COH (реакция Кучерова, Y = уксусный альдегид)
+3) CH₃COH + Ag₂O → CH₃COOH + 2Ag (окисление)` },
+                // Вопрос 13 (теория)
+                { id: 13, number: 13, type: 'theory',
+                  text: "Классификация химических реакций.",
+                  answer: `По числу веществ: соединения, разложения, замещения, обмена.
+По тепловому эффекту: экзо- и эндотермические.
+По изменению ст.окисления: ОВР и не ОВР.
+По обратимости: обратимые и необратимые.` },
+                // Вопрос 14 (практика)
+                { id: 14, number: 14, type: 'practice',
+                  text: "Из этана и неорганики получить бутан.",
+                  answer: `1) C₂H₆ + Cl₂ → C₂H₅Cl + HCl (на свету)
+2) 2C₂H₅Cl + 2Na → C₄H₁₀ + 2NaCl (реакция Вюрца)` },
+                // Вопрос 15 (теория)
+                { id: 15, number: 15, type: 'theory',
+                  text: "Крахмал и целлюлоза: строение, свойства, применение.",
+                  answer: `📌 Состоят из остатков глюкозы. Крахмал – смесь линейных и разветвлённых цепей, целлюлоза – линейные волокна.
+📌 Крахмал: синеет с йодом, гидролиз до глюкозы.
+📌 Целлюлоза: нерастворима, прочная.
+📌 Применение: крахмал – клейстер, целлюлоза – бумага, ткани.` },
+                // Вопрос 16 (практика)
+                { id: 16, number: 16, type: 'practice',
+                  text: "Напишите все изомеры состава C₅H₁₁OH",
+                  answer: `8 изомеров пентанола:
+1) пентанол-1
+2) пентанол-2
+3) пентанол-3
+4) 2-метилбутанол-1
+5) 3-метилбутанол-1
+6) 2-метилбутанол-2
+7) 3-метилбутанол-2
+8) 2,2-диметилпропанол-1` },
+                // Вопрос 17 (теория)
+                { id: 17, number: 17, type: 'theory',
+                  text: "Обратимость реакций. Химическое равновесие и его смещение. Применение.",
+                  answer: `📌 Равновесие – когда скорости прямой и обратной равны.
+📌 Принцип Ле-Шателье: при воздействии равновесие смещается в сторону ослабления воздействия.
+📌 Применение: в промышленности (синтез аммиака) подбирают условия для смещения равновесия.` },
+                // Вопрос 18 (практика)
+                { id: 18, number: 18, type: 'practice',
+                  text: "Осуществите превращения: C₅H₁₁OH → X → Y → C₅H₅OH (циклическое)",
+                  answer: `1) Дегидрирование (отщепление H₂) → циклопентадиен C₅H₆
+2) C₅H₆ + Cl₂ → C₅H₅Cl + HCl (замещение)
+3) C₅H₅Cl + NaOH → C₅H₅OH + NaCl (гидролиз)` },
+                // Вопрос 19 (теория)
+                { id: 19, number: 19, type: 'theory',
+                  text: "Ацетилен – строение, свойства, получение, применение.",
+                  answer: `📌 Тройная связь, реакции присоединения.
+📌 Получение: CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂
+📌 Применение: сварка, растворители, уксусная кислота, каучуки.` },
+                // Вопрос 20 (практика)
+                { id: 20, number: 20, type: 'practice',
+                  text: "Осуществите превращения: CO₂ → крахмал → глюкоза → этанол → бромэтан",
+                  answer: `1) фотосинтез (в растениях) CO₂ → крахмал
+2) (C₆H₁₀O₅)ₙ + nH₂O → nC₆H₁₂O₆ (гидролиз крахмала)
+3) C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (спиртовое брожение)
+4) C₂H₅OH + HBr → C₂H₅Br + H₂O` },
+                // Вопрос 21 (теория)
+                { id: 21, number: 21, type: 'theory',
+                  text: "Скорость химических реакций и факторы, влияющие на неё.",
+                  answer: `Факторы: природа веществ, концентрация, температура (правило Вант-Гоффа), площадь поверхности, катализатор.` },
+                // Вопрос 22 (практика)
+                { id: 22, number: 22, type: 'practice',
+                  text: "Из пропана получить гексан",
+                  answer: `1) C₃H₈ + Cl₂ → C₃H₇Cl + HCl (1-хлорпропан)
+2) 2C₃H₇Cl + 2Na → C₆H₁₄ + 2NaCl (реакция Вюрца)` },
+                // Вопрос 23 (теория)
+                { id: 23, number: 23, type: 'theory',
+                  text: "Ароматические углеводороды. Бензол: строение, свойства, получение, применение.",
+                  answer: `📌 C₆H₆, бензольное кольцо.
+📌 Реакции замещения (галогенирование, нитрование).
+📌 Получение: из нефти, тримеризация ацетилена: 3C₂H₂ → C₆H₆.
+📌 Применение: растворитель, пластмассы, красители, лекарства.` },
+                // Вопрос 24 (практика)
+                { id: 24, number: 24, type: 'practice',
+                  text: "Напишите все изомеры состава C₅H₁₀",
+                  answer: `Алкены: пентен-1, пентен-2 (цис/транс), 2-метилбутен-1, 3-метилбутен-1, 2-метилбутен-2. Циклоалканы: циклопентан, метилциклобутан, 1,2-диметилциклопропан, этилциклопропан.` },
+                // Вопрос 25 (теория)
+                { id: 25, number: 25, type: 'theory',
+                  text: "Теория Бутлерова химического строения органических веществ.",
+                  answer: `1) Атомы соединены по валентности.
+2) Свойства зависят от порядка связей (изомерия).
+3) Атомы влияют друг на друга.
+Развитие: стереохимия.` },
+                // Вопрос 26 (практика)
+                { id: 26, number: 26, type: 'practice',
+                  text: "Как получить из этанола 1,2-дихлорэтан?",
+                  answer: `1) C₂H₅OH → C₂H₄ + H₂O (дегидратация, нагревание с H₂SO₄)
+2) C₂H₄ + Cl₂ → C₂H₄Cl₂` },
+                // Вопрос 27 (теория)
+                { id: 27, number: 27, type: 'theory',
+                  text: "Электролиз как ОВР. Электролиз расплава и раствора NaCl.",
+                  answer: `📌 Электролиз – разложение током.
+📌 Расплав NaCl: Na⁺ + e → Na; 2Cl⁻ – 2e → Cl₂.
+📌 Раствор NaCl: на катоде 2H₂O + 2e → H₂ + 2OH⁻, на аноде 2Cl⁻ → Cl₂.` },
+                // Вопрос 28 (практика)
+                { id: 28, number: 28, type: 'practice',
+                  text: "Напишите структурные формулы: 3-бромгексанол-2; 2-метил-3-этилпентанол-1",
+                  answer: `📌 3-бромгексанол-2: CH₃-CH₂-CH(Br)-CH(OH)-CH₂-CH₃
+📌 2-метил-3-этилпентанол-1: CH₂OH-CH(CH₃)-CH(C₂H₅)-CH₂-CH₃` },
+                // Вопрос 29 (теория)
+                { id: 29, number: 29, type: 'theory',
+                  text: "Изомерия органических соединений и её виды.",
+                  answer: `📌 Изомеры – одинаковый состав, разное строение.
+Виды:
+1) структурная (углеродный скелет, положение функц. группы, межклассовая)
+2) пространственная (геометрическая цис/транс, оптическая)` },
+                // Вопрос 30 (практика)
+                { id: 30, number: 30, type: 'practice',
+                  text: "Осуществите превращения: Al₄C₃ → CH₄ → CH₃Br → C₂H₆ → CO₂ → CO",
+                  answer: `1) Al₄C₃ + 12H₂O → 4Al(OH)₃ + 3CH₄
+2) CH₄ + Br₂ → CH₃Br + HBr (на свету)
+3) 2CH₃Br + 2Na → C₂H₆ + 2NaBr (реакция Вюрца)
+4) 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O (горение)
+5) CO₂ + C ⇄ 2CO (при высокой температуре)` },
+                // Вопрос 31 (теория)
+                { id: 31, number: 31, type: 'theory',
+                  text: "Оксиды: классификация, свойства, применение.",
+                  answer: `📌 Основные (Na₂O, CaO) – реагируют с кислотами.
+📌 Кислотные (CO₂, SO₂) – реагируют со щелочами.
+📌 Амфотерные (Al₂O₃, ZnO) – и с кислотами, и со щелочами.
+📌 Несолеобразующие (CO, NO).
+Применение: известь, стекло, пигменты.` },
+                // Вопрос 32 (практика)
+                { id: 32, number: 32, type: 'practice',
+                  text: "Осуществите превращения: карбид кальция → X → Y → хлорэтан",
+                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (X = ацетилен)
+2) C₂H₂ + H₂ → C₂H₄ (Y = этилен, катализатор)
+3) C₂H₄ + HCl → C₂H₅Cl (хлорэтан)` },
+                // Вопрос 33 (теория)
+                { id: 33, number: 33, type: 'theory',
+                  text: "Металлы: положение в ПС, строение атома, химические свойства, применение.",
+                  answer: `📌 Внизу слева, на внешнем уровне 1–3 e, атомы большие.
+📌 Восстановители: реагируют с неметаллами, водой, кислотами, солями.
+📌 Применение: строительство, сантехника, инструменты, электрика.` },
+                // Вопрос 34 (практика)
+                { id: 34, number: 34, type: 'practice',
+                  text: "Напишите все изомеры состава C₅H₁₂",
+                  answer: `3 изомера пентана:
+1) н-пентан CH₃-CH₂-CH₂-CH₂-CH₃
+2) изопентан (2-метилбутан) CH₃-CH(CH₃)-CH₂-CH₃
+3) неопентан (2,2-диметилпропан) C(CH₃)₄` },
+                // Вопрос 35 (теория)
+                { id: 35, number: 35, type: 'theory',
+                  text: "Фенол: строение, свойства, получение, применение.",
+                  answer: `📌 C₆H₅OH – бензольное кольцо + OH.
+📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.
+📌 Получение: из каменноугольной смолы.
+📌 Применение: пластмассы, лекарства (аспирин), антисептики.` }
+            ];
+
+            // Формируем билеты (пары теория+практика) – всего 17 билетов
+            tickets = [];
+            for (let i = 0; i < TOTAL_TICKETS; i++) {
+                const theoryIdx = i * 2;
+                const practiceIdx = i * 2 + 1;
+                tickets.push({
+                    number: i + 1,
+                    theory: allQuestions[theoryIdx],
+                    practice: allQuestions[practiceIdx]
+                });
+            }
+
+            // Отдельные массивы для теории и практики
+            theoryQuestions = allQuestions.filter(q => q.type === 'theory');
+            practiceQuestions = allQuestions.filter(q => q.type === 'practice');
+        }
+
+        // =====================================================
+        // СОХРАНЕНИЕ / ЗАГРУЗКА
+        // =====================================================
+        function saveAllData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ allQuestions, tickets, theoryQuestions, practiceQuestions }));
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(userProgress));
+                localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+                localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+                localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+                localStorage.setItem(QUIZ_RESULTS_KEY, JSON.stringify(stats.quizResults));
+            } catch (e) { console.error('Ошибка сохранения', e); }
+        }
+
+        function loadAllData() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.allQuestions && parsed.allQuestions.length === TOTAL_QUESTIONS) {
+                        allQuestions = parsed.allQuestions;
+                        tickets = parsed.tickets || [];
+                        theoryQuestions = parsed.theoryQuestions || [];
+                        practiceQuestions = parsed.practiceQuestions || [];
+                    } else {
+                        initData();
+                    }
+                } else {
+                    initData();
+                }
+
+                const prog = localStorage.getItem(PROGRESS_KEY);
+                if (prog) {
+                    userProgress = JSON.parse(prog);
+                    if (!userProgress.lastViewed) userProgress.lastViewed = {};
+                    if (!userProgress.recentlyViewed) userProgress.recentlyViewed = [];
+                }
+
+                const bm = localStorage.getItem(BOOKMARKS_KEY);
+                if (bm) bookmarks = JSON.parse(bm);
+
+                const nt = localStorage.getItem(NOTES_KEY);
+                if (nt) notes = JSON.parse(nt);
+
+                const stg = localStorage.getItem(SETTINGS_KEY);
+                if (stg) {
+                    settings = JSON.parse(stg);
+                    applySettings();
+                }
+
+                const st = localStorage.getItem(STATS_KEY);
+                if (st) stats = JSON.parse(st);
+
+                const qr = localStorage.getItem(QUIZ_RESULTS_KEY);
+                if (qr) stats.quizResults = JSON.parse(qr);
+            } catch (e) {
+                console.error('Ошибка загрузки', e);
+                initData();
+            }
+        }
+
+        function applySettings() {
+            if (settings.theme === 'light') document.body.classList.add('light-theme');
+            else document.body.classList.remove('light-theme');
+            document.documentElement.style.setProperty('--base-font-size', settings.fontSize + 'px');
+            document.body.style.fontSize = settings.fontSize + 'px';
+        }
+
+        // =====================================================
+        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // =====================================================
+        function showMessage(text, type = 'info') {
+            const msg = document.createElement('div');
+            msg.className = `message message-${type}`;
+            msg.textContent = text;
+            msg.style.position = 'fixed';
+            msg.style.top = '70px';
+            msg.style.left = '16px';
+            msg.style.right = '16px';
+            msg.style.zIndex = '1000';
+            msg.style.padding = '14px 20px';
+            msg.style.borderRadius = '16px';
+            msg.style.textAlign = 'center';
+            msg.style.animation = 'slideDown 0.3s ease';
+            msg.style.background = type === 'success' ? 'rgba(0, 255, 136, 0.15)' : 'rgba(0, 212, 255, 0.15)';
+            msg.style.border = type === 'success' ? '1px solid rgba(0, 255, 136, 0.3)' : '1px solid rgba(0, 212, 255, 0.3)';
+            msg.style.color = type === 'success' ? 'var(--success)' : 'var(--info)';
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                setTimeout(() => { if (msg.parentNode) msg.remove(); }, 300);
+            }, 3000);
+        }
+
+        function toggleBookmark(questionId) {
+            const idx = bookmarks.indexOf(questionId);
+            if (idx === -1) {
+                bookmarks.push(questionId);
+                showMessage('⭐ Добавлено в избранное', 'success');
+            } else {
+                bookmarks.splice(idx, 1);
+                showMessage('⭐ Удалено из избранного', 'info');
+            }
+            saveAllData();
+            updateBookmarkIcon(questionId);
+        }
+
+        function updateBookmarkIcon(questionId) {
+            const btn = document.querySelector(`.bookmark-btn[data-id="${questionId}"]`);
+            if (btn) {
+                const isBookmark = bookmarks.includes(questionId);
+                btn.innerHTML = isBookmark ? '⭐' : '☆';
+                btn.classList.toggle('active', isBookmark);
+            } else {
+                rerenderCurrentPage();
+            }
+        }
+
+        function deleteNote(questionId) {
+            if (notes[questionId]) {
+                delete notes[questionId];
+                saveAllData();
+                showMessage('📝 Заметка удалена', 'info');
+                rerenderCurrentPage();
+            }
+        }
+
+        function saveNote(questionId, text) {
+            text = text.trim();
+            if (text.length > 2000) {
+                showMessage('Заметка слишком длинная (макс. 2000 символов)', 'info');
+                return;
+            }
+            if (!text) {
+                deleteNote(questionId);
+                return;
+            }
+            notes[questionId] = { text, date: new Date().toISOString() };
+            saveAllData();
+            showMessage('📝 Заметка сохранена', 'success');
+            rerenderCurrentPage();
+        }
+
+        function showNoteInput(questionId) {
+            const el = document.getElementById(`note-${questionId}`);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function toggleQuestionAnswer(questionId) {
+            if (openedAnswers.has(questionId)) {
+                openedAnswers.delete(questionId);
+            } else {
+                openedAnswers.add(questionId);
+            }
+            const answerDiv = document.getElementById(`answer-${questionId}`);
+            if (answerDiv) {
+                answerDiv.classList.toggle('hidden');
+                const btn = answerDiv.parentElement?.querySelector('.btn-secondary');
+                if (btn) btn.textContent = openedAnswers.has(questionId) ? '🔍 Скрыть ответ' : '🔍 Показать ответ';
+            }
+        }
+
+        function updateProgress(questionId, type) {
+            const today = new Date().toISOString().split('T')[0];
+            if (!userProgress.questions) userProgress.questions = {};
+            userProgress.questions[questionId] = true;
+            userProgress.lastViewed[questionId] = new Date().toISOString();
+
+            const recent = userProgress.recentlyViewed || [];
+            const existingIndex = recent.findIndex(item => item.id === questionId);
+            if (existingIndex !== -1) recent.splice(existingIndex, 1);
+            recent.unshift({ id: questionId, date: new Date().toISOString() });
+            if (recent.length > 10) recent.pop();
+            userProgress.recentlyViewed = recent;
+
+            const last = userProgress.lastActive;
+            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+            if (last === yesterday) {
+                userProgress.streak = (userProgress.streak || 0) + 1;
+            } else if (last !== today) {
+                userProgress.streak = 1;
+            }
+            userProgress.lastActive = today;
+
+            userProgress.studyTime = (userProgress.studyTime || 0) + 5;
+            stats.totalStudyTime = (stats.totalStudyTime || 0) + 5;
+
+            if (!stats.dailyActivity) stats.dailyActivity = {};
+            if (!stats.dailyActivity[today]) stats.dailyActivity[today] = 0;
+            stats.dailyActivity[today]++;
+
+            checkAchievements();
+            saveAllData();
+            updateGlobalProgress();
+        }
+
+        function updateGlobalProgress() {
+            const total = allQuestions.length;
+            const studied = Object.values(userProgress.questions || {}).filter(v => v).length;
+            const percent = total ? (studied / total) * 100 : 0;
+            const bar = document.getElementById('global-progress-fill');
+            if (bar) bar.style.width = percent + '%';
+        }
+
+        function checkAchievements() {
+            const totalStudied = Object.values(userProgress.questions || {}).filter(v => v).length;
+            const practiceStudied = allQuestions.filter(q => q.type === 'practice' && userProgress.questions?.[q.id]).length;
+            const totalQuizCorrect = (stats.quizResults || []).reduce((s, r) => s + r.score, 0);
+
+            achievements.forEach(a => {
+                if (!userProgress.achievements?.[a.id]) {
+                    let achieved = false;
+                    if (a.id === 'novice') achieved = totalStudied >= 5;
+                    else if (a.id === 'expert') achieved = totalStudied >= 15;
+                    else if (a.id === 'master') achieved = totalStudied >= 30;
+                    else if (a.id === 'practice') achieved = practiceStudied >= 1;
+                    else if (a.id === 'streak7') achieved = (userProgress.streak || 0) >= 7;
+                    else if (a.id === 'streak30') achieved = (userProgress.streak || 0) >= 30;
+                    else if (a.id === 'quizMaster') achieved = totalQuizCorrect >= 50;
+
+                    if (achieved) {
+                        if (!userProgress.achievements) userProgress.achievements = {};
+                        userProgress.achievements[a.id] = { date: new Date().toISOString() };
+                        showMessage(`🏆 Достижение: ${a.title}`, 'success');
+                    }
+                }
+            });
+        }
+
+        function exportToTxt() {
+            let content = 'ЭКЗАМЕНАЦИОННЫЕ ВОПРОСЫ ПО ХИМИИ (ПОЛНЫЙ СПИСОК)\n\n';
+            allQuestions.sort((a,b)=>a.number-b.number).forEach(q => {
+                content += `ВОПРОС №${q.number} (${q.type==='theory'?'теория':'практика'})\n`;
+                content += `${q.text}\n\nОТВЕТ:\n${q.answer}\n\n${'='.repeat(50)}\n\n`;
+            });
+            const blob = new Blob([content], {type:'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chem_questions.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('📄 Экспорт завершён', 'success');
+        }
+
+        function exportProgress() {
+            const data = {
+                userProgress,
+                bookmarks,
+                notes,
+                stats,
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'chem_progress.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('📤 Прогресс экспортирован', 'success');
+        }
+
+        function importProgress(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.userProgress && data.bookmarks && data.notes && data.stats) {
+                        userProgress = data.userProgress;
+                        bookmarks = data.bookmarks;
+                        notes = data.notes;
+                        stats = data.stats;
+                        saveAllData();
+                        showMessage('📥 Прогресс импортирован', 'success');
+                        rerenderCurrentPage();
+                    } else {
+                        showMessage('Неверный формат файла', 'danger');
+                    }
+                } catch (ex) {
+                    showMessage('Ошибка чтения файла', 'danger');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetProgress() {
+            if (confirm('Сбросить весь прогресс (изученные, заметки, избранное, статистику)?')) {
+                userProgress = {
+                    questions: {},
+                    lastViewed: {},
+                    streak: 0,
+                    lastActive: null,
+                    studyTime: 0,
+                    achievements: {},
+                    recentlyViewed: []
+                };
+                bookmarks = [];
+                notes = {};
+                stats = {
+                    dailyActivity: {},
+                    totalStudyTime: 0,
+                    quizResults: []
+                };
+                saveAllData();
+                showMessage('Прогресс сброшен', 'success');
+                rerenderCurrentPage();
+            }
+        }
+
+        function rerenderCurrentPage() {
+            const page = currentPageState.name;
+            const params = currentPageState.params;
+            switch (page) {
+                case 'main': showMainInterface(); break;
+                case 'tickets': showTicketsPage(params.filter || 'all'); break;
+                case 'ticket': showTicket(params.ticketNumber); break;
+                case 'theory': showTheoryPage(params.filter || 'all', params.search || ''); break;
+                case 'practice': showPracticePage(params.filter || 'all', params.search || ''); break;
+                case 'detail': showQuestionDetail(params.questionId); break;
+                case 'stats': showStatsPage(); break;
+                case 'settings': showSettingsPage(); break;
+                case 'quiz': showQuizPage(); break;
+                case 'flashcards': showFlashcardsPage(params.category || 'all', params.mode || 'unlearned'); break;
+                case 'reference': showReferencePage(); break;
+                case 'examselect': showExamSelectionPage(); break;
+                case 'exam': runExam(params.questions, params.title || 'Экзамен'); break;
+                default: showMainInterface();
+            }
+        }
+
+        function getTicketInfoByQuestionId(questionId) {
+            for (let t of tickets) {
+                if (t.theory.id === questionId || t.practice.id === questionId) return t;
+            }
+            return null;
+        }
+
+        function renderNavigation(activePage) {
+            const pages = [
+                { name: 'Главная', icon: '🏠', func: 'showMainInterface' },
+                { name: 'Билеты', icon: '📋', func: 'showTicketsPage' },
+                { name: 'Теория', icon: '📚', func: 'showTheoryPage' },
+                { name: 'Практика', icon: '⚗️', func: 'showPracticePage' },
+                { name: 'Карточки', icon: '🃏', func: 'showFlashcardsPage' },
+                { name: 'Справочник', icon: '📖', func: 'showReferencePage' },
+                { name: 'Статистика', icon: '📊', func: 'showStatsPage' },
+                { name: 'Настройки', icon: '⚙️', func: 'showSettingsPage' }
+            ];
+            return `
+                <nav class="navigation">
+                    <div class="nav-content">
+                        ${pages.map(p => `
+                            <button class="nav-item ${activePage === p.name ? 'active' : ''}" onclick="${p.func}()">
+                                <span class="nav-icon">${p.icon}</span>
+                                <span>${p.name}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </nav>
+            `;
+        }
+        // =====================================================
+        // ГЛАВНАЯ СТРАНИЦА
+        // =====================================================
+        function showMainInterface() {
+            currentPageState = { name: 'main', params: {} };
+            loadAllData();
+
+            const totalQuestions = allQuestions.length;
+            const studied = Object.values(userProgress.questions || {}).filter(v=>v).length;
+            const percent = totalQuestions ? Math.round((studied/totalQuestions)*100) : 0;
+
+            const theoryCount = theoryQuestions.length;
+            const practiceCount = practiceQuestions.length;
+            const theoryStudied = theoryQuestions.filter(q => userProgress.questions?.[q.id]).length;
+            const practiceStudied = practiceQuestions.filter(q => userProgress.questions?.[q.id]).length;
+
+            const recent = (userProgress.recentlyViewed || []).slice(0, 5).map(item => allQuestions.find(q => q.id === item.id)).filter(q => q);
+
+            const now = Date.now();
+            const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+            const toReview = allQuestions
+                .filter(q => {
+                    if (userProgress.questions?.[q.id]) return false;
+                    const lastView = userProgress.lastViewed?.[q.id];
+                    if (!lastView) return true;
+                    const lastDate = new Date(lastView).getTime();
+                    return (now - lastDate) > threeDaysMs;
+                })
+                .sort((a, b) => {
+                    const lastA = userProgress.lastViewed?.[a.id] ? new Date(userProgress.lastViewed[a.id]).getTime() : 0;
+                    const lastB = userProgress.lastViewed?.[b.id] ? new Date(userProgress.lastViewed[b.id]).getTime() : 0;
+                    return lastA - lastB;
+                })
+                .slice(0, 3);
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">🧪 ChemExam Assistant</div>
+                        <span class="streak-badge">🔥 ${userProgress.streak || 0} дней</span>
+                    </div>
+                    <div class="global-progress">
+                        <div id="global-progress-fill" class="global-progress-fill" style="width:${percent}%"></div>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h1>👋 Добро пожаловать!</h1>
+                        <p>Последняя активность: ${userProgress.lastActive ? new Date(userProgress.lastActive).toLocaleDateString('ru-RU') : 'нет'}</p>
+                    </div>
+                    <div class="card">
+                        <h2>📊 Общий прогресс</h2>
+                        <div style="margin:20px 0">
+                            <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                                <span>${studied}/${totalQuestions} вопросов</span>
+                                <span>${percent}%</span>
+                            </div>
+                            <div class="progress-bar" style="height:12px">
+                                <div class="progress-fill" style="width:${percent}%"></div>
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="stat"><div class="stat-value">${theoryStudied}/${theoryCount}</div><div class="stat-label">Теория</div></div>
+                            <div class="stat"><div class="stat-value">${practiceStudied}/${practiceCount}</div><div class="stat-label">Практика</div></div>
+                        </div>
+                    </div>
+                    ${recent.length ? `
+                    <div class="card">
+                        <h3>📌 Недавно просмотренные</h3>
+                        <div class="grid-2">
+                            ${recent.map(q => `
+                                <div class="recent-item" onclick="showQuestionDetail(${q.id})">
+                                    <span>${q.type==='theory'?'📚':'⚗️'}</span>
+                                    <span>Вопрос ${q.number}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : ''}
+                    ${toReview.length ? `
+                    <div class="card">
+                        <h3>🔄 Рекомендуем повторить</h3>
+                        <div class="grid-2">
+                            ${toReview.map(q => `
+                                <div class="recent-item" onclick="showQuestionDetail(${q.id})">
+                                    <span>${q.type==='theory'?'📚':'⚗️'}</span>
+                                    <span>Вопрос ${q.number}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>` : ''}
+                    <div class="card">
+                        <h3>🚀 Быстрые действия</h3>
+                        <div class="grid-2">
+                            <button class="btn btn-primary" onclick="showTicketsPage()">📋 Билеты</button>
+                            <button class="btn btn-secondary" onclick="showTheoryPage()">📚 Теория</button>
+                            <button class="btn btn-secondary" onclick="showPracticePage()">⚗️ Практика</button>
+                            <button class="btn btn-secondary" onclick="showQuizPage()">🧪 Тест</button>
+                            <button class="btn btn-secondary" onclick="showRandomTicket()">🎲 Случайный билет</button>
+                            <button class="btn btn-secondary" onclick="showExamSelectionPage()">📝 Экзамен</button>
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation('Главная')}
+            `;
+        }
+
+        function showRandomTicket() {
+            const randomNum = Math.floor(Math.random() * TOTAL_TICKETS) + 1;
+            showTicket(randomNum);
+        }
+
+        // =====================================================
+        // СТРАНИЦА БИЛЕТОВ
+        // =====================================================
+        function showTicketsPage(filter = 'all') {
+            currentPageState = { name: 'tickets', params: { filter } };
+            loadAllData();
+
+            let filteredTickets = [...tickets];
+            if (filter === 'completed') {
+                filteredTickets = filteredTickets.filter(t => 
+                    userProgress.questions?.[t.theory.id] && userProgress.questions?.[t.practice.id]
+                );
+            } else if (filter === 'incomplete') {
+                filteredTickets = filteredTickets.filter(t => 
+                    !(userProgress.questions?.[t.theory.id] && userProgress.questions?.[t.practice.id])
+                );
+            } else if (filter === 'bookmarked') {
+                filteredTickets = filteredTickets.filter(t => 
+                    bookmarks.includes(t.theory.id) || bookmarks.includes(t.practice.id)
+                );
+            }
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">📋 Экзаменационные билеты</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <div class="filter-chips">
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTicketsPage('all')">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTicketsPage('completed')">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTicketsPage('incomplete')">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTicketsPage('bookmarked')">⭐ Избранное</span>
+                        </div>
+                        <h2>Билеты (${filteredTickets.length})</h2>
+                        <div style="margin-top:16px">
+                            ${filteredTickets.map(t => {
+                                const theoryDone = userProgress.questions?.[t.theory.id] || false;
+                                const practiceDone = userProgress.questions?.[t.practice.id] || false;
+                                const statusClass = (theoryDone && practiceDone) ? 'completed' : (theoryDone || practiceDone) ? 'in-progress' : 'pending';
+                                const statusText = (theoryDone && practiceDone) ? '✅ Изучен' : (theoryDone || practiceDone) ? '⏳ В процессе' : '○ Новый';
+                                const progressWidth = (theoryDone?50:0) + (practiceDone?50:0);
+                                return `
+                                    <div class="ticket-item ${statusClass}" onclick="showTicket(${t.number})">
+                                        <div class="ticket-header">
+                                            <span class="ticket-number">Билет №${t.number}</span>
+                                            <span class="ticket-status ${statusClass}">${statusText}</span>
+                                        </div>
+                                        <div style="color:var(--text-secondary); font-size:0.875rem">
+                                            📚 ${t.theory.text.substring(0,50)}...<br>
+                                            ⚗️ ${t.practice.text.substring(0,50)}...
+                                        </div>
+                                        <div class="ticket-progress">
+                                            <div class="progress-bar"><div class="progress-fill" style="width:${progressWidth}%"></div></div>
+                                            <span class="progress-text">${(theoryDone?1:0)+(practiceDone?1:0)}/2</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation('Билеты')}
+            `;
+        }
+
+        // =====================================================
+        // ДЕТАЛЬНЫЙ БИЛЕТ
+        // =====================================================
+        function showTicket(ticketNumber) {
+            currentPageState = { name: 'ticket', params: { ticketNumber } };
+            loadAllData();
+            const ticket = tickets.find(t => t.number === ticketNumber);
+            if (!ticket) {
+                showTicketsPage();
+                return;
+            }
+
+            const theoryDone = userProgress.questions?.[ticket.theory.id] || false;
+            const practiceDone = userProgress.questions?.[ticket.practice.id] || false;
+            const theoryOpen = openedAnswers.has(ticket.theory.id);
+            const practiceOpen = openedAnswers.has(ticket.practice.id);
+            const theoryNote = notes[ticket.theory.id];
+            const practiceNote = notes[ticket.practice.id];
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">Билет №${ticket.number}</div>
+                        <button onclick="showTicketsPage()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <div class="ticket-progress" style="margin-bottom:16px">
+                            <div class="progress-bar"><div class="progress-fill" style="width:${(theoryDone?50:0)+(practiceDone?50:0)}%"></div></div>
+                            <span class="progress-text">${(theoryDone?1:0)+(practiceDone?1:0)}/2</span>
+                        </div>
+                        <!-- Вопрос 1 (теория) -->
+                        <div class="question-card" id="q-${ticket.theory.id}">
+                            <div class="question-header" onclick="toggleQuestionAnswer(${ticket.theory.id})">
+                                <span class="question-number">Вопрос 1 (теория) 📚</span>
+                                <button class="bookmark-btn ${bookmarks.includes(ticket.theory.id)?'active':''}" data-id="${ticket.theory.id}" onclick="event.stopPropagation(); toggleBookmark(${ticket.theory.id})">${bookmarks.includes(ticket.theory.id)?'⭐':'☆'}</button>
+                            </div>
+                            <div class="question-text">${ticket.theory.text}</div>
+                            <div class="answer-container">
+                                <div class="answer-content ${theoryOpen ? '' : 'hidden'}" id="answer-${ticket.theory.id}">${ticket.theory.answer}</div>
+                                <div style="display:flex; gap:8px; margin-top:12px">
+                                    <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${ticket.theory.id})">${theoryOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
+                                    <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.theory.id})">📝 Заметка</button>
+                                </div>
+                                <div id="note-${ticket.theory.id}" class="hidden" style="margin-top:12px">
+                                    <textarea class="note-input" id="noteText-${ticket.theory.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${theoryNote?.text||''}</textarea>
+                                    <div class="note-actions">
+                                        <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.theory.id}, document.getElementById('noteText-${ticket.theory.id}').value)">💾 Сохранить</button>
+                                        ${theoryNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.theory.id})">🗑️ Удалить</button>` : ''}
+                                    </div>
+                                </div>
+                                ${theoryNote ? `
+                                <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px">
+                                    <small>📝 ${new Date(theoryNote.date).toLocaleDateString()}</small>
+                                    <p>${theoryNote.text}</p>
+                                </div>` : ''}
+                                ${!theoryDone ? `<button class="btn btn-success" style="margin-top:12px" onclick="markQuestionLearned(${ticket.theory.id}, ${ticket.number})">✓ Отметить теорию</button>` : ''}
+                            </div>
+                        </div>
+                        <!-- Вопрос 2 (практика) -->
+                        <div class="question-card" id="q-${ticket.practice.id}">
+                            <div class="question-header" onclick="toggleQuestionAnswer(${ticket.practice.id})">
+                                <span class="question-number">Вопрос 2 (практика) ⚗️</span>
+                                <button class="bookmark-btn ${bookmarks.includes(ticket.practice.id)?'active':''}" data-id="${ticket.practice.id}" onclick="event.stopPropagation(); toggleBookmark(${ticket.practice.id})">${bookmarks.includes(ticket.practice.id)?'⭐':'☆'}</button>
+                            </div>
+                            <div class="question-text">${ticket.practice.text}</div>
+                            <div class="answer-container">
+                                <div class="answer-content ${practiceOpen ? '' : 'hidden'}" id="answer-${ticket.practice.id}">${ticket.practice.answer}</div>
+                                <div style="display:flex; gap:8px; margin-top:12px">
+                                    <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${ticket.practice.id})">${practiceOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
+                                    <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.practice.id})">📝 Заметка</button>
+                                </div>
+                                <div id="note-${ticket.practice.id}" class="hidden" style="margin-top:12px">
+                                    <textarea class="note-input" id="noteText-${ticket.practice.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${practiceNote?.text||''}</textarea>
+                                    <div class="note-actions">
+                                        <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.practice.id}, document.getElementById('noteText-${ticket.practice.id}').value)">💾 Сохранить</button>
+                                        ${practiceNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.practice.id})">🗑️ Удалить</button>` : ''}
+                                    </div>
+                                </div>
+                                ${practiceNote ? `
+                                <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px">
+                                    <small>📝 ${new Date(practiceNote.date).toLocaleDateString()}</small>
+                                    <p>${practiceNote.text}</p>
+                                </div>` : ''}
+                                ${!practiceDone ? `<button class="btn btn-success" style="margin-top:12px" onclick="markQuestionLearned(${ticket.practice.id}, ${ticket.number})">✓ Отметить практику</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-2">
+                        ${ticket.number > 1 ? `<button class="btn btn-secondary" onclick="showTicket(${ticket.number-1})">← Пред.</button>` : '<div></div>'}
+                        ${ticket.number < TOTAL_TICKETS ? `<button class="btn btn-primary" onclick="showTicket(${ticket.number+1})">След. →</button>` : ''}
+                    </div>
+                </main>
+                ${renderNavigation('Билеты')}
+            `;
+        }
+
+        function markQuestionLearned(questionId, ticketNumber) {
+            const q = allQuestions.find(q => q.id === questionId);
+            if (q) {
+                updateProgress(questionId, q.type);
+                showTicket(ticketNumber);
+            }
+        }
+
+        // =====================================================
+        // СТРАНИЦА ТЕОРИИ (с поиском)
+        // =====================================================
+        function showTheoryPage(filter = 'all', search = '') {
+            currentPageState = { name: 'theory', params: { filter, search } };
+            loadAllData();
+
+            const cacheKey = `${filter}_${search}`;
+            if (lastFilterParams.theory === cacheKey && cachedTheoryFiltered) {
+                renderTheoryList(cachedTheoryFiltered, filter, search);
+                return;
+            }
+
+            let filtered = [...theoryQuestions];
+            if (filter === 'completed') filtered = filtered.filter(q => userProgress.questions?.[q.id]);
+            else if (filter === 'incomplete') filtered = filtered.filter(q => !userProgress.questions?.[q.id]);
+            else if (filter === 'bookmarked') filtered = filtered.filter(q => bookmarks.includes(q.id));
+
+            if (search) {
+                const s = search.toLowerCase();
+                filtered = filtered.filter(q => q.text.toLowerCase().includes(s) || (q.answer && q.answer.toLowerCase().includes(s)));
+            }
+
+            cachedTheoryFiltered = filtered;
+            lastFilterParams.theory = cacheKey;
+
+            renderTheoryList(filtered, filter, search);
+        }
+
+        function renderTheoryList(filtered, filter, search) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">📚 Теоретические вопросы</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <div class="search-container">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="search-input" id="theorySearch" placeholder="Поиск по вопросам и ответам" value="${search}" oninput="searchTheory(this.value)">
+                            <button class="search-clear" onclick="clearTheorySearch()">✕</button>
+                        </div>
+                        <div class="filter-chips">
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTheoryPage('all', document.getElementById('theorySearch').value)">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTheoryPage('completed', document.getElementById('theorySearch').value)">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTheoryPage('incomplete', document.getElementById('theorySearch').value)">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTheoryPage('bookmarked', document.getElementById('theorySearch').value)">⭐ Избранное</span>
+                        </div>
+                        <h2>Теория (${filtered.length})</h2>
+                        <div style="margin-top:16px">
+                            ${filtered.map(q => {
+                                const done = userProgress.questions?.[q.id] || false;
+                                const book = bookmarks.includes(q.id);
+                                return `
+                                    <div class="question-card" onclick="showQuestionDetail(${q.id})">
+                                        <div class="question-header">
+                                            <span class="question-number">Вопрос №${q.number}</span>
+                                            <span>${book?'⭐':''} ${done?'✅':''}</span>
+                                        </div>
+                                        <div class="question-text">${highlightSearch(q.text, search)}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation('Теория')}
+            `;
+            document.getElementById('theorySearch')?.focus();
+        }
+
+        function highlightSearch(text, search) {
+            if (!search) return text;
+            const regex = new RegExp(`(${search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        function searchTheory(query) {
+            showTheoryPage(currentPageState.params.filter, query);
+        }
+
+        function clearTheorySearch() {
+            showTheoryPage(currentPageState.params.filter, '');
+        }
+
+        // =====================================================
+        // СТРАНИЦА ПРАКТИКИ (с поиском)
+        // =====================================================
+        function showPracticePage(filter = 'all', search = '') {
+            currentPageState = { name: 'practice', params: { filter, search } };
+            loadAllData();
+
+            const cacheKey = `${filter}_${search}`;
+            if (lastFilterParams.practice === cacheKey && cachedPracticeFiltered) {
+                renderPracticeList(cachedPracticeFiltered, filter, search);
+                return;
+            }
+
+            let filtered = [...practiceQuestions];
+            if (filter === 'completed') filtered = filtered.filter(q => userProgress.questions?.[q.id]);
+            else if (filter === 'incomplete') filtered = filtered.filter(q => !userProgress.questions?.[q.id]);
+            else if (filter === 'bookmarked') filtered = filtered.filter(q => bookmarks.includes(q.id));
+
+            if (search) {
+                const s = search.toLowerCase();
+                filtered = filtered.filter(q => q.text.toLowerCase().includes(s) || (q.answer && q.answer.toLowerCase().includes(s)));
+            }
+
+            cachedPracticeFiltered = filtered;
+            lastFilterParams.practice = cacheKey;
+
+            renderPracticeList(filtered, filter, search);
+        }
+
+        function renderPracticeList(filtered, filter, search) {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">⚗️ Практические задания</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <div class="search-container">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="search-input" id="practiceSearch" placeholder="Поиск по заданиям и ответам" value="${search}" oninput="searchPractice(this.value)">
+                            <button class="search-clear" onclick="clearPracticeSearch()">✕</button>
+                        </div>
+                        <div class="filter-chips">
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showPracticePage('all', document.getElementById('practiceSearch').value)">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showPracticePage('completed', document.getElementById('practiceSearch').value)">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showPracticePage('incomplete', document.getElementById('practiceSearch').value)">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showPracticePage('bookmarked', document.getElementById('practiceSearch').value)">⭐ Избранное</span>
+                        </div>
+                        <h2>Практика (${filtered.length})</h2>
+                        <div style="margin-top:16px">
+                            ${filtered.map(q => {
+                                const done = userProgress.questions?.[q.id] || false;
+                                const book = bookmarks.includes(q.id);
+                                return `
+                                    <div class="question-card" onclick="showQuestionDetail(${q.id})">
+                                        <div class="question-header">
+                                            <span class="question-number">Задание №${q.number}</span>
+                                            <span>${book?'⭐':''} ${done?'✅':''}</span>
+                                        </div>
+                                        <div class="question-text">${highlightSearch(q.text, search)}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation('Практика')}
+            `;
+            document.getElementById('practiceSearch')?.focus();
+        }
+
+        function searchPractice(query) {
+            showPracticePage(currentPageState.params.filter, query);
+        }
+
+        function clearPracticeSearch() {
+            showPracticePage(currentPageState.params.filter, '');
+        }
+
+        // =====================================================
+        // ДЕТАЛЬНЫЙ ПРОСМОТР ВОПРОСА
+        // =====================================================
+        function showQuestionDetail(questionId) {
+            currentPageState = { name: 'detail', params: { questionId } };
+            loadAllData();
+            const q = allQuestions.find(q => q.id === questionId);
+            if (!q) {
+                showTheoryPage();
+                return;
+            }
+
+            const done = userProgress.questions?.[q.id] || false;
+            const book = bookmarks.includes(q.id);
+            const note = notes[q.id];
+            const answerOpen = openedAnswers.has(q.id);
+            const ticketInfo = getTicketInfoByQuestionId(q.id);
+            const backPage = q.type === 'theory' ? 'showTheoryPage' : 'showPracticePage';
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">Вопрос №${q.number}</div>
+                        <button onclick="${backPage}()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="question-card">
+                        <div class="question-header" onclick="toggleQuestionAnswer(${q.id})">
+                            <span class="question-number">${q.type==='theory'?'📚 Теория':'⚗️ Практика'}</span>
+                            <button class="bookmark-btn ${book?'active':''}" data-id="${q.id}" onclick="event.stopPropagation(); toggleBookmark(${q.id})">${book?'⭐':'☆'}</button>
+                        </div>
+                        <div class="question-text">${q.text}</div>
+                        <div class="answer-container">
+                            <div class="answer-content ${answerOpen ? '' : 'hidden'}" id="answer-${q.id}">${q.answer}</div>
+                            <div style="display:flex; gap:8px; margin-top:12px">
+                                <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${q.id})">${answerOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
+                                <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${q.id})">📝 Заметка</button>
+                            </div>
+                            <div id="note-${q.id}" class="hidden" style="margin-top:12px">
+                                <textarea class="note-input" id="noteText-${q.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${note?.text||''}</textarea>
+                                <div class="note-actions">
+                                    <button class="btn btn-success" style="flex:1" onclick="saveNote(${q.id}, document.getElementById('noteText-${q.id}').value)">💾 Сохранить</button>
+                                    ${note ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${q.id})">🗑️ Удалить</button>` : ''}
+                                </div>
+                            </div>
+                            ${note ? `
+                            <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.05);border-radius:8px">
+                                <small>📝 ${new Date(note.date).toLocaleDateString()}</small>
+                                <p>${note.text}</p>
+                            </div>` : ''}
+                            ${!done ? `<button class="btn btn-success" style="margin-top:12px" onclick="markQuestionLearnedSingle(${q.id})">✓ Отметить изученным</button>` : ''}
+                            ${ticketInfo ? `<button class="btn btn-secondary" style="margin-top:12px" onclick="showTicket(${ticketInfo.number})">🎫 Перейти к билету №${ticketInfo.number}</button>` : ''}
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation(q.type==='theory'?'Теория':'Практика')}
+            `;
+        }
+
+        function markQuestionLearnedSingle(questionId) {
+            const q = allQuestions.find(q => q.id === questionId);
+            if (q) {
+                updateProgress(questionId, q.type);
+                showQuestionDetail(questionId);
+            }
+        }
+        // =====================================================
+        // СТАТИСТИКА
+        // =====================================================
+        function showStatsPage() {
+            currentPageState = { name: 'stats', params: {} };
+            loadAllData();
+
+            const totalQuestions = allQuestions.length;
+            const studied = Object.values(userProgress.questions || {}).filter(v=>v).length;
+            const percent = totalQuestions ? Math.round((studied/totalQuestions)*100) : 0;
+
+            const theoryCount = theoryQuestions.length;
+            const practiceCount = practiceQuestions.length;
+            const theoryStudied = theoryQuestions.filter(q => userProgress.questions?.[q.id]).length;
+            const practiceStudied = practiceQuestions.filter(q => userProgress.questions?.[q.id]).length;
+
+            // Активность за последние 7 дней
+            const last7Days = [];
+            for (let i=6; i>=0; i--) {
+                const d = new Date(); d.setDate(d.getDate()-i);
+                const ds = d.toISOString().split('T')[0];
+                last7Days.push({ date: ds, day: d.toLocaleDateString('ru-RU',{weekday:'short'}), count: stats.dailyActivity?.[ds] || 0 });
+            }
+            const maxAct = Math.max(...last7Days.map(d=>d.count),1);
+
+            // Статистика тестов
+            const quizResults = stats.quizResults || [];
+            const totalQuizTaken = quizResults.length;
+            const totalQuizQuestions = quizResults.reduce((s,r) => s + r.total, 0);
+            const totalQuizCorrect = quizResults.reduce((s,r) => s + r.score, 0);
+            const avgPercent = totalQuizQuestions ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">📊 Моя статистика</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h2>Общий прогресс</h2>
+                        <div class="stats-grid">
+                            <div class="stat"><div class="stat-value">${studied}</div><div class="stat-label">Изучено</div></div>
+                            <div class="stat"><div class="stat-value">${totalQuestions-studied}</div><div class="stat-label">Осталось</div></div>
+                            <div class="stat"><div class="stat-value">${percent}%</div><div class="stat-label">Прогресс</div></div>
+                        </div>
+                        <div class="progress-bar" style="margin:16px 0"><div class="progress-fill" style="width:${percent}%"></div></div>
+                        <div class="grid-2">
+                            <div class="stat"><div class="stat-value">${theoryStudied}/${theoryCount}</div><div class="stat-label">Теория</div></div>
+                            <div class="stat"><div class="stat-value">${practiceStudied}/${practiceCount}</div><div class="stat-label">Практика</div></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Активность за неделю</h3>
+                        <div style="display:flex;justify-content:space-around;align-items:flex-end;height:100px;margin-top:20px">
+                            ${last7Days.map(d => `
+                                <div style="display:flex;flex-direction:column;align-items:center;width:40px">
+                                    <div style="height:${(d.count/maxAct)*60}px;width:20px;background:linear-gradient(135deg,var(--info),#9b59b6);border-radius:10px 10px 0 0"></div>
+                                    <div style="margin-top:8px;font-size:0.6875rem;color:#888">${d.day}</div>
+                                    <div style="font-size:0.625rem;color:var(--info)">${d.count}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Статистика тестов</h3>
+                        <div class="stats-grid">
+                            <div class="stat"><div class="stat-value">${totalQuizTaken}</div><div class="stat-label">Тестов</div></div>
+                            <div class="stat"><div class="stat-value">${avgPercent}%</div><div class="stat-label">Средний</div></div>
+                            <div class="stat"><div class="stat-value">${totalQuizCorrect}</div><div class="stat-label">Правильных</div></div>
+                        </div>
+                        ${quizResults.length > 0 ? `
+                        <div style="margin-top:16px">
+                            <h4>Последние результаты</h4>
+                            ${quizResults.slice(-5).reverse().map(r => `
+                                <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid rgba(0,212,255,0.1)">
+                                    <span>${new Date(r.date).toLocaleDateString()}</span>
+                                    <span>${r.score}/${r.total} (${r.percentage}%)</span>
+                                </div>
+                            `).join('')}
+                        </div>` : ''}
+                    </div>
+                    <div class="card">
+                        <h3>Время занятий</h3>
+                        <div class="grid-2">
+                            <div class="stat"><div class="stat-value">${Math.floor((stats.totalStudyTime||0)/60)}ч ${(stats.totalStudyTime||0)%60}м</div><div class="stat-label">Всего</div></div>
+                            <div class="stat"><div class="stat-value">${studied?Math.floor((stats.totalStudyTime||0)/studied):0}м</div><div class="stat-label">На вопрос</div></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🏆 Достижения</h3>
+                        <div style="margin-top:16px">
+                            ${achievements.map(a => {
+                                let prog = 0;
+                                if (a.id==='novice'||a.id==='expert'||a.id==='master') prog = studied;
+                                else if (a.id==='practice') prog = practiceStudied;
+                                else if (a.id==='streak7'||a.id==='streak30') prog = userProgress.streak||0;
+                                else if (a.id==='quizMaster') prog = totalQuizCorrect;
+                                const perc = Math.min(100, (prog/a.target)*100);
+                                const achieved = userProgress.achievements?.[a.id];
+                                return `
+                                    <div class="achievement ${!achieved?'locked':''}">
+                                        <div class="achievement-icon">${a.icon}</div>
+                                        <div class="achievement-info">
+                                            <div class="achievement-title">${a.title}</div>
+                                            <div class="achievement-progress">${prog}/${a.target}</div>
+                                            <div class="progress-bar" style="margin-top:4px"><div class="progress-fill" style="width:${perc}%"></div></div>
+                                        </div>
+                                        ${achieved?'<div style="color:var(--success);">✓</div>':''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </main>
+                ${renderNavigation('Статистика')}
+            `;
+        }
+
+        // =====================================================
+        // НАСТРОЙКИ
+        // =====================================================
+        function showSettingsPage() {
+            currentPageState = { name: 'settings', params: {} };
+            loadAllData();
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">⚙️ Настройки</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h3>🎨 Тема оформления</h3>
+                        <div class="theme-toggle">
+                            <div class="theme-option ${settings.theme==='dark'?'active':''}" onclick="setTheme('dark')">🌙 Темная</div>
+                            <div class="theme-option ${settings.theme==='light'?'active':''}" onclick="setTheme('light')">☀️ Светлая</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🔤 Размер шрифта</h3>
+                        <input type="range" class="settings-slider" min="12" max="24" value="${settings.fontSize}" onchange="setFontSize(this.value)">
+                        <div style="text-align:center;margin-top:8px">${settings.fontSize}px</div>
+                    </div>
+                    <div class="card">
+                        <h3>📤 Экспорт / Импорт</h3>
+                        <button class="btn btn-secondary export-btn" onclick="exportToTxt()">📄 Скачать вопросы с ответами</button>
+                        <button class="btn btn-secondary export-btn" onclick="exportProgress()" style="margin-top:8px">📤 Экспорт прогресса</button>
+                        <div style="margin-top:16px">
+                            <label class="btn btn-secondary" for="importFile">📥 Импорт прогресса</label>
+                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importProgress(this.files[0])">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>⚠️ Опасная зона</h3>
+                        <button class="btn btn-danger" onclick="resetProgress()">🗑️ Сбросить прогресс</button>
+                    </div>
+                </main>
+                ${renderNavigation('Настройки')}
+            `;
+        }
+
+        function setTheme(theme) {
+            settings.theme = theme;
+            applySettings();
+            saveAllData();
+            showSettingsPage();
+        }
+
+        function setFontSize(size) {
+            settings.fontSize = parseInt(size);
+            applySettings();
+            saveAllData();
+            showSettingsPage();
+        }
+
+        // =====================================================
+        // ТЕСТЫ
+        // =====================================================
+        function showQuizPage() {
+            currentPageState = { name: 'quiz', params: {} };
+            loadAllData();
+
+            const shuffled = [...quizQuestions].sort(()=>Math.random()-0.5).slice(0,10);
+            let currentIndex = 0;
+            let score = 0;
+            let selectedOption = null;
+            let answerSubmitted = false;
+            let timerInterval;
+            let timeLeft = 600; // 10 минут
+
+            const formatTime = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+
+            function showQuestion() {
+                if (currentIndex >= shuffled.length) {
+                    clearInterval(timerInterval);
+                    showResults();
+                    return;
+                }
+                const q = shuffled[currentIndex];
+                const progress = (currentIndex/shuffled.length)*100;
+
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo-text">🧪 Тест</div>
+                            <button onclick="showMainInterface()" class="back-btn">✕</button>
+                        </div>
+                    </header>
+                    <main class="main-content scroll-container">
+                        <div class="quiz-progress">
+                            <span class="quiz-score">⭐ ${score}/${currentIndex}</span>
+                            <span class="timer ${timeLeft < 60 ? 'warning' : ''}">⏱️ ${formatTime(timeLeft)}</span>
+                        </div>
+                        <div class="progress-bar" style="margin-bottom:20px"><div class="progress-fill" style="width:${progress}%"></div></div>
+                        <div class="card">
+                            <h3>Вопрос ${currentIndex+1}/${shuffled.length}</h3>
+                            <p style="font-size:1rem;margin:20px 0">${q.question}</p>
+                            <div style="margin-top:20px">
+                                ${q.options.map((opt,idx)=>`
+                                    <div class="quiz-option ${selectedOption===idx?'selected':''}" onclick="window.selectQuizOption(${idx})">
+                                        <span class="quiz-marker ${selectedOption===idx?'selected':''}">${String.fromCharCode(65+idx)}</span>
+                                        <span>${opt}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="margin-top:20px; display:flex; gap:8px;">
+                                ${!answerSubmitted ? 
+                                    `<button class="btn btn-primary" style="flex:2" onclick="window.submitQuizAnswer(${q.correct})" ${selectedOption===null?'disabled':''}>✅ Ответить</button>
+                                     <button class="btn btn-secondary" style="flex:1" onclick="window.skipQuizQuestion()">⏭️ Пропустить</button>` :
+                                    `<button class="btn btn-success" style="flex:1" onclick="window.nextQuizQuestion()">Следующий →</button>`
+                                }
+                            </div>
+                            ${answerSubmitted ? `
+                                <div style="margin-top:20px;padding:16px;background:rgba(0,212,255,0.1);border-radius:12px">
+                                    <p style="color:${selectedOption===q.correct?'var(--success)':'var(--danger)'}">
+                                        ${selectedOption===q.correct ? '✅ Правильно!' : `❌ Неправильно. Правильный ответ: ${q.options[q.correct]}`}
+                                    </p>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </main>
+                `;
+                window.selectQuizOption = (idx) => { if(!answerSubmitted) { selectedOption=idx; showQuestion(); } };
+                window.submitQuizAnswer = (correctIdx) => {
+                    if(selectedOption!==null && !answerSubmitted) {
+                        answerSubmitted = true;
+                        if(selectedOption===correctIdx) score++;
+                        showQuestion();
+                    }
+                };
+                window.skipQuizQuestion = () => {
+                    if(!answerSubmitted) {
+                        answerSubmitted = true;
+                        currentIndex++;
+                        selectedOption = null;
+                        answerSubmitted = false;
+                        showQuestion();
+                    }
+                };
+                window.nextQuizQuestion = () => {
+                    currentIndex++;
+                    selectedOption = null;
+                    answerSubmitted = false;
+                    showQuestion();
+                };
+            }
+
+            function showResults() {
+                const percent = Math.round((score/shuffled.length)*100);
+                if(!stats.quizResults) stats.quizResults=[];
+                stats.quizResults.push({ date: new Date().toISOString(), score, total: shuffled.length, percentage: percent });
+                if (stats.quizResults.length > 30) stats.quizResults.shift();
+                saveAllData();
+                checkAchievements();
+
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo-text">📊 Результаты</div>
+                            <button onclick="showMainInterface()" class="back-btn">✕</button>
+                        </div>
+                    </header>
+                    <main class="main-content scroll-container">
+                        <div class="card">
+                            <div style="text-align:center">
+                                <h1 style="font-size:3rem">${percent}%</h1>
+                                <p>Правильных ответов: ${score}/${shuffled.length}</p>
+                            </div>
+                            <div class="progress-bar" style="height:12px;margin:20px 0"><div class="progress-fill" style="width:${percent}%"></div></div>
+                            <div class="grid-2">
+                                <button class="btn btn-primary" onclick="showQuizPage()">🔄 Ещё раз</button>
+                                <button class="btn btn-secondary" onclick="showMainInterface()">🏠 Главная</button>
+                            </div>
+                        </div>
+                    </main>
+                `;
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft<=0) { 
+                    clearInterval(timerInterval); 
+                    if (currentIndex < shuffled.length) showResults(); 
+                }
+                else {
+                    const t = document.querySelector('.timer');
+                    if(t) {
+                        t.textContent = `⏱️ ${formatTime(timeLeft)}`;
+                        t.classList.toggle('warning', timeLeft < 60);
+                    }
+                }
+            },1000);
+
+            showQuestion();
+        }
+
+        // =====================================================
+        // КАРТОЧКИ (Flashcards) с поддержкой свайпов
+        // =====================================================
+        function showFlashcardsPage(category = 'all', mode = 'unlearned') {
+            currentPageState = { name: 'flashcards', params: { category, mode } };
+            loadAllData();
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">🃏 Карточки</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h3>Настройки карточек</h3>
+                        <div class="form-group">
+                            <label class="form-label">Категория</label>
+                            <div class="filter-chips">
+                                <span class="filter-chip ${category==='all'?'active':''}" onclick="showFlashcardsPage('all', '${mode}')">Все</span>
+                                <span class="filter-chip ${category==='theory'?'active':''}" onclick="showFlashcardsPage('theory', '${mode}')">📚 Теория</span>
+                                <span class="filter-chip ${category==='practice'?'active':''}" onclick="showFlashcardsPage('practice', '${mode}')">⚗️ Практика</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Режим</label>
+                            <div class="filter-chips">
+                                <span class="filter-chip ${mode==='unlearned'?'active':''}" onclick="showFlashcardsPage('${category}', 'unlearned')">○ Невыученные</span>
+                                <span class="filter-chip ${mode==='all'?'active':''}" onclick="showFlashcardsPage('${category}', 'all')">📚 Все</span>
+                                <span class="filter-chip ${mode==='bookmarked'?'active':''}" onclick="showFlashcardsPage('${category}', 'bookmarked')">⭐ Избранное</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="startFlashcards('${category}', '${mode}')">▶️ Начать</button>
+                    </div>
+                </main>
+                ${renderNavigation('Карточки')}
+            `;
+        }
+
+        function startFlashcards(category, mode) {
+            loadAllData();
+            let questions = [];
+            if (category === 'all') questions = [...allQuestions];
+            else if (category === 'theory') questions = [...theoryQuestions];
+            else if (category === 'practice') questions = [...practiceQuestions];
+
+            if (mode === 'unlearned') questions = questions.filter(q => !userProgress.questions?.[q.id]);
+            else if (mode === 'bookmarked') questions = questions.filter(q => bookmarks.includes(q.id));
+
+            if (questions.length === 0) {
+                showMessage('Нет вопросов для данной категории', 'info');
+                showFlashcardsPage(category, mode);
+                return;
+            }
+
+            questions = questions.sort(() => Math.random() - 0.5);
+            runFlashcardsSession(questions);
+        }
+
+        function runFlashcardsSession(questions) {
+            let remaining = [...questions];
+            let currentIndex = 0;
+            let flipped = false;
+            let startX, currentX, isDragging = false, dragDelta = 0;
+
+            function renderCard() {
+                if (remaining.length === 0) {
+                    showMessage('🎉 Все карточки пройдены!', 'success');
+                    showFlashcardsPage();
+                    return;
+                }
+                const q = remaining[currentIndex];
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo-text">🃏 Карточки (осталось ${remaining.length})</div>
+                            <button onclick="showFlashcardsPage()" class="back-btn">✕</button>
+                        </div>
+                    </header>
+                    <main class="main-content scroll-container">
+                        <div class="flashcard-container" id="flashcard-container">
+                            <div class="flashcard ${flipped ? 'flipped' : ''}" id="flashcard" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event)" ontouchend="handleTouchEnd(event)">
+                                <div class="flashcard-front">
+                                    <p style="font-size:1.2rem; margin-bottom:10px;">${q.text}</p>
+                                    <small style="color:#888;">Нажмите, чтобы перевернуть, или потяните влево/вправо</small>
+                                </div>
+                                <div class="flashcard-back">
+                                    <p>${q.answer}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid-2" style="margin-top:20px;">
+                            <button class="btn btn-danger" onclick="flashcardSwipeLeft()">❌ Не знаю</button>
+                            <button class="btn btn-success" onclick="flashcardSwipeRight()">✅ Знаю</button>
+                        </div>
+                    </main>
+                `;
+                window.flashcard = document.getElementById('flashcard');
+                window.handleTouchStart = (e) => {
+                    startX = e.touches[0].clientX;
+                    isDragging = true;
+                    window.flashcard.classList.add('dragging');
+                };
+                window.handleTouchMove = (e) => {
+                    if (!isDragging) return;
+                    currentX = e.touches[0].clientX;
+                    dragDelta = currentX - startX;
+                    if (dragDelta > 0) {
+                        window.flashcard.style.transform = `translateX(${dragDelta}px)`;
+                        window.flashcard.classList.add('swipe-right');
+                        window.flashcard.classList.remove('swipe-left');
+                    } else if (dragDelta < 0) {
+                        window.flashcard.style.transform = `translateX(${dragDelta}px)`;
+                        window.flashcard.classList.add('swipe-left');
+                        window.flashcard.classList.remove('swipe-right');
+                    }
+                };
+                window.handleTouchEnd = () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    window.flashcard.classList.remove('dragging');
+                    window.flashcard.style.transform = '';
+                    if (dragDelta > 50) {
+                        flashcardSwipeRight();
+                    } else if (dragDelta < -50) {
+                        flashcardSwipeLeft();
+                    }
+                    window.flashcard.classList.remove('swipe-left', 'swipe-right');
+                    dragDelta = 0;
+                };
+                window.flashcardSwipeLeft = () => {
+                    // Не знаю – остаётся в колоде, идём дальше
+                    currentIndex++;
+                    if (currentIndex >= remaining.length) currentIndex = 0;
+                    flipped = false;
+                    renderCard();
+                };
+                window.flashcardSwipeRight = () => {
+                    // Знаю – удаляем из колоды, отмечаем изученным
+                    const qq = remaining[currentIndex];
+                    if (qq && !userProgress.questions?.[qq.id]) {
+                        updateProgress(qq.id, qq.type);
+                    }
+                    remaining.splice(currentIndex, 1);
+                    if (currentIndex >= remaining.length) currentIndex = 0;
+                    flipped = false;
+                    renderCard();
+                };
+                window.flashcard.onclick = () => {
+                    flipped = !flipped;
+                    window.flashcard.classList.toggle('flipped', flipped);
+                };
+            }
+
+            renderCard();
+        }
+
+        // =====================================================
+        // СПРАВОЧНИК (полноценный)
+        // =====================================================
+        function showReferencePage() {
+            currentPageState = { name: 'reference', params: {} };
+            loadAllData();
+
+            // Полная таблица Менделеева (118 элементов)
+            const elements = generatePeriodicTable();
+
+            // Ряд активности металлов
+            const activitySeries = ['Li', 'K', 'Ba', 'Ca', 'Na', 'Mg', 'Al', 'Mn', 'Zn', 'Cr', 'Fe', 'Co', 'Ni', 'Sn', 'Pb', 'H', 'Cu', 'Ag', 'Hg', 'Au'];
+
+            // Таблица растворимости (катионы и анионы)
+            const cations = ['H⁺', 'Li⁺', 'Na⁺', 'K⁺', 'NH₄⁺', 'Ag⁺', 'Ba²⁺', 'Ca²⁺', 'Mg²⁺', 'Zn²⁺', 'Cu²⁺', 'Fe²⁺', 'Fe³⁺', 'Al³⁺', 'Pb²⁺'];
+            const anions = ['Cl⁻', 'Br⁻', 'I⁻', 'S²⁻', 'OH⁻', 'SO₄²⁻', 'CO₃²⁻', 'PO₄³⁻'];
+
+            function renderPeriodicTable() {
+                let html = '<div class="periodic-table">';
+                for (let period = 1; period <= 7; period++) {
+                    for (let group = 1; group <= 18; group++) {
+                        const el = elements.find(e => e.period === period && e.group === group);
+                        if (el) {
+                            html += `<div class="periodic-element" title="${el.name}">`;
+                            html += `<div class="periodic-element-symbol">${el.symbol}</div>`;
+                            html += `<div class="periodic-element-number">${el.number}</div>`;
+                            html += `</div>`;
+                        } else {
+                            html += `<div class="periodic-element" style="background:transparent; border:none;"></div>`;
+                        }
+                    }
+                }
+                html += '</div>';
+
+                // Лантаноиды
+                const lanthanides = elements.filter(e => e.number >= 57 && e.number <= 71);
+                html += '<h4 style="margin-top:16px;">Лантаноиды</h4><div class="lanthanide-row">';
+                lanthanides.forEach(el => {
+                    html += `<div class="periodic-element" title="${el.name}"><div class="periodic-element-symbol">${el.symbol}</div><div class="periodic-element-number">${el.number}</div></div>`;
+                });
+                html += '</div>';
+
+                // Актиноиды
+                const actinides = elements.filter(e => e.number >= 89 && e.number <= 103);
+                html += '<h4>Актиноиды</h4><div class="actinide-row">';
+                actinides.forEach(el => {
+                    html += `<div class="periodic-element" title="${el.name}"><div class="periodic-element-symbol">${el.symbol}</div><div class="periodic-element-number">${el.number}</div></div>`;
+                });
+                html += '</div>';
+
+                return html;
+            }
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">📖 Справочник</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h2>🧪 Периодическая таблица элементов</h2>
+                        ${renderPeriodicTable()}
+                        <p style="margin-top:8px;">* Группы 1-18, периоды 1-7. Лантаноиды и актиноиды вынесены отдельно.</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>⚡ Ряд активности металлов</h2>
+                        <div class="activity-series">
+                            ${activitySeries.map(m => `<span class="metal">${m}</span>`).join('')}
+                        </div>
+                        <p style="margin-top:8px;">Чем левее, тем активнее металл.</p>
+                    </div>
+
+                    <div class="card">
+                        <h2>💧 Таблица растворимости</h2>
+                        <div class="solubility-table">
+                            <table>
+                                <thead>
+                                    <tr><th>Катион \\ Анион</th>${anions.map(a => `<th>${a}</th>`).join('')}</tr>
+                                </thead>
+                                <tbody>
+                                    ${cations.map(c => {
+                                        return `<tr><td><b>${c}</b></td>${
+                                            anions.map(a => {
+                                                let sol = getSolubility(c, a);
+                                                let cls = '';
+                                                if (sol === 'Р') cls = 'solubility-R';
+                                                else if (sol === 'М') cls = 'solubility-M';
+                                                else if (sol === 'Н') cls = 'solubility-N';
+                                                else cls = 'solubility-unknown';
+                                                return `<td class="${cls}">${sol}</td>`;
+                                            }).join('')
+                                        }</tr>`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <p><span class="solubility-R">Р</span> – растворимо, <span class="solubility-M">М</span> – малорастворимо, <span class="solubility-N">Н</span> – нерастворимо, <span class="solubility-unknown">-</span> – нет данных.</p>
+                    </div>
+                </main>
+                ${renderNavigation('Справочник')}
+            `;
+        }
+
+        function generatePeriodicTable() {
+            // Массив всех элементов с координатами (период, группа)
+            return [
+                { number:1, symbol:'H', name:'Водород', period:1, group:1 },
+                { number:2, symbol:'He', name:'Гелий', period:1, group:18 },
+                // Период 2
+                { number:3, symbol:'Li', name:'Литий', period:2, group:1 },
+                { number:4, symbol:'Be', name:'Бериллий', period:2, group:2 },
+                { number:5, symbol:'B', name:'Бор', period:2, group:13 },
+                { number:6, symbol:'C', name:'Углерод', period:2, group:14 },
+                { number:7, symbol:'N', name:'Азот', period:2, group:15 },
+                { number:8, symbol:'O', name:'Кислород', period:2, group:16 },
+                { number:9, symbol:'F', name:'Фтор', period:2, group:17 },
+                { number:10, symbol:'Ne', name:'Неон', period:2, group:18 },
+                // Период 3
+                { number:11, symbol:'Na', name:'Натрий', period:3, group:1 },
+                { number:12, symbol:'Mg', name:'Магний', period:3, group:2 },
+                { number:13, symbol:'Al', name:'Алюминий', period:3, group:13 },
+                { number:14, symbol:'Si', name:'Кремний', period:3, group:14 },
+                { number:15, symbol:'P', name:'Фосфор', period:3, group:15 },
+                { number:16, symbol:'S', name:'Сера', period:3, group:16 },
+                { number:17, symbol:'Cl', name:'Хлор', period:3, group:17 },
+                { number:18, symbol:'Ar', name:'Аргон', period:3, group:18 },
+                // Период 4
+                { number:19, symbol:'K', name:'Калий', period:4, group:1 },
+                { number:20, symbol:'Ca', name:'Кальций', period:4, group:2 },
+                { number:21, symbol:'Sc', name:'Скандий', period:4, group:3 },
+                { number:22, symbol:'Ti', name:'Титан', period:4, group:4 },
+                { number:23, symbol:'V', name:'Ванадий', period:4, group:5 },
+                { number:24, symbol:'Cr', name:'Хром', period:4, group:6 },
+                { number:25, symbol:'Mn', name:'Марганец', period:4, group:7 },
+                { number:26, symbol:'Fe', name:'Железо', period:4, group:8 },
+                { number:27, symbol:'Co', name:'Кобальт', period:4, group:9 },
+                { number:28, symbol:'Ni', name:'Никель', period:4, group:10 },
+                { number:29, symbol:'Cu', name:'Медь', period:4, group:11 },
+                { number:30, symbol:'Zn', name:'Цинк', period:4, group:12 },
+                { number:31, symbol:'Ga', name:'Галлий', period:4, group:13 },
+                { number:32, symbol:'Ge', name:'Германий', period:4, group:14 },
+                { number:33, symbol:'As', name:'Мышьяк', period:4, group:15 },
+                { number:34, symbol:'Se', name:'Селен', period:4, group:16 },
+                { number:35, symbol:'Br', name:'Бром', period:4, group:17 },
+                { number:36, symbol:'Kr', name:'Криптон', period:4, group:18 },
+                // Период 5
+                { number:37, symbol:'Rb', name:'Рубидий', period:5, group:1 },
+                { number:38, symbol:'Sr', name:'Стронций', period:5, group:2 },
+                { number:39, symbol:'Y', name:'Иттрий', period:5, group:3 },
+                { number:40, symbol:'Zr', name:'Цирконий', period:5, group:4 },
+                { number:41, symbol:'Nb', name:'Ниобий', period:5, group:5 },
+                { number:42, symbol:'Mo', name:'Молибден', period:5, group:6 },
+                { number:43, symbol:'Tc', name:'Технеций', period:5, group:7 },
+                { number:44, symbol:'Ru', name:'Рутений', period:5, group:8 },
+                { number:45, symbol:'Rh', name:'Родий', period:5, group:9 },
+                { number:46, symbol:'Pd', name:'Палладий', period:5, group:10 },
+                { number:47, symbol:'Ag', name:'Серебро', period:5, group:11 },
+                { number:48, symbol:'Cd', name:'Кадмий', period:5, group:12 },
+                { number:49, symbol:'In', name:'Индий', period:5, group:13 },
+                { number:50, symbol:'Sn', name:'Олово', period:5, group:14 },
+                { number:51, symbol:'Sb', name:'Сурьма', period:5, group:15 },
+                { number:52, symbol:'Te', name:'Теллур', period:5, group:16 },
+                { number:53, symbol:'I', name:'Иод', period:5, group:17 },
+                { number:54, symbol:'Xe', name:'Ксенон', period:5, group:18 },
+                // Период 6
+                { number:55, symbol:'Cs', name:'Цезий', period:6, group:1 },
+                { number:56, symbol:'Ba', name:'Барий', period:6, group:2 },
+                { number:57, symbol:'La', name:'Лантан', period:6, group:3 },
+                { number:58, symbol:'Ce', name:'Церий', period:6, group:3 },
+                { number:59, symbol:'Pr', name:'Празеодим', period:6, group:3 },
+                { number:60, symbol:'Nd', name:'Неодим', period:6, group:3 },
+                { number:61, symbol:'Pm', name:'Прометий', period:6, group:3 },
+                { number:62, symbol:'Sm', name:'Самарий', period:6, group:3 },
+                { number:63, symbol:'Eu', name:'Европий', period:6, group:3 },
+                { number:64, symbol:'Gd', name:'Гадолиний', period:6, group:3 },
+                { number:65, symbol:'Tb', name:'Тербий', period:6, group:3 },
+                { number:66, symbol:'Dy', name:'Диспрозий', period:6, group:3 },
+                { number:67, symbol:'Ho', name:'Гольмий', period:6, group:3 },
+                { number:68, symbol:'Er', name:'Эрбий', period:6, group:3 },
+                { number:69, symbol:'Tm', name:'Тулий', period:6, group:3 },
+                { number:70, symbol:'Yb', name:'Иттербий', period:6, group:3 },
+                { number:71, symbol:'Lu', name:'Лютеций', period:6, group:3 },
+                { number:72, symbol:'Hf', name:'Гафний', period:6, group:4 },
+                { number:73, symbol:'Ta', name:'Тантал', period:6, group:5 },
+                { number:74, symbol:'W', name:'Вольфрам', period:6, group:6 },
+                { number:75, symbol:'Re', name:'Рений', period:6, group:7 },
+                { number:76, symbol:'Os', name:'Осмий', period:6, group:8 },
+                { number:77, symbol:'Ir', name:'Иридий', period:6, group:9 },
+                { number:78, symbol:'Pt', name:'Платина', period:6, group:10 },
+                { number:79, symbol:'Au', name:'Золото', period:6, group:11 },
+                { number:80, symbol:'Hg', name:'Ртуть', period:6, group:12 },
+                { number:81, symbol:'Tl', name:'Таллий', period:6, group:13 },
+                { number:82, symbol:'Pb', name:'Свинец', period:6, group:14 },
+                { number:83, symbol:'Bi', name:'Висмут', period:6, group:15 },
+                { number:84, symbol:'Po', name:'Полоний', period:6, group:16 },
+                { number:85, symbol:'At', name:'Астат', period:6, group:17 },
+                { number:86, symbol:'Rn', name:'Радон', period:6, group:18 },
+                // Период 7
+                { number:87, symbol:'Fr', name:'Франций', period:7, group:1 },
+                { number:88, symbol:'Ra', name:'Радий', period:7, group:2 },
+                { number:89, symbol:'Ac', name:'Актиний', period:7, group:3 },
+                { number:90, symbol:'Th', name:'Торий', period:7, group:3 },
+                { number:91, symbol:'Pa', name:'Протактиний', period:7, group:3 },
+                { number:92, symbol:'U', name:'Уран', period:7, group:3 },
+                { number:93, symbol:'Np', name:'Нептуний', period:7, group:3 },
+                { number:94, symbol:'Pu', name:'Плутоний', period:7, group:3 },
+                { number:95, symbol:'Am', name:'Америций', period:7, group:3 },
+                { number:96, symbol:'Cm', name:'Кюрий', period:7, group:3 },
+                { number:97, symbol:'Bk', name:'Берклий', period:7, group:3 },
+                { number:98, symbol:'Cf', name:'Калифорний', period:7, group:3 },
+                { number:99, symbol:'Es', name:'Эйнштейний', period:7, group:3 },
+                { number:100, symbol:'Fm', name:'Фермий', period:7, group:3 },
+                { number:101, symbol:'Md', name:'Менделевий', period:7, group:3 },
+                { number:102, symbol:'No', name:'Нобелий', period:7, group:3 },
+                { number:103, symbol:'Lr', name:'Лоуренсий', period:7, group:3 },
+                { number:104, symbol:'Rf', name:'Резерфордий', period:7, group:4 },
+                { number:105, symbol:'Db', name:'Дубний', period:7, group:5 },
+                { number:106, symbol:'Sg', name:'Сиборгий', period:7, group:6 },
+                { number:107, symbol:'Bh', name:'Борий', period:7, group:7 },
+                { number:108, symbol:'Hs', name:'Хассий', period:7, group:8 },
+                { number:109, symbol:'Mt', name:'Мейтнерий', period:7, group:9 },
+                { number:110, symbol:'Ds', name:'Дармштадтий', period:7, group:10 },
+                { number:111, symbol:'Rg', name:'Рентгений', period:7, group:11 },
+                { number:112, symbol:'Cn', name:'Коперниций', period:7, group:12 },
+                { number:113, symbol:'Nh', name:'Нихоний', period:7, group:13 },
+                { number:114, symbol:'Fl', name:'Флеровий', period:7, group:14 },
+                { number:115, symbol:'Mc', name:'Московий', period:7, group:15 },
+                { number:116, symbol:'Lv', name:'Ливерморий', period:7, group:16 },
+                { number:117, symbol:'Ts', name:'Теннессин', period:7, group:17 },
+                { number:118, symbol:'Og', name:'Оганесон', period:7, group:18 }
+            ];
+        }
+
+        function getSolubility(cation, anion) {
+            // Упрощённая логика для демонстрации. Можно расширить.
+            const rules = {
+                'Na⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'Р', 'OH⁻':'Р', 'SO₄²⁻':'Р', 'CO₃²⁻':'Р', 'PO₄³⁻':'Р' },
+                'K⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'Р', 'OH⁻':'Р', 'SO₄²⁻':'Р', 'CO₃²⁻':'Р', 'PO₄³⁻':'Р' },
+                'NH₄⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'Р', 'OH⁻':'Р', 'SO₄²⁻':'Р', 'CO₃²⁻':'Р', 'PO₄³⁻':'Р' },
+                'Ag⁺': { 'Cl⁻':'Н', 'Br⁻':'Н', 'I⁻':'Н', 'S²⁻':'Н', 'OH⁻':'?', 'SO₄²⁻':'М', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
+                'Ba²⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'?', 'OH⁻':'Р', 'SO₄²⁻':'Н', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
+                'Ca²⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'?', 'OH⁻':'М', 'SO₄²⁻':'М', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
+                'Pb²⁺': { 'Cl⁻':'М', 'Br⁻':'М', 'I⁻':'М', 'S²⁻':'Н', 'OH⁻':'Н', 'SO₄²⁻':'Н', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
+                // Для остальных по умолчанию '?'
+            };
+            if (rules[cation] && rules[cation][anion]) return rules[cation][anion];
+            return '?';
+        }
+
+        // =====================================================
+        // ЭКЗАМЕН С ВЫБОРОМ БИЛЕТОВ
+        // =====================================================
+        function showExamSelectionPage() {
+            currentPageState = { name: 'examselect', params: {} };
+            loadAllData();
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <div class="logo-text">📝 Выбор билетов</div>
+                        <button onclick="showMainInterface()" class="back-btn">← Назад</button>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h3>Выберите билеты для экзамена</h3>
+                        <div class="quick-actions">
+                            <button class="btn btn-secondary btn-icon" onclick="selectAllTickets(true)">✅ Все</button>
+                            <button class="btn btn-secondary btn-icon" onclick="selectAllTickets(false)">❌ Ни одного</button>
+                            <button class="btn btn-secondary btn-icon" onclick="selectUnlearnedTickets()">📚 Невыученные</button>
+                        </div>
+                        <div class="checkbox-group" id="exam-tickets-list">
+                            ${tickets.map(t => `
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="${t.number}" checked> Билет №${t.number}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <button class="btn btn-primary" onclick="startExamWithSelected()">▶️ Начать экзамен</button>
+                    </div>
+                </main>
+                ${renderNavigation('Главная')}
+            `;
+        }
+
+        function selectAllTickets(select) {
+            document.querySelectorAll('#exam-tickets-list input[type=checkbox]').forEach(cb => cb.checked = select);
+        }
+
+        function selectUnlearnedTickets() {
+            document.querySelectorAll('#exam-tickets-list input[type=checkbox]').forEach(cb => {
+                const ticketNum = parseInt(cb.value);
+                const ticket = tickets.find(t => t.number === ticketNum);
+                if (ticket) {
+                    const theoryDone = userProgress.questions?.[ticket.theory.id] || false;
+                    const practiceDone = userProgress.questions?.[ticket.practice.id] || false;
+                    cb.checked = !(theoryDone && practiceDone);
+                }
+            });
+        }
+
+        function startExamWithSelected() {
+            const checkboxes = document.querySelectorAll('#exam-tickets-list input[type=checkbox]:checked');
+            const selectedNumbers = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            if (selectedNumbers.length === 0) {
+                showMessage('Выберите хотя бы один билет', 'info');
+                return;
+            }
+            const selectedTickets = tickets.filter(t => selectedNumbers.includes(t.number)).sort((a,b) => a.number - b.number);
+            const questions = [];
+            selectedTickets.forEach(t => {
+                questions.push(t.theory);
+                questions.push(t.practice);
+            });
+            runExam(questions, `Экзамен (${selectedNumbers.length} билетов)`);
+        }
+
+        function runExam(questions, title = 'Экзамен') {
+            currentPageState = { name: 'exam', params: { questions, title } };
+            let currentIndex = 0;
+            let score = 0;
+            let selectedOption = null;
+            let answerSubmitted = false;
+            let timerInterval;
+            let timeLeft = questions.length * 60; // 1 минута на вопрос
+
+            const formatTime = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
+
+            function showQuestion() {
+                if (currentIndex >= questions.length) {
+                    clearInterval(timerInterval);
+                    showResults();
+                    return;
+                }
+                const q = questions[currentIndex];
+                const progress = (currentIndex/questions.length)*100;
+
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo-text">${title}</div>
+                            <button onclick="showMainInterface()" class="back-btn">✕</button>
+                        </div>
+                    </header>
+                    <main class="main-content scroll-container">
+                        <div class="quiz-progress">
+                            <span class="quiz-score">⭐ ${score}/${currentIndex}</span>
+                            <span class="timer ${timeLeft < 60 ? 'warning' : ''}">⏱️ ${formatTime(timeLeft)}</span>
+                        </div>
+                        <div class="progress-bar" style="margin-bottom:20px"><div class="progress-fill" style="width:${progress}%"></div></div>
+                        <div class="card">
+                            <h3>Вопрос ${currentIndex+1}/${questions.length}</h3>
+                            <p style="font-size:1rem;margin:20px 0">${q.text}</p>
+                            <div class="answer-container">
+                                <div class="answer-content hidden" id="exam-answer-${q.id}">${q.answer}</div>
+                                <div style="display:flex; gap:8px; margin-top:12px">
+                                    <button class="btn btn-secondary" style="flex:2" onclick="toggleExamAnswer(${q.id})">🔍 Показать ответ</button>
+                                    <button class="btn btn-secondary" style="flex:1" onclick="examNext()">⏭️ Далее</button>
+                                </div>
+                                ${!answerSubmitted ? `
+                                    <button class="btn btn-success" style="margin-top:12px" onclick="examMarkCorrect(${q.id})">✓ Отметить как верный</button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </main>
+                `;
+                window.toggleExamAnswer = (id) => {
+                    const ans = document.getElementById(`exam-answer-${id}`);
+                    if (ans) ans.classList.toggle('hidden');
+                };
+                window.examMarkCorrect = (id) => {
+                    if (!answerSubmitted) {
+                        answerSubmitted = true;
+                        score++;
+                        showMessage('Ответ засчитан', 'success');
+                        setTimeout(() => examNext(), 1000);
+                    }
+                };
+                window.examNext = () => {
+                    currentIndex++;
+                    selectedOption = null;
+                    answerSubmitted = false;
+                    showQuestion();
+                };
+            }
+
+            function showResults() {
+                const percent = Math.round((score/questions.length)*100);
+                if(!stats.quizResults) stats.quizResults=[];
+                stats.quizResults.push({ date: new Date().toISOString(), score, total: questions.length, percentage: percent });
+                if (stats.quizResults.length > 30) stats.quizResults.shift();
+                saveAllData();
+                checkAchievements();
+
+                const app = document.getElementById('app');
+                app.innerHTML = `
+                    <header class="header">
+                        <div class="header-content">
+                            <div class="logo-text">📊 Результаты экзамена</div>
+                            <button onclick="showMainInterface()" class="back-btn">✕</button>
+                        </div>
+                    </header>
+                    <main class="main-content scroll-container">
+                        <div class="card">
+                            <div style="text-align:center">
+                                <h1 style="font-size:3rem">${percent}%</h1>
+                                <p>Правильных ответов: ${score}/${questions.length}</p>
+                            </div>
+                            <div class="progress-bar" style="height:12px;margin:20px 0"><div class="progress-fill" style="width:${percent}%"></div></div>
+                            <div class="grid-2">
+                                <button class="btn btn-primary" onclick="showExamSelectionPage()">🔄 Новый экзамен</button>
+                                <button class="btn btn-secondary" onclick="showMainInterface()">🏠 Главная</button>
+                            </div>
+                        </div>
+                    </main>
+                `;
+            }
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if(timeLeft<=0) { 
+                    clearInterval(timerInterval); 
+                    if (currentIndex < questions.length) showResults(); 
+                }
+                else {
+                    const t = document.querySelector('.timer');
+                    if(t) {
+                        t.textContent = `⏱️ ${formatTime(timeLeft)}`;
+                        t.classList.toggle('warning', timeLeft < 60);
+                    }
+                }
+            },1000);
+
+            showQuestion();
+        }
+
+        // =====================================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // =====================================================
+        function initTelegram() {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+            }
+        }
+
+        function initApp() {
+            initTelegram();
+            loadAllData();
+            showMainInterface();
+        }
+
+        function safeInit() {
+            try {
+                initApp();
+            } catch (e) {
+                console.error('Ошибка инициализации:', e);
+                alert('Ошибка: ' + e.message + '\n' + e.stack);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', safeInit);
+        } else {
+            safeInit();
+        }
+
+        // Экспорт глобальных функций (для onclick)
+        window.showMainInterface = showMainInterface;
+        window.showTicketsPage = showTicketsPage;
+        window.showTicket = showTicket;
+        window.showTheoryPage = showTheoryPage;
+        window.searchTheory = searchTheory;
+        window.clearTheorySearch = clearTheorySearch;
+        window.showPracticePage = showPracticePage;
+        window.searchPractice = searchPractice;
+        window.clearPracticeSearch = clearPracticeSearch;
+        window.showQuestionDetail = showQuestionDetail;
+        window.showStatsPage = showStatsPage;
+        window.showSettingsPage = showSettingsPage;
+        window.showQuizPage = showQuizPage;
+        window.showRandomTicket = showRandomTicket;
+        window.showFlashcardsPage = showFlashcardsPage;
+        window.startFlashcards = startFlashcards;
+        window.showReferencePage = showReferencePage;
+        window.showExamSelectionPage = showExamSelectionPage;
+        window.selectAllTickets = selectAllTickets;
+        window.selectUnlearnedTickets = selectUnlearnedTickets;
+        window.startExamWithSelected = startExamWithSelected;
+        window.toggleBookmark = toggleBookmark;
+        window.toggleQuestionAnswer = toggleQuestionAnswer;
+        window.showNoteInput = showNoteInput;
+        window.saveNote = saveNote;
+        window.deleteNote = deleteNote;
+        window.markQuestionLearned = markQuestionLearned;
+        window.markQuestionLearnedSingle = markQuestionLearnedSingle;
+        window.setTheme = setTheme;
+        window.setFontSize = setFontSize;
+        window.resetProgress = resetProgress;
+        window.exportToTxt = exportToTxt;
+        window.exportProgress = exportProgress;
+        window.importProgress = importProgress;
+        // Для тестов и карточек (будут переопределяться динамически)
+        window.selectQuizOption = null;
+        window.submitQuizAnswer = null;
+        window.skipQuizQuestion = null;
+        window.nextQuizQuestion = null;
+        window.flashcardSwipeLeft = null;
+        window.flashcardSwipeRight = null;
+        window.handleTouchStart = null;
+        window.handleTouchMove = null;
+        window.handleTouchEnd = null;
+        window.toggleExamAnswer = null;
+        window.examMarkCorrect = null;
+        window.examNext = null;
+    </script>
+</body>
+</html>
