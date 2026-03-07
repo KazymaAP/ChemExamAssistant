@@ -1858,16 +1858,16 @@
         // =====================================================
         // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
         // =====================================================
-        const STORAGE_KEY = 'chemExamData_v11';
-        const PROGRESS_KEY = 'chemExamProgress_v11';
-        const BOOKMARKS_KEY = 'chemExamBookmarks_v11';
-        const NOTES_KEY = 'chemExamNotes_v11';
-        const SETTINGS_KEY = 'chemExamSettings_v11';
-        const STATS_KEY = 'chemExamStats_v11';
-        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v11';
-        const HISTORY_KEY = 'chemExamHistory_v11';
-        const GAMIFICATION_KEY = 'chemExamGamification_v11';
-        const TAGS_KEY = 'chemExamTags_v11';
+        const STORAGE_KEY = 'chemExamData_v12';
+        const PROGRESS_KEY = 'chemExamProgress_v12';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v12';
+        const NOTES_KEY = 'chemExamNotes_v12';
+        const SETTINGS_KEY = 'chemExamSettings_v12';
+        const STATS_KEY = 'chemExamStats_v12';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v12';
+        const HISTORY_KEY = 'chemExamHistory_v12';
+        const GAMIFICATION_KEY = 'chemExamGamification_v12';
+        const TAGS_KEY = 'chemExamTags_v12';
 
         const TOTAL_QUESTIONS = 35;
         const TOTAL_TICKETS = 17;
@@ -1946,6 +1946,7 @@
         };
 
         let reminderTimeout = null;
+        let searchIndex = new Map(); // ИСПРАВЛЕНО: объявлен searchIndex
 
         // Достижения
         const achievements = [
@@ -5610,6 +5611,7 @@
                 "O₂",
                 "N₂"
               ], correct: 0 },
+
             // ===== БИЛЕТ 11: Ароматические углеводороды. Бензол (50 вопросов) =====
             // id 2451-2500
             { id: 2451, ticket: 11, topic: "Бензол",
@@ -7739,6 +7741,34 @@
 
         window.quizQuestions = quizQuestions;
         console.log('Всего загружено тестовых вопросов:', quizQuestions.length);
+
+        // =====================================================
+        // Словарь терминов
+        // =====================================================
+        const termDefinitions = {
+            'алкан': 'Предельный углеводород, общая формула CₙH₂ₙ₊₂',
+            'алкен': 'Непредельный углеводород с двойной связью, формула CₙH₂ₙ',
+            'алкин': 'Непредельный углеводород с тройной связью, формула CₙH₂ₙ₋₂',
+            'изомер': 'Вещества с одинаковым составом, но разным строением',
+            'полимер': 'Вещество с большой молекулярной массой, состоящее из повторяющихся звеньев',
+            'гидролиз': 'Разложение вещества водой',
+            'электролиз': 'Разложение вещества электрическим током',
+            'катализатор': 'Вещество, ускоряющее реакцию, но не расходующееся в ней',
+            'метан': 'Простейший алкан, CH₄',
+            'этилен': 'Простейший алкен, C₂H₄',
+            'ацетилен': 'Простейший алкин, C₂H₂',
+            'бензол': 'Ароматический углеводород, C₆H₆'
+        };
+
+        // Состояние текущей страницы
+        let currentPageState = { name: 'main', params: {} };
+        let openedAnswers = new Set();
+
+        // Кеши для фильтров
+        let cachedTheoryFiltered = null;
+        let cachedPracticeFiltered = null;
+        let lastFilterParams = { theory: null, practice: null };
+
         // =====================================================
         // ИНИЦИАЛИЗАЦИЯ ДАННЫХ
         // =====================================================
@@ -7869,7 +7899,6 @@
             // Строим индекс для поиска
             buildSearchIndex();
         }
-
         // =====================================================
         // ПОИСКОВЫЙ ИНДЕКС
         // =====================================================
@@ -10952,5 +10981,6 @@
     </script>
 </body>
 </html>
+
 
 
