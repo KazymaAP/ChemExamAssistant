@@ -800,11 +800,29 @@
             margin: 4px;
             border: 1px dashed rgba(0, 212, 255, 0.3);
             transition: all 0.3s ease;
+            cursor: help;
         }
 
         .key-term:hover {
             background: rgba(0, 212, 255, 0.2);
             transform: scale(1.05);
+        }
+
+        .key-term-definition {
+            position: absolute;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--info);
+            font-size: 0.8rem;
+            max-width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .key-term:hover + .key-term-definition {
+            display: block;
         }
 
         .hidden {
@@ -904,6 +922,16 @@
             background: linear-gradient(135deg, var(--info), #0099cc);
             color: white;
             border-color: transparent;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            background: rgba(42, 42, 42, 0.6);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 16px;
+            color: var(--text-color);
+            margin-bottom: 16px;
+            width: 100%;
         }
 
         .flashcard-container {
@@ -1078,6 +1106,8 @@
         .highlight {
             background: rgba(255,255,0,0.3);
             border-radius: 4px;
+            padding: 2px 0;
+            font-weight: bold;
         }
 
         .checkbox-group {
@@ -1097,9 +1127,9 @@
             display: flex;
             gap: 8px;
             margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
-        /* Стили для таблицы Менделеева */
         .periodic-table {
             display: grid;
             grid-template-columns: repeat(18, 1fr);
@@ -1193,6 +1223,66 @@
             font-size: 0.8rem;
         }
 
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0,212,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: rgba(0,212,255,0.1);
+        }
+
+        .history-time {
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .activity-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: rgba(0,212,255,0.1);
+            position: relative;
+            cursor: help;
+        }
+
+        .calendar-day[data-count="1"] { background: rgba(0,212,255,0.2); }
+        .calendar-day[data-count="2"] { background: rgba(0,212,255,0.3); }
+        .calendar-day[data-count="3"] { background: rgba(0,212,255,0.4); }
+        .calendar-day[data-count="4"] { background: rgba(0,212,255,0.5); }
+        .calendar-day[data-count="5"] { background: rgba(0,212,255,0.6); }
+        .calendar-day[data-count="6"] { background: rgba(0,212,255,0.7); }
+        .calendar-day[data-count="7"] { background: rgba(0,212,255,0.8); }
+        .calendar-day[data-count="8"] { background: rgba(0,212,255,0.9); }
+        .calendar-day[data-count="9"] { background: var(--info); }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         @media (max-width: 375px) {
             .header { padding: 10px 12px; }
             .main-content { padding: 12px; padding-bottom: 70px; }
@@ -1220,24 +1310,31 @@
     </div>
 
     <script>
-        alert('Скрипт запущен');
-        console.log('Скрипт стартовал');
-        window.onerror = function(msg, url, line) {
-           alert('Ошибка: ' + msg + ' на строке ' + line);
-        };
         // =====================================================
         // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
         // =====================================================
-        const STORAGE_KEY = 'chemExamData_v7';
-        const PROGRESS_KEY = 'chemExamProgress_v7';
-        const BOOKMARKS_KEY = 'chemExamBookmarks_v7';
-        const NOTES_KEY = 'chemExamNotes_v7';
-        const SETTINGS_KEY = 'chemExamSettings_v7';
-        const STATS_KEY = 'chemExamStats_v7';
-        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v7';
+        const STORAGE_KEY = 'chemExamData_v8';
+        const PROGRESS_KEY = 'chemExamProgress_v8';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v8';
+        const NOTES_KEY = 'chemExamNotes_v8';
+        const SETTINGS_KEY = 'chemExamSettings_v8';
+        const STATS_KEY = 'chemExamStats_v8';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v8';
+        const HISTORY_KEY = 'chemExamHistory_v8';
+        const REMINDER_KEY = 'chemExamReminder_v8';
 
         const TOTAL_QUESTIONS = 35;
         const TOTAL_TICKETS = 17;
+        
+        // Дебаунс для поиска и автосохранения
+        const debounce = (fn, delay) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn(...args), delay);
+            };
+        };
+
         // =====================================================
         // ГЛОБАЛЬНЫЕ ДАННЫЕ
         // =====================================================
@@ -1253,24 +1350,32 @@
             lastActive: null,
             studyTime: 0,
             achievements: {},
-            recentlyViewed: []    // { id, date }
+            recentlyViewed: [],   // { id, date } - максимум 20
+            timeSpent: {}         // id -> время в секундах
         };
 
         let bookmarks = [];
         let notes = {};
+        let history = [];         // История просмотров (максимум 20)
 
         let settings = {
             theme: 'dark',
             fontSize: 16,
             reminders: false,
-            reminderTime: '20:00'
+            reminderTime: '20:00',
+            autoSave: true,
+            showAnswers: true
         };
 
         let stats = {
             dailyActivity: {},
             totalStudyTime: 0,
-            quizResults: []
+            quizResults: [],
+            questionsPerDay: {},
+            lastWeekActivity: []
         };
+
+        let reminderTimeout = null;
 
         const achievements = [
             { id: 'novice', title: 'Новичок', desc: 'Изучил 5 вопросов', icon: '🌱', target: 5 },
@@ -1304,248 +1409,138 @@
         let cachedPracticeFiltered = null;
         let lastFilterParams = { theory: null, practice: null };
 
+        // Индекс для быстрого поиска
+        let searchIndex = new Map();
+
+        // Словарь терминов
+        const termDefinitions = {
+            'алкан': 'Предельный углеводород, общая формула CₙH₂ₙ₊₂',
+            'алкен': 'Непредельный углеводород с двойной связью, формула CₙH₂ₙ',
+            'алкин': 'Непредельный углеводород с тройной связью, формула CₙH₂ₙ₋₂',
+            'изомер': 'Вещества с одинаковым составом, но разным строением',
+            'полимер': 'Вещество с большой молекулярной массой, состоящее из повторяющихся звеньев',
+            'гидролиз': 'Разложение вещества водой',
+            'электролиз': 'Разложение вещества электрическим током',
+            'катализатор': 'Вещество, ускоряющее реакцию, но не расходующееся в ней',
+            'метан': 'Простейший алкан, CH₄',
+            'этилен': 'Простейший алкен, C₂H₄',
+            'ацетилен': 'Простейший алкин, C₂H₂',
+            'бензол': 'Ароматический углеводород, C₆H₆'
+        };
+
         // =====================================================
-        // ИНИЦИАЛИЗАЦИЯ ДАННЫХ (35 вопросов) — ИСПРАВЛЕНО: строки в обратных кавычках
+        // ИНИЦИАЛИЗАЦИЯ ДАННЫХ
         // =====================================================
         function initData() {
             allQuestions = [
-                // Вопрос 1 (теория)
                 { id: 1, number: 1, type: 'theory',
                   text: "Периодический закон и периодическая система химических элементов Д.И. Менделеева. Значение для науки.",
-                  answer: `📌 Суть закона: Свойства химических элементов и образованных ими веществ находятся в периодической зависимости от заряда их атомных ядер.
-
-📌 Таблица: графическое отображение закона. Элементы расположены по периодам и группам, показывая повторяемость свойств.
-
-📌 Значение:
-1️⃣ Систематизировал все известные элементы.
-2️⃣ Предсказал открытие новых элементов (германий, галлий), описав их свойства.
-3️⃣ Сыграл главную роль в понимании строения атома.` },
-                // Вопрос 2 (практика)
+                  answer: `📌 Суть закона: Свойства химических элементов и образованных ими веществ находятся в периодической зависимости от заряда их атомных ядер.\n\n📌 Таблица: графическое отображение закона. Элементы расположены по периодам и группам, показывая повторяемость свойств.\n\n📌 Значение:\n1️⃣ Систематизировал все известные элементы.\n2️⃣ Предсказал открытие новых элементов (германий, галлий), описав их свойства.\n3️⃣ Сыграл главную роль в понимании строения атома.` },
                 { id: 2, number: 2, type: 'practice',
                   text: "Напишите структурные формулы веществ: 2-метилпропановая кислота, 3,4-диметилпентановая кислота",
-                  answer: `📌 2-метилпропановая кислота:
-CH₃-CH-COOH
-     |
-     CH₃
-
-📌 3,4-диметилпентановая кислота:
-CH₃-CH-CH-CH₂-COOH
-     |   |
-     CH₃ CH₃` },
-                // Вопрос 3 (теория)
+                  answer: `📌 2-метилпропановая кислота:\nCH₃-CH-COOH\n     |\n     CH₃\n\n📌 3,4-диметилпентановая кислота:\nCH₃-CH-CH-CH₂-COOH\n     |   |\n     CH₃ CH₃` },
                 { id: 3, number: 3, type: 'theory',
                   text: "Предельные углеводороды (Алканы). Общая формула, строение. Химические свойства метана. Применение.",
-                  answer: `📌 Общая формула: CₙH₂ₙ₊₂ (метан CH₄, пропан C₃H₈).
-📌 Строение: простые связи, sp³-гибридизация.
-📌 Свойства метана: галогенирование, горение, пиролиз.
-📌 Применение: топливо, растворители, пластмассы.` },
-                // Вопрос 4 (практика)
+                  answer: `📌 Общая формула: CₙH₂ₙ₊₂ (метан CH₄, пропан C₃H₈).\n📌 Строение: простые связи, sp³-гибридизация.\n📌 Свойства метана: галогенирование, горение, пиролиз.\n📌 Применение: топливо, растворители, пластмассы.` },
                 { id: 4, number: 4, type: 'practice',
                   text: "Как получить из карбида кальция 1,2-дихлорэтан?",
-                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (ацетилен) + Ca(OH)₂
-2) C₂H₂ + H₂ (катализатор) → C₂H₄ (этилен)
-3) C₂H₄ + Cl₂ → C₂H₄Cl₂ (1,2-дихлорэтан)` },
-                // Вопрос 5 (теория)
+                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (ацетилен) + Ca(OH)₂\n2) C₂H₂ + H₂ (катализатор) → C₂H₄ (этилен)\n3) C₂H₄ + Cl₂ → C₂H₄Cl₂ (1,2-дихлорэтан)` },
                 { id: 5, number: 5, type: 'theory',
                   text: "Строение атомов химических элементов. Закономерности изменения свойств в зависимости от строения.",
-                  answer: `📌 Строение: ядро (протоны, нейтроны) и электроны по слоям.
-📌 В периоде (→): радиус уменьшается, металлич. свойства слабеют.
-📌 В группе (↓): радиус растёт, металлич. свойства усиливаются.` },
-                // Вопрос 6 (практика)
+                  answer: `📌 Строение: ядро (протоны, нейтроны) и электроны по слоям.\n📌 В периоде (→): радиус уменьшается, металлич. свойства слабеют.\n📌 В группе (↓): радиус растёт, металлич. свойства усиливаются.` },
                 { id: 6, number: 6, type: 'practice',
                   text: "Напишите структурные формулы: 2-метилбутан, 2,2-дихлорпентан, 3,3-диметилпентан",
-                  answer: `📌 2-метилбутан: CH₃-CH(CH₃)-CH₂-CH₃
-📌 2,2-дихлорпентан: CH₃-CCl₂-CH₂-CH₂-CH₃
-📌 3,3-диметилпентан: CH₃-CH₂-C(CH₃)₂-CH₂-CH₃` },
-                // Вопрос 7 (теория)
+                  answer: `📌 2-метилбутан: CH₃-CH(CH₃)-CH₂-CH₃\n📌 2,2-дихлорпентан: CH₃-CCl₂-CH₂-CH₂-CH₃\n📌 3,3-диметилпентан: CH₃-CH₂-C(CH₃)₂-CH₂-CH₃` },
                 { id: 7, number: 7, type: 'theory',
                   text: "Непредельные углеводороды ряда этилена. Строение, свойства этилена. Применение.",
-                  answer: `📌 Общая формула: CₙH₂ₙ. Двойная связь (σ и π).
-📌 Свойства: присоединение (галогенирование, гидратация, полимеризация).
-📌 Применение: полиэтилен, трубы, плёнка, краски.` },
-                // Вопрос 8 (практика)
+                  answer: `📌 Общая формула: CₙH₂ₙ. Двойная связь (σ и π).\n📌 Свойства: присоединение (галогенирование, гидратация, полимеризация).\n📌 Применение: полиэтилен, трубы, плёнка, краски.` },
                 { id: 8, number: 8, type: 'practice',
                   text: "Осуществите превращения: AlCl₃ → X → Y → Cu₂O",
-                  answer: `1) AlCl₃ → Al (электролиз расплава или вытеснение более активным металлом)
-2) 4Al + 3O₂ → 2Al₂O₃ (X=Al, Y=Al₂O₃)
-3) 2Al + 3CuO → Al₂O₃ + 3Cu, затем 4Cu + O₂ → 2Cu₂O (недостаток кислорода)` },
-                // Вопрос 9 (теория)
+                  answer: `1) AlCl₃ → Al (электролиз расплава или вытеснение более активным металлом)\n2) 4Al + 3O₂ → 2Al₂O₃ (X=Al, Y=Al₂O₃)\n3) 2Al + 3CuO → Al₂O₃ + 3Cu, затем 4Cu + O₂ → 2Cu₂O (недостаток кислорода)` },
                 { id: 9, number: 9, type: 'theory',
                   text: "Виды химической связи.",
-                  answer: `1️⃣ Ковалентная неполярная (H₂, O₂)
-2️⃣ Ковалентная полярная (HCl, H₂O)
-3️⃣ Ионная (NaCl)
-4️⃣ Металлическая
-5️⃣ Водородная` },
-                // Вопрос 10 (практика)
+                  answer: `1️⃣ Ковалентная неполярная (H₂, O₂)\n2️⃣ Ковалентная полярная (HCl, H₂O)\n3️⃣ Ионная (NaCl)\n4️⃣ Металлическая\n5️⃣ Водородная` },
                 { id: 10, number: 10, type: 'practice',
                   text: "Напишите структурные формулы: 3-метилпентен-1, 2-метил-4-изопропилгексен-1",
-                  answer: `📌 3-метилпентен-1: CH₂=CH-CH(CH₃)-CH₂-CH₃
-📌 2-метил-4-изопропилгексен-1: CH₂=C(CH₃)-CH₂-CH(CH(CH₃)₂)-CH₂-CH₃` },
-                // Вопрос 11 (теория)
+                  answer: `📌 3-метилпентен-1: CH₂=CH-CH(CH₃)-CH₂-CH₃\n📌 2-метил-4-изопропилгексен-1: CH₂=C(CH₃)-CH₂-CH(CH(CH₃)₂)-CH₂-CH₃` },
                 { id: 11, number: 11, type: 'theory',
                   text: "Аминокислоты, их строение, свойства, роль, применение.",
-                  answer: `📌 Строение: NH₂ и COOH группы.
-📌 Свойства: амфотерность, образование полипептидов.
-📌 Роль: строительные блоки белков.
-📌 Применение: пищевые добавки, лекарства.` },
-                // Вопрос 12 (практика)
+                  answer: `📌 Строение: NH₂ и COOH группы.\n📌 Свойства: амфотерность, образование полипептидов.\n📌 Роль: строительные блоки белков.\n📌 Применение: пищевые добавки, лекарства.` },
                 { id: 12, number: 12, type: 'practice',
                   text: "Осуществите превращения: метан → X → Y → уксусная кислота",
-                  answer: `1) 2CH₄ → C₂H₂ + 3H₂ (пиролиз) (X = ацетилен)
-2) C₂H₂ + H₂O → CH₃COH (реакция Кучерова, Y = уксусный альдегид)
-3) CH₃COH + Ag₂O → CH₃COOH + 2Ag (окисление)` },
-                // Вопрос 13 (теория)
+                  answer: `1) 2CH₄ → C₂H₂ + 3H₂ (пиролиз) (X = ацетилен)\n2) C₂H₂ + H₂O → CH₃COH (реакция Кучерова, Y = уксусный альдегид)\n3) CH₃COH + Ag₂O → CH₃COOH + 2Ag (окисление)` },
                 { id: 13, number: 13, type: 'theory',
                   text: "Классификация химических реакций.",
-                  answer: `По числу веществ: соединения, разложения, замещения, обмена.
-По тепловому эффекту: экзо- и эндотермические.
-По изменению ст.окисления: ОВР и не ОВР.
-По обратимости: обратимые и необратимые.` },
-                // Вопрос 14 (практика)
+                  answer: `По числу веществ: соединения, разложения, замещения, обмена.\nПо тепловому эффекту: экзо- и эндотермические.\nПо изменению ст.окисления: ОВР и не ОВР.\nПо обратимости: обратимые и необратимые.` },
                 { id: 14, number: 14, type: 'practice',
                   text: "Из этана и неорганики получить бутан.",
-                  answer: `1) C₂H₆ + Cl₂ → C₂H₅Cl + HCl (на свету)
-2) 2C₂H₅Cl + 2Na → C₄H₁₀ + 2NaCl (реакция Вюрца)` },
-                // Вопрос 15 (теория)
+                  answer: `1) C₂H₆ + Cl₂ → C₂H₅Cl + HCl (на свету)\n2) 2C₂H₅Cl + 2Na → C₄H₁₀ + 2NaCl (реакция Вюрца)` },
                 { id: 15, number: 15, type: 'theory',
                   text: "Крахмал и целлюлоза: строение, свойства, применение.",
-                  answer: `📌 Состоят из остатков глюкозы. Крахмал – смесь линейных и разветвлённых цепей, целлюлоза – линейные волокна.
-📌 Крахмал: синеет с йодом, гидролиз до глюкозы.
-📌 Целлюлоза: нерастворима, прочная.
-📌 Применение: крахмал – клейстер, целлюлоза – бумага, ткани.` },
-                // Вопрос 16 (практика)
+                  answer: `📌 Состоят из остатков глюкозы. Крахмал – смесь линейных и разветвлённых цепей, целлюлоза – линейные волокна.\n📌 Крахмал: синеет с йодом, гидролиз до глюкозы.\n📌 Целлюлоза: нерастворима, прочная.\n📌 Применение: крахмал – клейстер, целлюлоза – бумага, ткани.` },
                 { id: 16, number: 16, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₁OH",
-                  answer: `8 изомеров пентанола:
-1) пентанол-1
-2) пентанол-2
-3) пентанол-3
-4) 2-метилбутанол-1
-5) 3-метилбутанол-1
-6) 2-метилбутанол-2
-7) 3-метилбутанол-2
-8) 2,2-диметилпропанол-1` },
-                // Вопрос 17 (теория)
+                  answer: `8 изомеров пентанола:\n1) пентанол-1\n2) пентанол-2\n3) пентанол-3\n4) 2-метилбутанол-1\n5) 3-метилбутанол-1\n6) 2-метилбутанол-2\n7) 3-метилбутанол-2\n8) 2,2-диметилпропанол-1` },
                 { id: 17, number: 17, type: 'theory',
                   text: "Обратимость реакций. Химическое равновесие и его смещение. Применение.",
-                  answer: `📌 Равновесие – когда скорости прямой и обратной равны.
-📌 Принцип Ле-Шателье: при воздействии равновесие смещается в сторону ослабления воздействия.
-📌 Применение: в промышленности (синтез аммиака) подбирают условия для смещения равновесия.` },
-                // Вопрос 18 (практика)
+                  answer: `📌 Равновесие – когда скорости прямой и обратной равны.\n📌 Принцип Ле-Шателье: при воздействии равновесие смещается в сторону ослабления воздействия.\n📌 Применение: в промышленности (синтез аммиака) подбирают условия для смещения равновесия.` },
                 { id: 18, number: 18, type: 'practice',
                   text: "Осуществите превращения: C₅H₁₁OH → X → Y → C₅H₅OH (циклическое)",
-                  answer: `1) Дегидрирование (отщепление H₂) → циклопентадиен C₅H₆
-2) C₅H₆ + Cl₂ → C₅H₅Cl + HCl (замещение)
-3) C₅H₅Cl + NaOH → C₅H₅OH + NaCl (гидролиз)` },
-                // Вопрос 19 (теория)
+                  answer: `1) Дегидрирование (отщепление H₂) → циклопентадиен C₅H₆\n2) C₅H₆ + Cl₂ → C₅H₅Cl + HCl (замещение)\n3) C₅H₅Cl + NaOH → C₅H₅OH + NaCl (гидролиз)` },
                 { id: 19, number: 19, type: 'theory',
                   text: "Ацетилен – строение, свойства, получение, применение.",
-                  answer: `📌 Тройная связь, реакции присоединения.
-📌 Получение: CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂
-📌 Применение: сварка, растворители, уксусная кислота, каучуки.` },
-                // Вопрос 20 (практика)
+                  answer: `📌 Тройная связь, реакции присоединения.\n📌 Получение: CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂\n📌 Применение: сварка, растворители, уксусная кислота, каучуки.` },
                 { id: 20, number: 20, type: 'practice',
                   text: "Осуществите превращения: CO₂ → крахмал → глюкоза → этанол → бромэтан",
-                  answer: `1) фотосинтез (в растениях) CO₂ → крахмал
-2) (C₆H₁₀O₅)ₙ + nH₂O → nC₆H₁₂O₆ (гидролиз крахмала)
-3) C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (спиртовое брожение)
-4) C₂H₅OH + HBr → C₂H₅Br + H₂O` },
-                // Вопрос 21 (теория)
+                  answer: `1) фотосинтез (в растениях) CO₂ → крахмал\n2) (C₆H₁₀O₅)ₙ + nH₂O → nC₆H₁₂O₆ (гидролиз крахмала)\n3) C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (спиртовое брожение)\n4) C₂H₅OH + HBr → C₂H₅Br + H₂O` },
                 { id: 21, number: 21, type: 'theory',
                   text: "Скорость химических реакций и факторы, влияющие на неё.",
                   answer: `Факторы: природа веществ, концентрация, температура (правило Вант-Гоффа), площадь поверхности, катализатор.` },
-                // Вопрос 22 (практика)
                 { id: 22, number: 22, type: 'practice',
                   text: "Из пропана получить гексан",
-                  answer: `1) C₃H₈ + Cl₂ → C₃H₇Cl + HCl (1-хлорпропан)
-2) 2C₃H₇Cl + 2Na → C₆H₁₄ + 2NaCl (реакция Вюрца)` },
-                // Вопрос 23 (теория)
+                  answer: `1) C₃H₈ + Cl₂ → C₃H₇Cl + HCl (1-хлорпропан)\n2) 2C₃H₇Cl + 2Na → C₆H₁₄ + 2NaCl (реакция Вюрца)` },
                 { id: 23, number: 23, type: 'theory',
                   text: "Ароматические углеводороды. Бензол: строение, свойства, получение, применение.",
-                  answer: `📌 C₆H₆, бензольное кольцо.
-📌 Реакции замещения (галогенирование, нитрование).
-📌 Получение: из нефти, тримеризация ацетилена: 3C₂H₂ → C₆H₆.
-📌 Применение: растворитель, пластмассы, красители, лекарства.` },
-                // Вопрос 24 (практика)
+                  answer: `📌 C₆H₆, бензольное кольцо.\n📌 Реакции замещения (галогенирование, нитрование).\n📌 Получение: из нефти, тримеризация ацетилена: 3C₂H₂ → C₆H₆.\n📌 Применение: растворитель, пластмассы, красители, лекарства.` },
                 { id: 24, number: 24, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₀",
                   answer: `Алкены: пентен-1, пентен-2 (цис/транс), 2-метилбутен-1, 3-метилбутен-1, 2-метилбутен-2. Циклоалканы: циклопентан, метилциклобутан, 1,2-диметилциклопропан, этилциклопропан.` },
-                // Вопрос 25 (теория)
                 { id: 25, number: 25, type: 'theory',
                   text: "Теория Бутлерова химического строения органических веществ.",
-                  answer: `1) Атомы соединены по валентности.
-2) Свойства зависят от порядка связей (изомерия).
-3) Атомы влияют друг на друга.
-Развитие: стереохимия.` },
-                // Вопрос 26 (практика)
+                  answer: `1) Атомы соединены по валентности.\n2) Свойства зависят от порядка связей (изомерия).\n3) Атомы влияют друг на друга.\nРазвитие: стереохимия.` },
                 { id: 26, number: 26, type: 'practice',
                   text: "Как получить из этанола 1,2-дихлорэтан?",
-                  answer: `1) C₂H₅OH → C₂H₄ + H₂O (дегидратация, нагревание с H₂SO₄)
-2) C₂H₄ + Cl₂ → C₂H₄Cl₂` },
-                // Вопрос 27 (теория)
+                  answer: `1) C₂H₅OH → C₂H₄ + H₂O (дегидратация, нагревание с H₂SO₄)\n2) C₂H₄ + Cl₂ → C₂H₄Cl₂` },
                 { id: 27, number: 27, type: 'theory',
                   text: "Электролиз как ОВР. Электролиз расплава и раствора NaCl.",
-                  answer: `📌 Электролиз – разложение током.
-📌 Расплав NaCl: Na⁺ + e → Na; 2Cl⁻ – 2e → Cl₂.
-📌 Раствор NaCl: на катоде 2H₂O + 2e → H₂ + 2OH⁻, на аноде 2Cl⁻ → Cl₂.` },
-                // Вопрос 28 (практика)
+                  answer: `📌 Электролиз – разложение током.\n📌 Расплав NaCl: Na⁺ + e → Na; 2Cl⁻ – 2e → Cl₂.\n📌 Раствор NaCl: на катоде 2H₂O + 2e → H₂ + 2OH⁻, на аноде 2Cl⁻ → Cl₂.` },
                 { id: 28, number: 28, type: 'practice',
                   text: "Напишите структурные формулы: 3-бромгексанол-2; 2-метил-3-этилпентанол-1",
-                  answer: `📌 3-бромгексанол-2: CH₃-CH₂-CH(Br)-CH(OH)-CH₂-CH₃
-📌 2-метил-3-этилпентанол-1: CH₂OH-CH(CH₃)-CH(C₂H₅)-CH₂-CH₃` },
-                // Вопрос 29 (теория)
+                  answer: `📌 3-бромгексанол-2: CH₃-CH₂-CH(Br)-CH(OH)-CH₂-CH₃\n📌 2-метил-3-этилпентанол-1: CH₂OH-CH(CH₃)-CH(C₂H₅)-CH₂-CH₃` },
                 { id: 29, number: 29, type: 'theory',
                   text: "Изомерия органических соединений и её виды.",
-                  answer: `📌 Изомеры – одинаковый состав, разное строение.
-Виды:
-1) структурная (углеродный скелет, положение функц. группы, межклассовая)
-2) пространственная (геометрическая цис/транс, оптическая)` },
-                // Вопрос 30 (практика)
+                  answer: `📌 Изомеры – одинаковый состав, разное строение.\nВиды:\n1) структурная (углеродный скелет, положение функц. группы, межклассовая)\n2) пространственная (геометрическая цис/транс, оптическая)` },
                 { id: 30, number: 30, type: 'practice',
                   text: "Осуществите превращения: Al₄C₃ → CH₄ → CH₃Br → C₂H₆ → CO₂ → CO",
-                  answer: `1) Al₄C₃ + 12H₂O → 4Al(OH)₃ + 3CH₄
-2) CH₄ + Br₂ → CH₃Br + HBr (на свету)
-3) 2CH₃Br + 2Na → C₂H₆ + 2NaBr (реакция Вюрца)
-4) 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O (горение)
-5) CO₂ + C ⇄ 2CO (при высокой температуре)` },
-                // Вопрос 31 (теория)
+                  answer: `1) Al₄C₃ + 12H₂O → 4Al(OH)₃ + 3CH₄\n2) CH₄ + Br₂ → CH₃Br + HBr (на свету)\n3) 2CH₃Br + 2Na → C₂H₆ + 2NaBr (реакция Вюрца)\n4) 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O (горение)\n5) CO₂ + C ⇄ 2CO (при высокой температуре)` },
                 { id: 31, number: 31, type: 'theory',
                   text: "Оксиды: классификация, свойства, применение.",
-                  answer: `📌 Основные (Na₂O, CaO) – реагируют с кислотами.
-📌 Кислотные (CO₂, SO₂) – реагируют со щелочами.
-📌 Амфотерные (Al₂O₃, ZnO) – и с кислотами, и со щелочами.
-📌 Несолеобразующие (CO, NO).
-Применение: известь, стекло, пигменты.` },
-                // Вопрос 32 (практика)
+                  answer: `📌 Основные (Na₂O, CaO) – реагируют с кислотами.\n📌 Кислотные (CO₂, SO₂) – реагируют со щелочами.\n📌 Амфотерные (Al₂O₃, ZnO) – и с кислотами, и со щелочами.\n📌 Несолеобразующие (CO, NO).\nПрименение: известь, стекло, пигменты.` },
                 { id: 32, number: 32, type: 'practice',
                   text: "Осуществите превращения: карбид кальция → X → Y → хлорэтан",
-                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (X = ацетилен)
-2) C₂H₂ + H₂ → C₂H₄ (Y = этилен, катализатор)
-3) C₂H₄ + HCl → C₂H₅Cl (хлорэтан)` },
-                // Вопрос 33 (теория)
+                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (X = ацетилен)\n2) C₂H₂ + H₂ → C₂H₄ (Y = этилен, катализатор)\n3) C₂H₄ + HCl → C₂H₅Cl (хлорэтан)` },
                 { id: 33, number: 33, type: 'theory',
                   text: "Металлы: положение в ПС, строение атома, химические свойства, применение.",
-                  answer: `📌 Внизу слева, на внешнем уровне 1–3 e, атомы большие.
-📌 Восстановители: реагируют с неметаллами, водой, кислотами, солями.
-📌 Применение: строительство, сантехника, инструменты, электрика.` },
-                // Вопрос 34 (практика)
+                  answer: `📌 Внизу слева, на внешнем уровне 1–3 e, атомы большие.\n📌 Восстановители: реагируют с неметаллами, водой, кислотами, солями.\n📌 Применение: строительство, сантехника, инструменты, электрика.` },
                 { id: 34, number: 34, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₂",
-                  answer: `3 изомера пентана:
-1) н-пентан CH₃-CH₂-CH₂-CH₂-CH₃
-2) изопентан (2-метилбутан) CH₃-CH(CH₃)-CH₂-CH₃
-3) неопентан (2,2-диметилпропан) C(CH₃)₄` },
-                // Вопрос 35 (теория)
+                  answer: `3 изомера пентана:\n1) н-пентан CH₃-CH₂-CH₂-CH₂-CH₃\n2) изопентан (2-метилбутан) CH₃-CH(CH₃)-CH₂-CH₃\n3) неопентан (2,2-диметилпропан) C(CH₃)₄` },
                 { id: 35, number: 35, type: 'theory',
                   text: "Фенол: строение, свойства, получение, применение.",
-                  answer: `📌 C₆H₅OH – бензольное кольцо + OH.
-📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.
-📌 Получение: из каменноугольной смолы.
-📌 Применение: пластмассы, лекарства (аспирин), антисептики.` }
+                  answer: `📌 C₆H₅OH – бензольное кольцо + OH.\n📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.\n📌 Получение: из каменноугольной смолы.\n📌 Применение: пластмассы, лекарства (аспирин), антисептики.` }
             ];
 
-            // Формируем билеты (пары теория+практика) – всего 17 билетов
+            // Формируем билеты
             tickets = [];
             for (let i = 0; i < TOTAL_TICKETS; i++) {
                 const theoryIdx = i * 2;
@@ -1557,9 +1552,89 @@ CH₃-CH-CH-CH₂-COOH
                 });
             }
 
-            // Отдельные массивы для теории и практики
             theoryQuestions = allQuestions.filter(q => q.type === 'theory');
             practiceQuestions = allQuestions.filter(q => q.type === 'practice');
+            
+            // Строим индекс для поиска
+            buildSearchIndex();
+        }
+
+        // =====================================================
+        // ПОИСКОВЫЙ ИНДЕКС
+        // =====================================================
+        function buildSearchIndex() {
+            searchIndex.clear();
+            allQuestions.forEach(q => {
+                const text = (q.text + ' ' + q.answer).toLowerCase();
+                // Разбиваем на слова и индексируем с учетом окончаний
+                const words = text.split(/\W+/);
+                words.forEach(word => {
+                    if (word.length < 3) return;
+                    
+                    // Индексируем основу слова (первые 5 букв)
+                    const base = word.substring(0, 5);
+                    if (!searchIndex.has(base)) {
+                        searchIndex.set(base, new Set());
+                    }
+                    searchIndex.get(base).add(q.id);
+                    
+                    // Индексируем полное слово
+                    if (!searchIndex.has(word)) {
+                        searchIndex.set(word, new Set());
+                    }
+                    searchIndex.get(word).add(q.id);
+                });
+                
+                // Индексируем химические формулы
+                const formulas = q.answer.match(/[A-Z][a-z]?\d*/g);
+                if (formulas) {
+                    formulas.forEach(f => {
+                        if (!searchIndex.has(f)) {
+                            searchIndex.set(f, new Set());
+                        }
+                        searchIndex.get(f).add(q.id);
+                    });
+                }
+            });
+        }
+
+        function smartSearch(query) {
+            if (!query) return allQuestions;
+            
+            query = query.toLowerCase();
+            const words = query.split(/\W+/).filter(w => w.length >= 2);
+            if (words.length === 0) return allQuestions;
+            
+            // Находим ID вопросов для каждого слова
+            const resultsPerWord = words.map(word => {
+                // Пробуем точное совпадение
+                if (searchIndex.has(word)) {
+                    return searchIndex.get(word);
+                }
+                
+                // Пробуем по основе
+                const base = word.substring(0, 5);
+                if (searchIndex.has(base)) {
+                    return searchIndex.get(base);
+                }
+                
+                // Ищем похожие
+                const similar = new Set();
+                for (let [key, ids] of searchIndex) {
+                    if (key.includes(word) || word.includes(key)) {
+                        ids.forEach(id => similar.add(id));
+                    }
+                }
+                return similar;
+            });
+            
+            // Находим пересечение для всех слов
+            let result = new Set(resultsPerWord[0]);
+            for (let i = 1; i < resultsPerWord.length; i++) {
+                result = new Set([...result].filter(id => resultsPerWord[i].has(id)));
+            }
+            
+            return allQuestions.filter(q => result.has(q.id));
         }
 
         // =====================================================
@@ -1574,6 +1649,7 @@ CH₃-CH-CH-CH₂-COOH
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
                 localStorage.setItem(STATS_KEY, JSON.stringify(stats));
                 localStorage.setItem(QUIZ_RESULTS_KEY, JSON.stringify(stats.quizResults));
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
             } catch (e) { console.error('Ошибка сохранения', e); }
         }
 
@@ -1599,6 +1675,7 @@ CH₃-CH-CH-CH₂-COOH
                     userProgress = JSON.parse(prog);
                     if (!userProgress.lastViewed) userProgress.lastViewed = {};
                     if (!userProgress.recentlyViewed) userProgress.recentlyViewed = [];
+                    if (!userProgress.timeSpent) userProgress.timeSpent = {};
                 }
 
                 const bm = localStorage.getItem(BOOKMARKS_KEY);
@@ -1618,6 +1695,13 @@ CH₃-CH-CH-CH₂-COOH
 
                 const qr = localStorage.getItem(QUIZ_RESULTS_KEY);
                 if (qr) stats.quizResults = JSON.parse(qr);
+                
+                const hist = localStorage.getItem(HISTORY_KEY);
+                if (hist) history = JSON.parse(hist);
+                
+                // Обновляем индекс после загрузки
+                buildSearchIndex();
+                
             } catch (e) {
                 console.error('Ошибка загрузки', e);
                 initData();
@@ -1629,6 +1713,45 @@ CH₃-CH-CH-CH₂-COOH
             else document.body.classList.remove('light-theme');
             document.documentElement.style.setProperty('--base-font-size', settings.fontSize + 'px');
             document.body.style.fontSize = settings.fontSize + 'px';
+            
+            if (settings.reminders) {
+                setupReminder();
+            }
+        }
+
+        // =====================================================
+        // НАПОМИНАНИЯ
+        // =====================================================
+        function setupReminder() {
+            if (reminderTimeout) clearTimeout(reminderTimeout);
+            
+            const now = new Date();
+            const [hours, minutes] = settings.reminderTime.split(':').map(Number);
+            
+            const reminderTime = new Date();
+            reminderTime.setHours(hours, minutes, 0, 0);
+            
+            if (reminderTime <= now) {
+                reminderTime.setDate(reminderTime.getDate() + 1);
+            }
+            
+            const delay = reminderTime - now;
+            
+            reminderTimeout = setTimeout(() => {
+                if (Notification.permission === 'granted') {
+                    new Notification('🧪 ChemExam Assistant', {
+                        body: 'Пора повторить химию!',
+                        icon: '/icon.png'
+                    });
+                }
+                setupReminder(); // Следующее напоминание
+            }, delay);
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
         }
 
         // =====================================================
@@ -1676,19 +1799,21 @@ CH₃-CH-CH-CH₂-COOH
                 const isBookmark = bookmarks.includes(questionId);
                 btn.innerHTML = isBookmark ? '⭐' : '☆';
                 btn.classList.toggle('active', isBookmark);
-            } else {
-                rerenderCurrentPage();
             }
         }
 
-        function deleteNote(questionId) {
-            if (notes[questionId]) {
+        // Автосохранение заметок с дебаунсом
+        const autoSaveNote = debounce((questionId, text) => {
+            if (!settings.autoSave) return;
+            text = text.trim();
+            if (!text) {
                 delete notes[questionId];
-                saveAllData();
-                showMessage('📝 Заметка удалена', 'info');
-                rerenderCurrentPage();
+            } else {
+                notes[questionId] = { text, date: new Date().toISOString() };
             }
-        }
+            saveAllData();
+            showMessage('📝 Автосохранение', 'info');
+        }, 2000);
 
         function saveNote(questionId, text) {
             text = text.trim();
@@ -1703,7 +1828,15 @@ CH₃-CH-CH-CH₂-COOH
             notes[questionId] = { text, date: new Date().toISOString() };
             saveAllData();
             showMessage('📝 Заметка сохранена', 'success');
-            rerenderCurrentPage();
+        }
+
+        function deleteNote(questionId) {
+            if (notes[questionId]) {
+                delete notes[questionId];
+                saveAllData();
+                showMessage('📝 Заметка удалена', 'info');
+                rerenderCurrentPage();
+            }
         }
 
         function showNoteInput(questionId) {
@@ -1725,19 +1858,57 @@ CH₃-CH-CH-CH₂-COOH
             }
         }
 
+        function addToHistory(questionId) {
+            const q = allQuestions.find(q => q.id === questionId);
+            if (!q) return;
+            
+            // Удаляем дубликаты
+            history = history.filter(item => item.id !== questionId);
+            
+            // Добавляем в начало
+            history.unshift({
+                id: questionId,
+                number: q.number,
+                type: q.type,
+                date: new Date().toISOString()
+            });
+            
+            // Оставляем только 20 последних
+            if (history.length > 20) history.pop();
+            
+            saveAllData();
+        }
+
         function updateProgress(questionId, type) {
             const today = new Date().toISOString().split('T')[0];
+            const now = Date.now();
+            
             if (!userProgress.questions) userProgress.questions = {};
             userProgress.questions[questionId] = true;
             userProgress.lastViewed[questionId] = new Date().toISOString();
+            
+            // Считаем время на вопрос
+            const lastView = userProgress.lastViewed[questionId];
+            if (lastView) {
+                const timeSpent = Math.round((now - new Date(lastView).getTime()) / 1000);
+                if (timeSpent > 0 && timeSpent < 3600) { // Не больше часа
+                    if (!userProgress.timeSpent) userProgress.timeSpent = {};
+                    userProgress.timeSpent[questionId] = (userProgress.timeSpent[questionId] || 0) + timeSpent;
+                }
+            }
 
+            // Недавно просмотренные
             const recent = userProgress.recentlyViewed || [];
             const existingIndex = recent.findIndex(item => item.id === questionId);
             if (existingIndex !== -1) recent.splice(existingIndex, 1);
             recent.unshift({ id: questionId, date: new Date().toISOString() });
-            if (recent.length > 10) recent.pop();
+            if (recent.length > 20) recent.pop();
             userProgress.recentlyViewed = recent;
+            
+            // Добавляем в историю
+            addToHistory(questionId);
 
+            // Streak
             const last = userProgress.lastActive;
             const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
             if (last === yesterday) {
@@ -1747,9 +1918,11 @@ CH₃-CH-CH-CH₂-COOH
             }
             userProgress.lastActive = today;
 
+            // Время занятий
             userProgress.studyTime = (userProgress.studyTime || 0) + 5;
             stats.totalStudyTime = (stats.totalStudyTime || 0) + 5;
 
+            // Дневная активность
             if (!stats.dailyActivity) stats.dailyActivity = {};
             if (!stats.dailyActivity[today]) stats.dailyActivity[today] = 0;
             stats.dailyActivity[today]++;
@@ -1814,6 +1987,7 @@ CH₃-CH-CH-CH₂-COOH
                 bookmarks,
                 notes,
                 stats,
+                history,
                 exportDate: new Date().toISOString()
             };
             const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -1836,7 +2010,9 @@ CH₃-CH-CH-CH₂-COOH
                         bookmarks = data.bookmarks;
                         notes = data.notes;
                         stats = data.stats;
+                        history = data.history || [];
                         saveAllData();
+                        buildSearchIndex();
                         showMessage('📥 Прогресс импортирован', 'success');
                         rerenderCurrentPage();
                     } else {
@@ -1858,15 +2034,18 @@ CH₃-CH-CH-CH₂-COOH
                     lastActive: null,
                     studyTime: 0,
                     achievements: {},
-                    recentlyViewed: []
+                    recentlyViewed: [],
+                    timeSpent: {}
                 };
                 bookmarks = [];
                 notes = {};
                 stats = {
                     dailyActivity: {},
                     totalStudyTime: 0,
-                    quizResults: []
+                    quizResults: [],
+                    questionsPerDay: {}
                 };
+                history = [];
                 saveAllData();
                 showMessage('Прогресс сброшен', 'success');
                 rerenderCurrentPage();
@@ -1878,10 +2057,10 @@ CH₃-CH-CH-CH₂-COOH
             const params = currentPageState.params;
             switch (page) {
                 case 'main': showMainInterface(); break;
-                case 'tickets': showTicketsPage(params.filter || 'all'); break;
+                case 'tickets': showTicketsPage(params.filter || 'all', params.sort || 'number'); break;
                 case 'ticket': showTicket(params.ticketNumber); break;
-                case 'theory': showTheoryPage(params.filter || 'all', params.search || ''); break;
-                case 'practice': showPracticePage(params.filter || 'all', params.search || ''); break;
+                case 'theory': showTheoryPage(params.filter || 'all', params.search || '', params.sort || 'number'); break;
+                case 'practice': showPracticePage(params.filter || 'all', params.search || '', params.sort || 'number'); break;
                 case 'detail': showQuestionDetail(params.questionId); break;
                 case 'stats': showStatsPage(); break;
                 case 'settings': showSettingsPage(); break;
@@ -1890,6 +2069,7 @@ CH₃-CH-CH-CH₂-COOH
                 case 'reference': showReferencePage(); break;
                 case 'examselect': showExamSelectionPage(); break;
                 case 'exam': runExam(params.questions, params.title || 'Экзамен'); break;
+                case 'random': showRandomQuestion(); break;
                 default: showMainInterface();
             }
         }
@@ -1925,6 +2105,24 @@ CH₃-CH-CH-CH₂-COOH
                 </nav>
             `;
         }
+
+        // =====================================================
+        // ВЫДЕЛЕНИЕ ТЕРМИНОВ
+        // =====================================================
+        function highlightTerms(text) {
+            if (!text) return text;
+            
+            let result = text;
+            Object.keys(termDefinitions).forEach(term => {
+                const regex = new RegExp(`\\b${term}\\b`, 'gi');
+                result = result.replace(regex, match => 
+                    `<span class="key-term" title="${termDefinitions[term.toLowerCase()]}">${match}</span>`
+                );
+            });
+            
+            return result;
+        }
+
         // =====================================================
         // ГЛАВНАЯ СТРАНИЦА
         // =====================================================
@@ -1960,12 +2158,20 @@ CH₃-CH-CH-CH₂-COOH
                 })
                 .slice(0, 3);
 
+            // Статистика за сегодня
+            const today = new Date().toISOString().split('T')[0];
+            const todayActivity = stats.dailyActivity?.[today] || 0;
+            const totalTime = userProgress.studyTime || 0;
+
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
                     <div class="header-content">
                         <div class="logo-text">🧪 ChemExam Assistant</div>
-                        <span class="streak-badge">🔥 ${userProgress.streak || 0} дней</span>
+                        <div style="display: flex; gap: 8px;">
+                            <span class="streak-badge">🔥 ${userProgress.streak || 0}</span>
+                            ${history.length > 0 ? '<span class="notification-badge" style="position: relative;">' + history.length + '</span>' : ''}
+                        </div>
                     </div>
                     <div class="global-progress">
                         <div id="global-progress-fill" class="global-progress-fill" style="width:${percent}%"></div>
@@ -1974,8 +2180,12 @@ CH₃-CH-CH-CH₂-COOH
                 <main class="main-content scroll-container">
                     <div class="card">
                         <h1>👋 Добро пожаловать!</h1>
-                        <p>Последняя активность: ${userProgress.lastActive ? new Date(userProgress.lastActive).toLocaleDateString('ru-RU') : 'нет'}</p>
+                        <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                            <p>Сегодня: ${todayActivity} вопросов</p>
+                            <p>Время: ${Math.floor(totalTime/60)}ч ${totalTime%60}м</p>
+                        </div>
                     </div>
+                    
                     <div class="card">
                         <h2>📊 Общий прогресс</h2>
                         <div style="margin:20px 0">
@@ -1992,6 +2202,24 @@ CH₃-CH-CH-CH₂-COOH
                             <div class="stat"><div class="stat-value">${practiceStudied}/${practiceCount}</div><div class="stat-label">Практика</div></div>
                         </div>
                     </div>
+                    
+                    ${history.length > 0 ? `
+                    <div class="card">
+                        <h3>📜 История просмотров</h3>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            ${history.slice(0, 10).map(item => {
+                                const q = allQuestions.find(q => q.id === item.id);
+                                if (!q) return '';
+                                return `
+                                    <div class="history-item" onclick="showQuestionDetail(${q.id})">
+                                        <span>${q.type === 'theory' ? '📚' : '⚗️'} Вопрос ${q.number}</span>
+                                        <span class="history-time">${new Date(item.date).toLocaleTimeString()}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>` : ''}
+                    
                     ${recent.length ? `
                     <div class="card">
                         <h3>📌 Недавно просмотренные</h3>
@@ -2004,6 +2232,7 @@ CH₃-CH-CH-CH₂-COOH
                             `).join('')}
                         </div>
                     </div>` : ''}
+                    
                     ${toReview.length ? `
                     <div class="card">
                         <h3>🔄 Рекомендуем повторить</h3>
@@ -2016,6 +2245,7 @@ CH₃-CH-CH-CH₂-COOH
                             `).join('')}
                         </div>
                     </div>` : ''}
+                    
                     <div class="card">
                         <h3>🚀 Быстрые действия</h3>
                         <div class="grid-2">
@@ -2024,12 +2254,46 @@ CH₃-CH-CH-CH₂-COOH
                             <button class="btn btn-secondary" onclick="showPracticePage()">⚗️ Практика</button>
                             <button class="btn btn-secondary" onclick="showQuizPage()">🧪 Тест</button>
                             <button class="btn btn-secondary" onclick="showRandomTicket()">🎲 Случайный билет</button>
+                            <button class="btn btn-secondary" onclick="showRandomQuestion()">🎲 Случайный вопрос</button>
                             <button class="btn btn-secondary" onclick="showExamSelectionPage()">📝 Экзамен</button>
                         </div>
                     </div>
+                    
+                    ${history.length > 0 ? `
+                    <div class="card">
+                        <h3>📅 Активность за неделю</h3>
+                        <div class="activity-calendar">
+                            ${generateActivityCalendar()}
+                        </div>
+                    </div>` : ''}
                 </main>
                 ${renderNavigation('Главная')}
             `;
+        }
+
+        function generateActivityCalendar() {
+            const days = [];
+            const today = new Date();
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const count = stats.dailyActivity?.[dateStr] || 0;
+                
+                const dayNames = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+                const dayName = dayNames[date.getDay()];
+                
+                days.push(`
+                    <div class="calendar-day" data-count="${Math.min(count, 9)}" 
+                         title="${dateStr}: ${count} действий">
+                        <div style="font-size: 0.6rem; text-align: center;">${dayName}</div>
+                        <div style="font-size: 0.7rem; text-align: center; font-weight: bold;">${date.getDate()}</div>
+                    </div>
+                `);
+            }
+            
+            return days.join('');
         }
 
         function showRandomTicket() {
@@ -2037,11 +2301,16 @@ CH₃-CH-CH-CH₂-COOH
             showTicket(randomNum);
         }
 
+        function showRandomQuestion() {
+            const randomIndex = Math.floor(Math.random() * allQuestions.length);
+            showQuestionDetail(allQuestions[randomIndex].id);
+        }
+
         // =====================================================
         // СТРАНИЦА БИЛЕТОВ
         // =====================================================
-        function showTicketsPage(filter = 'all') {
-            currentPageState = { name: 'tickets', params: { filter } };
+        function showTicketsPage(filter = 'all', sort = 'number') {
+            currentPageState = { name: 'tickets', params: { filter, sort } };
             loadAllData();
 
             let filteredTickets = [...tickets];
@@ -2057,6 +2326,22 @@ CH₃-CH-CH-CH₂-COOH
                 filteredTickets = filteredTickets.filter(t => 
                     bookmarks.includes(t.theory.id) || bookmarks.includes(t.practice.id)
                 );
+            } else if (filter === 'in-progress') {
+                filteredTickets = filteredTickets.filter(t => 
+                    (userProgress.questions?.[t.theory.id] || userProgress.questions?.[t.practice.id]) &&
+                    !(userProgress.questions?.[t.theory.id] && userProgress.questions?.[t.practice.id])
+                );
+            }
+            
+            // Сортировка
+            if (sort === 'number') {
+                filteredTickets.sort((a, b) => a.number - b.number);
+            } else if (sort === 'progress') {
+                filteredTickets.sort((a, b) => {
+                    const progA = (userProgress.questions?.[a.theory.id] ? 1 : 0) + (userProgress.questions?.[a.practice.id] ? 1 : 0);
+                    const progB = (userProgress.questions?.[b.theory.id] ? 1 : 0) + (userProgress.questions?.[b.practice.id] ? 1 : 0);
+                    return progB - progA;
+                });
             }
 
             const app = document.getElementById('app');
@@ -2070,11 +2355,20 @@ CH₃-CH-CH-CH₂-COOH
                 <main class="main-content scroll-container">
                     <div class="card">
                         <div class="filter-chips">
-                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTicketsPage('all')">Все</span>
-                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTicketsPage('completed')">✅ Выученные</span>
-                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTicketsPage('incomplete')">○ Невыученные</span>
-                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTicketsPage('bookmarked')">⭐ Избранное</span>
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTicketsPage('all', '${sort}')">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTicketsPage('completed', '${sort}')">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTicketsPage('incomplete', '${sort}')">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='in-progress'?'active':''}" onclick="showTicketsPage('in-progress', '${sort}')">⏳ В процессе</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTicketsPage('bookmarked', '${sort}')">⭐ Избранное</span>
                         </div>
+                        
+                        <div class="form-group">
+                            <select class="sort-select" onchange="showTicketsPage('${filter}', this.value)">
+                                <option value="number" ${sort==='number'?'selected':''}>По номеру</option>
+                                <option value="progress" ${sort==='progress'?'selected':''}>По прогрессу</option>
+                            </select>
+                        </div>
+                        
                         <h2>Билеты (${filteredTickets.length})</h2>
                         <div style="margin-top:16px">
                             ${filteredTickets.map(t => {
@@ -2083,10 +2377,11 @@ CH₃-CH-CH-CH₂-COOH
                                 const statusClass = (theoryDone && practiceDone) ? 'completed' : (theoryDone || practiceDone) ? 'in-progress' : 'pending';
                                 const statusText = (theoryDone && practiceDone) ? '✅ Изучен' : (theoryDone || practiceDone) ? '⏳ В процессе' : '○ Новый';
                                 const progressWidth = (theoryDone?50:0) + (practiceDone?50:0);
+                                const bookmarked = bookmarks.includes(t.theory.id) || bookmarks.includes(t.practice.id);
                                 return `
                                     <div class="ticket-item ${statusClass}" onclick="showTicket(${t.number})">
                                         <div class="ticket-header">
-                                            <span class="ticket-number">Билет №${t.number}</span>
+                                            <span class="ticket-number">Билет №${t.number} ${bookmarked ? '⭐' : ''}</span>
                                             <span class="ticket-status ${statusClass}">${statusText}</span>
                                         </div>
                                         <div style="color:var(--text-secondary); font-size:0.875rem">
@@ -2119,6 +2414,10 @@ CH₃-CH-CH-CH₂-COOH
                 return;
             }
 
+            // Добавляем в историю
+            addToHistory(ticket.theory.id);
+            addToHistory(ticket.practice.id);
+
             const theoryDone = userProgress.questions?.[ticket.theory.id] || false;
             const practiceDone = userProgress.questions?.[ticket.practice.id] || false;
             const theoryOpen = openedAnswers.has(ticket.theory.id);
@@ -2140,6 +2439,7 @@ CH₃-CH-CH-CH₂-COOH
                             <div class="progress-bar"><div class="progress-fill" style="width:${(theoryDone?50:0)+(practiceDone?50:0)}%"></div></div>
                             <span class="progress-text">${(theoryDone?1:0)+(practiceDone?1:0)}/2</span>
                         </div>
+                        
                         <!-- Вопрос 1 (теория) -->
                         <div class="question-card" id="q-${ticket.theory.id}">
                             <div class="question-header" onclick="toggleQuestionAnswer(${ticket.theory.id})">
@@ -2148,13 +2448,13 @@ CH₃-CH-CH-CH₂-COOH
                             </div>
                             <div class="question-text">${ticket.theory.text}</div>
                             <div class="answer-container">
-                                <div class="answer-content ${theoryOpen ? '' : 'hidden'}" id="answer-${ticket.theory.id}">${ticket.theory.answer}</div>
+                                <div class="answer-content ${theoryOpen ? '' : 'hidden'}" id="answer-${ticket.theory.id}">${highlightTerms(ticket.theory.answer)}</div>
                                 <div style="display:flex; gap:8px; margin-top:12px">
                                     <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${ticket.theory.id})">${theoryOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
                                     <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.theory.id})">📝 Заметка</button>
                                 </div>
                                 <div id="note-${ticket.theory.id}" class="hidden" style="margin-top:12px">
-                                    <textarea class="note-input" id="noteText-${ticket.theory.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${theoryNote?.text||''}</textarea>
+                                    <textarea class="note-input" id="noteText-${ticket.theory.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${ticket.theory.id}, this.value)">${theoryNote?.text||''}</textarea>
                                     <div class="note-actions">
                                         <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.theory.id}, document.getElementById('noteText-${ticket.theory.id}').value)">💾 Сохранить</button>
                                         ${theoryNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.theory.id})">🗑️ Удалить</button>` : ''}
@@ -2168,6 +2468,7 @@ CH₃-CH-CH-CH₂-COOH
                                 ${!theoryDone ? `<button class="btn btn-success" style="margin-top:12px" onclick="markQuestionLearned(${ticket.theory.id}, ${ticket.number})">✓ Отметить теорию</button>` : ''}
                             </div>
                         </div>
+                        
                         <!-- Вопрос 2 (практика) -->
                         <div class="question-card" id="q-${ticket.practice.id}">
                             <div class="question-header" onclick="toggleQuestionAnswer(${ticket.practice.id})">
@@ -2176,13 +2477,13 @@ CH₃-CH-CH-CH₂-COOH
                             </div>
                             <div class="question-text">${ticket.practice.text}</div>
                             <div class="answer-container">
-                                <div class="answer-content ${practiceOpen ? '' : 'hidden'}" id="answer-${ticket.practice.id}">${ticket.practice.answer}</div>
+                                <div class="answer-content ${practiceOpen ? '' : 'hidden'}" id="answer-${ticket.practice.id}">${highlightTerms(ticket.practice.answer)}</div>
                                 <div style="display:flex; gap:8px; margin-top:12px">
                                     <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${ticket.practice.id})">${practiceOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
                                     <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.practice.id})">📝 Заметка</button>
                                 </div>
                                 <div id="note-${ticket.practice.id}" class="hidden" style="margin-top:12px">
-                                    <textarea class="note-input" id="noteText-${ticket.practice.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${practiceNote?.text||''}</textarea>
+                                    <textarea class="note-input" id="noteText-${ticket.practice.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${ticket.practice.id}, this.value)">${practiceNote?.text||''}</textarea>
                                     <div class="note-actions">
                                         <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.practice.id}, document.getElementById('noteText-${ticket.practice.id}').value)">💾 Сохранить</button>
                                         ${practiceNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.practice.id})">🗑️ Удалить</button>` : ''}
@@ -2197,10 +2498,13 @@ CH₃-CH-CH-CH₂-COOH
                             </div>
                         </div>
                     </div>
+                    
                     <div class="grid grid-2">
                         ${ticket.number > 1 ? `<button class="btn btn-secondary" onclick="showTicket(${ticket.number-1})">← Пред.</button>` : '<div></div>'}
-                        ${ticket.number < TOTAL_TICKETS ? `<button class="btn btn-primary" onclick="showTicket(${ticket.number+1})">След. →</button>` : ''}
+                        ${ticket.number < TOTAL_TICKETS ? `<button class="btn btn-primary" onclick="showTicket(${ticket.number+1})">След. →</button>` : '<div></div>'}
                     </div>
+                    
+                    <button class="btn btn-secondary" onclick="showRandomTicket()" style="margin-top: 8px;">🎲 Случайный билет</button>
                 </main>
                 ${renderNavigation('Билеты')}
             `;
@@ -2215,35 +2519,46 @@ CH₃-CH-CH-CH₂-COOH
         }
 
         // =====================================================
-        // СТРАНИЦА ТЕОРИИ (с поиском)
+        // СТРАНИЦА ТЕОРИИ
         // =====================================================
-        function showTheoryPage(filter = 'all', search = '') {
-            currentPageState = { name: 'theory', params: { filter, search } };
+        function showTheoryPage(filter = 'all', search = '', sort = 'number') {
+            currentPageState = { name: 'theory', params: { filter, search, sort } };
             loadAllData();
 
-            const cacheKey = `${filter}_${search}`;
-            if (lastFilterParams.theory === cacheKey && cachedTheoryFiltered) {
-                renderTheoryList(cachedTheoryFiltered, filter, search);
-                return;
-            }
-
             let filtered = [...theoryQuestions];
+            
+            // Фильтры
             if (filter === 'completed') filtered = filtered.filter(q => userProgress.questions?.[q.id]);
             else if (filter === 'incomplete') filtered = filtered.filter(q => !userProgress.questions?.[q.id]);
             else if (filter === 'bookmarked') filtered = filtered.filter(q => bookmarks.includes(q.id));
-
+            else if (filter === 'has-notes') filtered = filtered.filter(q => notes[q.id]);
+            
+            // Поиск
             if (search) {
-                const s = search.toLowerCase();
-                filtered = filtered.filter(q => q.text.toLowerCase().includes(s) || (q.answer && q.answer.toLowerCase().includes(s)));
+                filtered = smartSearch(search).filter(q => q.type === 'theory');
+            }
+            
+            // Сортировка
+            if (sort === 'number') {
+                filtered.sort((a, b) => a.number - b.number);
+            } else if (sort === 'date') {
+                filtered.sort((a, b) => {
+                    const dateA = userProgress.lastViewed?.[a.id] ? new Date(userProgress.lastViewed[a.id]) : new Date(0);
+                    const dateB = userProgress.lastViewed?.[b.id] ? new Date(userProgress.lastViewed[b.id]) : new Date(0);
+                    return dateB - dateA;
+                });
+            } else if (sort === 'time') {
+                filtered.sort((a, b) => {
+                    const timeA = userProgress.timeSpent?.[a.id] || 0;
+                    const timeB = userProgress.timeSpent?.[b.id] || 0;
+                    return timeB - timeA;
+                });
             }
 
-            cachedTheoryFiltered = filtered;
-            lastFilterParams.theory = cacheKey;
-
-            renderTheoryList(filtered, filter, search);
+            renderTheoryList(filtered, filter, search, sort);
         }
 
-        function renderTheoryList(filtered, filter, search) {
+        function renderTheoryList(filtered, filter, search, sort) {
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
@@ -2256,25 +2571,38 @@ CH₃-CH-CH-CH₂-COOH
                     <div class="card">
                         <div class="search-container">
                             <span class="search-icon">🔍</span>
-                            <input type="text" class="search-input" id="theorySearch" placeholder="Поиск по вопросам и ответам" value="${search}" oninput="searchTheory(this.value)">
+                            <input type="text" class="search-input" id="theorySearch" placeholder="Поиск по вопросам и ответам" value="${search}" oninput="debounceSearchTheory(this.value)">
                             <button class="search-clear" onclick="clearTheorySearch()">✕</button>
                         </div>
+                        
                         <div class="filter-chips">
-                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTheoryPage('all', document.getElementById('theorySearch').value)">Все</span>
-                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTheoryPage('completed', document.getElementById('theorySearch').value)">✅ Выученные</span>
-                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTheoryPage('incomplete', document.getElementById('theorySearch').value)">○ Невыученные</span>
-                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTheoryPage('bookmarked', document.getElementById('theorySearch').value)">⭐ Избранное</span>
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showTheoryPage('all', document.getElementById('theorySearch').value, '${sort}')">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showTheoryPage('completed', document.getElementById('theorySearch').value, '${sort}')">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showTheoryPage('incomplete', document.getElementById('theorySearch').value, '${sort}')">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showTheoryPage('bookmarked', document.getElementById('theorySearch').value, '${sort}')">⭐ Избранное</span>
+                            <span class="filter-chip ${filter==='has-notes'?'active':''}" onclick="showTheoryPage('has-notes', document.getElementById('theorySearch').value, '${sort}')">📝 С заметками</span>
                         </div>
+                        
+                        <div class="form-group">
+                            <select class="sort-select" onchange="showTheoryPage('${filter}', document.getElementById('theorySearch').value, this.value)">
+                                <option value="number" ${sort==='number'?'selected':''}>По номеру</option>
+                                <option value="date" ${sort==='date'?'selected':''}>По дате просмотра</option>
+                                <option value="time" ${sort==='time'?'selected':''}>По времени изучения</option>
+                            </select>
+                        </div>
+                        
                         <h2>Теория (${filtered.length})</h2>
                         <div style="margin-top:16px">
                             ${filtered.map(q => {
                                 const done = userProgress.questions?.[q.id] || false;
                                 const book = bookmarks.includes(q.id);
+                                const hasNote = notes[q.id];
+                                const timeSpent = userProgress.timeSpent?.[q.id] || 0;
                                 return `
                                     <div class="question-card" onclick="showQuestionDetail(${q.id})">
                                         <div class="question-header">
                                             <span class="question-number">Вопрос №${q.number}</span>
-                                            <span>${book?'⭐':''} ${done?'✅':''}</span>
+                                            <span>${book?'⭐':''} ${done?'✅':''} ${hasNote?'📝':''} ${timeSpent > 0 ? '⏱️' + Math.floor(timeSpent/60) + 'м' : ''}</span>
                                         </div>
                                         <div class="question-text">${highlightSearch(q.text, search)}</div>
                                     </div>
@@ -2294,44 +2622,50 @@ CH₃-CH-CH-CH₂-COOH
             return text.replace(regex, '<span class="highlight">$1</span>');
         }
 
+        const debounceSearchTheory = debounce((query) => {
+            showTheoryPage(currentPageState.params.filter, query, currentPageState.params.sort);
+        }, 300);
+
         function searchTheory(query) {
-            showTheoryPage(currentPageState.params.filter, query);
+            debounceSearchTheory(query);
         }
 
         function clearTheorySearch() {
-            showTheoryPage(currentPageState.params.filter, '');
+            showTheoryPage(currentPageState.params.filter, '', currentPageState.params.sort);
         }
 
         // =====================================================
-        // СТРАНИЦА ПРАКТИКИ (с поиском)
+        // СТРАНИЦА ПРАКТИКИ
         // =====================================================
-        function showPracticePage(filter = 'all', search = '') {
-            currentPageState = { name: 'practice', params: { filter, search } };
+        function showPracticePage(filter = 'all', search = '', sort = 'number') {
+            currentPageState = { name: 'practice', params: { filter, search, sort } };
             loadAllData();
 
-            const cacheKey = `${filter}_${search}`;
-            if (lastFilterParams.practice === cacheKey && cachedPracticeFiltered) {
-                renderPracticeList(cachedPracticeFiltered, filter, search);
-                return;
-            }
-
             let filtered = [...practiceQuestions];
+            
             if (filter === 'completed') filtered = filtered.filter(q => userProgress.questions?.[q.id]);
             else if (filter === 'incomplete') filtered = filtered.filter(q => !userProgress.questions?.[q.id]);
             else if (filter === 'bookmarked') filtered = filtered.filter(q => bookmarks.includes(q.id));
+            else if (filter === 'has-notes') filtered = filtered.filter(q => notes[q.id]);
 
             if (search) {
-                const s = search.toLowerCase();
-                filtered = filtered.filter(q => q.text.toLowerCase().includes(s) || (q.answer && q.answer.toLowerCase().includes(s)));
+                filtered = smartSearch(search).filter(q => q.type === 'practice');
+            }
+            
+            if (sort === 'number') {
+                filtered.sort((a, b) => a.number - b.number);
+            } else if (sort === 'date') {
+                filtered.sort((a, b) => {
+                    const dateA = userProgress.lastViewed?.[a.id] ? new Date(userProgress.lastViewed[a.id]) : new Date(0);
+                    const dateB = userProgress.lastViewed?.[b.id] ? new Date(userProgress.lastViewed[b.id]) : new Date(0);
+                    return dateB - dateA;
+                });
             }
 
-            cachedPracticeFiltered = filtered;
-            lastFilterParams.practice = cacheKey;
-
-            renderPracticeList(filtered, filter, search);
+            renderPracticeList(filtered, filter, search, sort);
         }
 
-        function renderPracticeList(filtered, filter, search) {
+        function renderPracticeList(filtered, filter, search, sort) {
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
@@ -2344,25 +2678,36 @@ CH₃-CH-CH-CH₂-COOH
                     <div class="card">
                         <div class="search-container">
                             <span class="search-icon">🔍</span>
-                            <input type="text" class="search-input" id="practiceSearch" placeholder="Поиск по заданиям и ответам" value="${search}" oninput="searchPractice(this.value)">
+                            <input type="text" class="search-input" id="practiceSearch" placeholder="Поиск по заданиям и ответам" value="${search}" oninput="debounceSearchPractice(this.value)">
                             <button class="search-clear" onclick="clearPracticeSearch()">✕</button>
                         </div>
+                        
                         <div class="filter-chips">
-                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showPracticePage('all', document.getElementById('practiceSearch').value)">Все</span>
-                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showPracticePage('completed', document.getElementById('practiceSearch').value)">✅ Выученные</span>
-                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showPracticePage('incomplete', document.getElementById('practiceSearch').value)">○ Невыученные</span>
-                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showPracticePage('bookmarked', document.getElementById('practiceSearch').value)">⭐ Избранное</span>
+                            <span class="filter-chip ${filter==='all'?'active':''}" onclick="showPracticePage('all', document.getElementById('practiceSearch').value, '${sort}')">Все</span>
+                            <span class="filter-chip ${filter==='completed'?'active':''}" onclick="showPracticePage('completed', document.getElementById('practiceSearch').value, '${sort}')">✅ Выученные</span>
+                            <span class="filter-chip ${filter==='incomplete'?'active':''}" onclick="showPracticePage('incomplete', document.getElementById('practiceSearch').value, '${sort}')">○ Невыученные</span>
+                            <span class="filter-chip ${filter==='bookmarked'?'active':''}" onclick="showPracticePage('bookmarked', document.getElementById('practiceSearch').value, '${sort}')">⭐ Избранное</span>
+                            <span class="filter-chip ${filter==='has-notes'?'active':''}" onclick="showPracticePage('has-notes', document.getElementById('practiceSearch').value, '${sort}')">📝 С заметками</span>
                         </div>
+                        
+                        <div class="form-group">
+                            <select class="sort-select" onchange="showPracticePage('${filter}', document.getElementById('practiceSearch').value, this.value)">
+                                <option value="number" ${sort==='number'?'selected':''}>По номеру</option>
+                                <option value="date" ${sort==='date'?'selected':''}>По дате просмотра</option>
+                            </select>
+                        </div>
+                        
                         <h2>Практика (${filtered.length})</h2>
                         <div style="margin-top:16px">
                             ${filtered.map(q => {
                                 const done = userProgress.questions?.[q.id] || false;
                                 const book = bookmarks.includes(q.id);
+                                const hasNote = notes[q.id];
                                 return `
                                     <div class="question-card" onclick="showQuestionDetail(${q.id})">
                                         <div class="question-header">
                                             <span class="question-number">Задание №${q.number}</span>
-                                            <span>${book?'⭐':''} ${done?'✅':''}</span>
+                                            <span>${book?'⭐':''} ${done?'✅':''} ${hasNote?'📝':''}</span>
                                         </div>
                                         <div class="question-text">${highlightSearch(q.text, search)}</div>
                                     </div>
@@ -2376,12 +2721,16 @@ CH₃-CH-CH-CH₂-COOH
             document.getElementById('practiceSearch')?.focus();
         }
 
+        const debounceSearchPractice = debounce((query) => {
+            showPracticePage(currentPageState.params.filter, query, currentPageState.params.sort);
+        }, 300);
+
         function searchPractice(query) {
-            showPracticePage(currentPageState.params.filter, query);
+            debounceSearchPractice(query);
         }
 
         function clearPracticeSearch() {
-            showPracticePage(currentPageState.params.filter, '');
+            showPracticePage(currentPageState.params.filter, '', currentPageState.params.sort);
         }
 
         // =====================================================
@@ -2396,12 +2745,26 @@ CH₃-CH-CH-CH₂-COOH
                 return;
             }
 
+            // Добавляем в историю
+            addToHistory(questionId);
+            
+            // Обновляем время просмотра
+            if (!userProgress.lastViewed) userProgress.lastViewed = {};
+            userProgress.lastViewed[questionId] = new Date().toISOString();
+
             const done = userProgress.questions?.[q.id] || false;
             const book = bookmarks.includes(q.id);
             const note = notes[q.id];
             const answerOpen = openedAnswers.has(q.id);
             const ticketInfo = getTicketInfoByQuestionId(q.id);
             const backPage = q.type === 'theory' ? 'showTheoryPage' : 'showPracticePage';
+            const timeSpent = userProgress.timeSpent?.[q.id] || 0;
+
+            // Находим следующий и предыдущий вопросы
+            const sameTypeQuestions = q.type === 'theory' ? theoryQuestions : practiceQuestions;
+            const currentIndex = sameTypeQuestions.findIndex(item => item.id === q.id);
+            const prevQuestion = currentIndex > 0 ? sameTypeQuestions[currentIndex - 1] : null;
+            const nextQuestion = currentIndex < sameTypeQuestions.length - 1 ? sameTypeQuestions[currentIndex + 1] : null;
 
             const app = document.getElementById('app');
             app.innerHTML = `
@@ -2415,17 +2778,20 @@ CH₃-CH-CH-CH₂-COOH
                     <div class="question-card">
                         <div class="question-header" onclick="toggleQuestionAnswer(${q.id})">
                             <span class="question-number">${q.type==='theory'?'📚 Теория':'⚗️ Практика'}</span>
-                            <button class="bookmark-btn ${book?'active':''}" data-id="${q.id}" onclick="event.stopPropagation(); toggleBookmark(${q.id})">${book?'⭐':'☆'}</button>
+                            <div>
+                                <span style="margin-right: 10px; color: #888;">⏱️ ${Math.floor(timeSpent/60)}м</span>
+                                <button class="bookmark-btn ${book?'active':''}" data-id="${q.id}" onclick="event.stopPropagation(); toggleBookmark(${q.id})">${book?'⭐':'☆'}</button>
+                            </div>
                         </div>
                         <div class="question-text">${q.text}</div>
                         <div class="answer-container">
-                            <div class="answer-content ${answerOpen ? '' : 'hidden'}" id="answer-${q.id}">${q.answer}</div>
+                            <div class="answer-content ${answerOpen ? '' : 'hidden'}" id="answer-${q.id}">${highlightTerms(q.answer)}</div>
                             <div style="display:flex; gap:8px; margin-top:12px">
                                 <button class="btn btn-secondary" style="flex:1" onclick="toggleQuestionAnswer(${q.id})">${answerOpen ? '🔍 Скрыть ответ' : '🔍 Показать ответ'}</button>
                                 <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${q.id})">📝 Заметка</button>
                             </div>
                             <div id="note-${q.id}" class="hidden" style="margin-top:12px">
-                                <textarea class="note-input" id="noteText-${q.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000">${note?.text||''}</textarea>
+                                <textarea class="note-input" id="noteText-${q.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${q.id}, this.value)">${note?.text||''}</textarea>
                                 <div class="note-actions">
                                     <button class="btn btn-success" style="flex:1" onclick="saveNote(${q.id}, document.getElementById('noteText-${q.id}').value)">💾 Сохранить</button>
                                     ${note ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${q.id})">🗑️ Удалить</button>` : ''}
@@ -2440,9 +2806,20 @@ CH₃-CH-CH-CH₂-COOH
                             ${ticketInfo ? `<button class="btn btn-secondary" style="margin-top:12px" onclick="showTicket(${ticketInfo.number})">🎫 Перейти к билету №${ticketInfo.number}</button>` : ''}
                         </div>
                     </div>
+                    
+                    <div class="grid grid-2" style="margin-top: 16px;">
+                        ${prevQuestion ? `<button class="btn btn-secondary" onclick="showQuestionDetail(${prevQuestion.id})">← Вопрос ${prevQuestion.number}</button>` : '<div></div>'}
+                        ${nextQuestion ? `<button class="btn btn-primary" onclick="showQuestionDetail(${nextQuestion.id})">Вопрос ${nextQuestion.number} →</button>` : '<div></div>'}
+                    </div>
+                    
+                    <button class="btn btn-secondary" onclick="showRandomQuestion()" style="margin-top: 8px;">🎲 Случайный вопрос</button>
                 </main>
-                ${renderNavigation(q.type==='theory'?'Теория':'Практика')}
+                ${renderNavigation(q.type==='теория'?'Теория':'Практика')}
             `;
+        }
+
+        function autoSaveNote(questionId, text) {
+            autoSaveNote(questionId, text);
         }
 
         function markQuestionLearnedSingle(questionId) {
@@ -2452,6 +2829,7 @@ CH₃-CH-CH-CH₂-COOH
                 showQuestionDetail(questionId);
             }
         }
+
         // =====================================================
         // СТАТИСТИКА
         // =====================================================
@@ -2484,6 +2862,18 @@ CH₃-CH-CH-CH₂-COOH
             const totalQuizCorrect = quizResults.reduce((s,r) => s + r.score, 0);
             const avgPercent = totalQuizQuestions ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
 
+            // Время изучения
+            const totalTime = userProgress.studyTime || 0;
+            const avgTimePerQuestion = studied ? Math.floor(totalTime / studied) : 0;
+
+            // Самые просматриваемые вопросы
+            const mostViewed = Object.entries(userProgress.lastViewed || {})
+                .map(([id, date]) => ({ id: parseInt(id), date }))
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5)
+                .map(item => allQuestions.find(q => q.id === item.id))
+                .filter(q => q);
+
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
@@ -2506,6 +2896,7 @@ CH₃-CH-CH-CH₂-COOH
                             <div class="stat"><div class="stat-value">${practiceStudied}/${practiceCount}</div><div class="stat-label">Практика</div></div>
                         </div>
                     </div>
+                    
                     <div class="card">
                         <h3>Активность за неделю</h3>
                         <div style="display:flex;justify-content:space-around;align-items:flex-end;height:100px;margin-top:20px">
@@ -2518,6 +2909,16 @@ CH₃-CH-CH-CH₂-COOH
                             `).join('')}
                         </div>
                     </div>
+                    
+                    <div class="card">
+                        <h3>Время занятий</h3>
+                        <div class="stats-grid">
+                            <div class="stat"><div class="stat-value">${Math.floor(totalTime/60)}ч ${totalTime%60}м</div><div class="stat-label">Всего</div></div>
+                            <div class="stat"><div class="stat-value">${avgTimePerQuestion}м</div><div class="stat-label">На вопрос</div></div>
+                            <div class="stat"><div class="stat-value">${userProgress.streak || 0}</div><div class="stat-label">Дней подряд</div></div>
+                        </div>
+                    </div>
+                    
                     <div class="card">
                         <h3>Статистика тестов</h3>
                         <div class="stats-grid">
@@ -2536,13 +2937,18 @@ CH₃-CH-CH-CH₂-COOH
                             `).join('')}
                         </div>` : ''}
                     </div>
+                    
+                    ${mostViewed.length > 0 ? `
                     <div class="card">
-                        <h3>Время занятий</h3>
-                        <div class="grid-2">
-                            <div class="stat"><div class="stat-value">${Math.floor((stats.totalStudyTime||0)/60)}ч ${(stats.totalStudyTime||0)%60}м</div><div class="stat-label">Всего</div></div>
-                            <div class="stat"><div class="stat-value">${studied?Math.floor((stats.totalStudyTime||0)/studied):0}м</div><div class="stat-label">На вопрос</div></div>
-                        </div>
-                    </div>
+                        <h3>Часто просматриваемые</h3>
+                        ${mostViewed.map(q => `
+                            <div class="recent-item" onclick="showQuestionDetail(${q.id})">
+                                <span>${q.type==='theory'?'📚':'⚗️'} Вопрос ${q.number}</span>
+                                <span class="history-time">${new Date(userProgress.lastViewed[q.id]).toLocaleDateString()}</span>
+                            </div>
+                        `).join('')}
+                    </div>` : ''}
+                    
                     <div class="card">
                         <h3>🏆 Достижения</h3>
                         <div style="margin-top:16px">
@@ -2596,11 +3002,34 @@ CH₃-CH-CH-CH₂-COOH
                             <div class="theme-option ${settings.theme==='light'?'active':''}" onclick="setTheme('light')">☀️ Светлая</div>
                         </div>
                     </div>
+                    
                     <div class="card">
                         <h3>🔤 Размер шрифта</h3>
                         <input type="range" class="settings-slider" min="12" max="24" value="${settings.fontSize}" onchange="setFontSize(this.value)">
                         <div style="text-align:center;margin-top:8px">${settings.fontSize}px</div>
                     </div>
+                    
+                    <div class="card">
+                        <h3>⏰ Напоминания</h3>
+                        <div class="checkbox-label">
+                            <input type="checkbox" ${settings.reminders ? 'checked' : ''} onchange="toggleReminders(this.checked)">
+                            <span>Включить напоминания</span>
+                        </div>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label class="form-label">Время напоминания</label>
+                            <input type="time" class="form-input" value="${settings.reminderTime}" onchange="setReminderTime(this.value)">
+                        </div>
+                        <button class="btn btn-secondary" onclick="requestNotificationPermission()">🔔 Разрешить уведомления</button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>⚡ Дополнительно</h3>
+                        <div class="checkbox-label">
+                            <input type="checkbox" ${settings.autoSave ? 'checked' : ''} onchange="toggleAutoSave(this.checked)">
+                            <span>Автосохранение заметок</span>
+                        </div>
+                    </div>
+                    
                     <div class="card">
                         <h3>📤 Экспорт / Импорт</h3>
                         <button class="btn btn-secondary export-btn" onclick="exportToTxt()">📄 Скачать вопросы с ответами</button>
@@ -2610,6 +3039,7 @@ CH₃-CH-CH-CH₂-COOH
                             <input type="file" id="importFile" accept=".json" style="display:none" onchange="importProgress(this.files[0])">
                         </div>
                     </div>
+                    
                     <div class="card">
                         <h3>⚠️ Опасная зона</h3>
                         <button class="btn btn-danger" onclick="resetProgress()">🗑️ Сбросить прогресс</button>
@@ -2631,6 +3061,30 @@ CH₃-CH-CH-CH₂-COOH
             applySettings();
             saveAllData();
             showSettingsPage();
+        }
+
+        function toggleReminders(enabled) {
+            settings.reminders = enabled;
+            if (enabled) {
+                setupReminder();
+                requestNotificationPermission();
+            } else if (reminderTimeout) {
+                clearTimeout(reminderTimeout);
+            }
+            saveAllData();
+        }
+
+        function setReminderTime(time) {
+            settings.reminderTime = time;
+            if (settings.reminders) {
+                setupReminder();
+            }
+            saveAllData();
+        }
+
+        function toggleAutoSave(enabled) {
+            settings.autoSave = enabled;
+            saveAllData();
         }
 
         // =====================================================
@@ -2777,7 +3231,7 @@ CH₃-CH-CH-CH₂-COOH
         }
 
         // =====================================================
-        // КАРТОЧКИ (Flashcards) с поддержкой свайпов
+        // КАРТОЧКИ
         // =====================================================
         function showFlashcardsPage(category = 'all', mode = 'unlearned') {
             currentPageState = { name: 'flashcards', params: { category, mode } };
@@ -2910,14 +3364,12 @@ CH₃-CH-CH-CH₂-COOH
                     dragDelta = 0;
                 };
                 window.flashcardSwipeLeft = () => {
-                    // Не знаю – остаётся в колоде, идём дальше
                     currentIndex++;
                     if (currentIndex >= remaining.length) currentIndex = 0;
                     flipped = false;
                     renderCard();
                 };
                 window.flashcardSwipeRight = () => {
-                    // Знаю – удаляем из колоды, отмечаем изученным
                     const qq = remaining[currentIndex];
                     if (qq && !userProgress.questions?.[qq.id]) {
                         updateProgress(qq.id, qq.type);
@@ -2937,19 +3389,14 @@ CH₃-CH-CH-CH₂-COOH
         }
 
         // =====================================================
-        // СПРАВОЧНИК (полноценный)
+        // СПРАВОЧНИК
         // =====================================================
         function showReferencePage() {
             currentPageState = { name: 'reference', params: {} };
             loadAllData();
 
-            // Полная таблица Менделеева (118 элементов)
             const elements = generatePeriodicTable();
-
-            // Ряд активности металлов
             const activitySeries = ['Li', 'K', 'Ba', 'Ca', 'Na', 'Mg', 'Al', 'Mn', 'Zn', 'Cr', 'Fe', 'Co', 'Ni', 'Sn', 'Pb', 'H', 'Cu', 'Ag', 'Hg', 'Au'];
-
-            // Таблица растворимости (катионы и анионы)
             const cations = ['H⁺', 'Li⁺', 'Na⁺', 'K⁺', 'NH₄⁺', 'Ag⁺', 'Ba²⁺', 'Ca²⁺', 'Mg²⁺', 'Zn²⁺', 'Cu²⁺', 'Fe²⁺', 'Fe³⁺', 'Al³⁺', 'Pb²⁺'];
             const anions = ['Cl⁻', 'Br⁻', 'I⁻', 'S²⁻', 'OH⁻', 'SO₄²⁻', 'CO₃²⁻', 'PO₄³⁻'];
 
@@ -2970,7 +3417,6 @@ CH₃-CH-CH-CH₂-COOH
                 }
                 html += '</div>';
 
-                // Лантаноиды
                 const lanthanides = elements.filter(e => e.number >= 57 && e.number <= 71);
                 html += '<h4 style="margin-top:16px;">Лантаноиды</h4><div class="lanthanide-row">';
                 lanthanides.forEach(el => {
@@ -2978,7 +3424,6 @@ CH₃-CH-CH-CH₂-COOH
                 });
                 html += '</div>';
 
-                // Актиноиды
                 const actinides = elements.filter(e => e.number >= 89 && e.number <= 103);
                 html += '<h4>Актиноиды</h4><div class="actinide-row">';
                 actinides.forEach(el => {
@@ -3038,17 +3483,27 @@ CH₃-CH-CH-CH₂-COOH
                         </div>
                         <p><span class="solubility-R">Р</span> – растворимо, <span class="solubility-M">М</span> – малорастворимо, <span class="solubility-N">Н</span> – нерастворимо, <span class="solubility-unknown">-</span> – нет данных.</p>
                     </div>
+                    
+                    <div class="card">
+                        <h2>📚 Определения терминов</h2>
+                        <div style="display: grid; gap: 10px;">
+                            ${Object.entries(termDefinitions).map(([term, def]) => `
+                                <div>
+                                    <span class="key-term" style="cursor: default;">${term}</span>
+                                    <span style="color: var(--text-secondary); margin-left: 10px;">${def}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
                 </main>
                 ${renderNavigation('Справочник')}
             `;
         }
 
         function generatePeriodicTable() {
-            // Массив всех элементов с координатами (период, группа)
             return [
                 { number:1, symbol:'H', name:'Водород', period:1, group:1 },
                 { number:2, symbol:'He', name:'Гелий', period:1, group:18 },
-                // Период 2
                 { number:3, symbol:'Li', name:'Литий', period:2, group:1 },
                 { number:4, symbol:'Be', name:'Бериллий', period:2, group:2 },
                 { number:5, symbol:'B', name:'Бор', period:2, group:13 },
@@ -3057,7 +3512,6 @@ CH₃-CH-CH-CH₂-COOH
                 { number:8, symbol:'O', name:'Кислород', period:2, group:16 },
                 { number:9, symbol:'F', name:'Фтор', period:2, group:17 },
                 { number:10, symbol:'Ne', name:'Неон', period:2, group:18 },
-                // Период 3
                 { number:11, symbol:'Na', name:'Натрий', period:3, group:1 },
                 { number:12, symbol:'Mg', name:'Магний', period:3, group:2 },
                 { number:13, symbol:'Al', name:'Алюминий', period:3, group:13 },
@@ -3066,7 +3520,6 @@ CH₃-CH-CH-CH₂-COOH
                 { number:16, symbol:'S', name:'Сера', period:3, group:16 },
                 { number:17, symbol:'Cl', name:'Хлор', period:3, group:17 },
                 { number:18, symbol:'Ar', name:'Аргон', period:3, group:18 },
-                // Период 4
                 { number:19, symbol:'K', name:'Калий', period:4, group:1 },
                 { number:20, symbol:'Ca', name:'Кальций', period:4, group:2 },
                 { number:21, symbol:'Sc', name:'Скандий', period:4, group:3 },
@@ -3085,7 +3538,6 @@ CH₃-CH-CH-CH₂-COOH
                 { number:34, symbol:'Se', name:'Селен', period:4, group:16 },
                 { number:35, symbol:'Br', name:'Бром', period:4, group:17 },
                 { number:36, symbol:'Kr', name:'Криптон', period:4, group:18 },
-                // Период 5
                 { number:37, symbol:'Rb', name:'Рубидий', period:5, group:1 },
                 { number:38, symbol:'Sr', name:'Стронций', period:5, group:2 },
                 { number:39, symbol:'Y', name:'Иттрий', period:5, group:3 },
@@ -3104,7 +3556,6 @@ CH₃-CH-CH-CH₂-COOH
                 { number:52, symbol:'Te', name:'Теллур', period:5, group:16 },
                 { number:53, symbol:'I', name:'Иод', period:5, group:17 },
                 { number:54, symbol:'Xe', name:'Ксенон', period:5, group:18 },
-                // Период 6
                 { number:55, symbol:'Cs', name:'Цезий', period:6, group:1 },
                 { number:56, symbol:'Ba', name:'Барий', period:6, group:2 },
                 { number:57, symbol:'La', name:'Лантан', period:6, group:3 },
@@ -3137,7 +3588,6 @@ CH₃-CH-CH-CH₂-COOH
                 { number:84, symbol:'Po', name:'Полоний', period:6, group:16 },
                 { number:85, symbol:'At', name:'Астат', period:6, group:17 },
                 { number:86, symbol:'Rn', name:'Радон', period:6, group:18 },
-                // Период 7
                 { number:87, symbol:'Fr', name:'Франций', period:7, group:1 },
                 { number:88, symbol:'Ra', name:'Радий', period:7, group:2 },
                 { number:89, symbol:'Ac', name:'Актиний', period:7, group:3 },
@@ -3174,7 +3624,6 @@ CH₃-CH-CH-CH₂-COOH
         }
 
         function getSolubility(cation, anion) {
-            // Упрощённая логика для демонстрации. Можно расширить.
             const rules = {
                 'Na⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'Р', 'OH⁻':'Р', 'SO₄²⁻':'Р', 'CO₃²⁻':'Р', 'PO₄³⁻':'Р' },
                 'K⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'Р', 'OH⁻':'Р', 'SO₄²⁻':'Р', 'CO₃²⁻':'Р', 'PO₄³⁻':'Р' },
@@ -3183,7 +3632,6 @@ CH₃-CH-CH-CH₂-COOH
                 'Ba²⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'?', 'OH⁻':'Р', 'SO₄²⁻':'Н', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
                 'Ca²⁺': { 'Cl⁻':'Р', 'Br⁻':'Р', 'I⁻':'Р', 'S²⁻':'?', 'OH⁻':'М', 'SO₄²⁻':'М', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
                 'Pb²⁺': { 'Cl⁻':'М', 'Br⁻':'М', 'I⁻':'М', 'S²⁻':'Н', 'OH⁻':'Н', 'SO₄²⁻':'Н', 'CO₃²⁻':'Н', 'PO₄³⁻':'Н' },
-                // Для остальных по умолчанию '?'
             };
             if (rules[cation] && rules[cation][anion]) return rules[cation][anion];
             return '?';
@@ -3211,15 +3659,25 @@ CH₃-CH-CH-CH₂-COOH
                             <button class="btn btn-secondary btn-icon" onclick="selectAllTickets(true)">✅ Все</button>
                             <button class="btn btn-secondary btn-icon" onclick="selectAllTickets(false)">❌ Ни одного</button>
                             <button class="btn btn-secondary btn-icon" onclick="selectUnlearnedTickets()">📚 Невыученные</button>
+                            <button class="btn btn-secondary btn-icon" onclick="selectRandomTickets()">🎲 Случайные 5</button>
                         </div>
                         <div class="checkbox-group" id="exam-tickets-list">
-                            ${tickets.map(t => `
-                                <label class="checkbox-label">
-                                    <input type="checkbox" value="${t.number}" checked> Билет №${t.number}
-                                </label>
-                            `).join('')}
+                            ${tickets.map(t => {
+                                const theoryDone = userProgress.questions?.[t.theory.id] || false;
+                                const practiceDone = userProgress.questions?.[t.practice.id] || false;
+                                return `
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" value="${t.number}" checked> 
+                                        Билет №${t.number} 
+                                        ${theoryDone ? '✅' : '○'} ${practiceDone ? '✅' : '○'}
+                                    </label>
+                                `;
+                            }).join('')}
                         </div>
-                        <button class="btn btn-primary" onclick="startExamWithSelected()">▶️ Начать экзамен</button>
+                        <div style="display: flex; gap: 8px; margin-top: 16px;">
+                            <button class="btn btn-primary" style="flex: 2;" onclick="startExamWithSelected()">▶️ Начать экзамен</button>
+                            <button class="btn btn-secondary" style="flex: 1;" onclick="startExamWithSelected(true)">🔄 Случайный порядок</button>
+                        </div>
                     </div>
                 </main>
                 ${renderNavigation('Главная')}
@@ -3242,19 +3700,29 @@ CH₃-CH-CH-CH₂-COOH
             });
         }
 
-        function startExamWithSelected() {
+        function selectRandomTickets() {
+            selectAllTickets(false);
+            const checkboxes = Array.from(document.querySelectorAll('#exam-tickets-list input[type=checkbox]'));
+            const shuffled = checkboxes.sort(() => 0.5 - Math.random());
+            shuffled.slice(0, 5).forEach(cb => cb.checked = true);
+        }
+
+        function startExamWithSelected(randomize = false) {
             const checkboxes = document.querySelectorAll('#exam-tickets-list input[type=checkbox]:checked');
             const selectedNumbers = Array.from(checkboxes).map(cb => parseInt(cb.value));
             if (selectedNumbers.length === 0) {
                 showMessage('Выберите хотя бы один билет', 'info');
                 return;
             }
-            const selectedTickets = tickets.filter(t => selectedNumbers.includes(t.number)).sort((a,b) => a.number - b.number);
+            const selectedTickets = tickets.filter(t => selectedNumbers.includes(t.number));
             const questions = [];
             selectedTickets.forEach(t => {
                 questions.push(t.theory);
                 questions.push(t.practice);
             });
+            if (randomize) {
+                questions.sort(() => Math.random() - 0.5);
+            }
             runExam(questions, `Экзамен (${selectedNumbers.length} билетов)`);
         }
 
@@ -3262,7 +3730,6 @@ CH₃-CH-CH-CH₂-COOH
             currentPageState = { name: 'exam', params: { questions, title } };
             let currentIndex = 0;
             let score = 0;
-            let selectedOption = null;
             let answerSubmitted = false;
             let timerInterval;
             let timeLeft = questions.length * 60; // 1 минута на вопрос
@@ -3316,13 +3783,13 @@ CH₃-CH-CH-CH₂-COOH
                     if (!answerSubmitted) {
                         answerSubmitted = true;
                         score++;
+                        updateProgress(q.id, q.type);
                         showMessage('Ответ засчитан', 'success');
                         setTimeout(() => examNext(), 1000);
                     }
                 };
                 window.examNext = () => {
                     currentIndex++;
-                    selectedOption = null;
                     answerSubmitted = false;
                     showQuestion();
                 };
@@ -3385,6 +3852,15 @@ CH₃-CH-CH-CH₂-COOH
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 Telegram.WebApp.ready();
                 Telegram.WebApp.expand();
+                
+                // Адаптация под тему Telegram
+                const colorScheme = Telegram.WebApp.colorScheme;
+                if (colorScheme === 'light') {
+                    settings.theme = 'light';
+                } else {
+                    settings.theme = 'dark';
+                }
+                applySettings();
             }
         }
 
@@ -3392,59 +3868,66 @@ CH₃-CH-CH-CH₂-COOH
             initTelegram();
             loadAllData();
             showMainInterface();
-        }
-
-        function safeInit() {
-            try {
-                initApp();
-            } catch (e) {
-                console.error('Ошибка инициализации:', e);
-                alert('Ошибка: ' + e.message + '\n' + e.stack);
+            
+            // Запрашиваем разрешение на уведомления, если включены напоминания
+            if (settings.reminders) {
+                requestNotificationPermission();
             }
         }
 
+        // Запуск
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', safeInit);
+            document.addEventListener('DOMContentLoaded', initApp);
         } else {
-            safeInit();
+            initApp();
         }
 
-        // Экспорт глобальных функций (для onclick)
+        // Экспорт глобальных функций
         window.showMainInterface = showMainInterface;
         window.showTicketsPage = showTicketsPage;
         window.showTicket = showTicket;
         window.showTheoryPage = showTheoryPage;
         window.searchTheory = searchTheory;
+        window.debounceSearchTheory = debounceSearchTheory;
         window.clearTheorySearch = clearTheorySearch;
         window.showPracticePage = showPracticePage;
         window.searchPractice = searchPractice;
+        window.debounceSearchPractice = debounceSearchPractice;
         window.clearPracticeSearch = clearPracticeSearch;
         window.showQuestionDetail = showQuestionDetail;
         window.showStatsPage = showStatsPage;
         window.showSettingsPage = showSettingsPage;
         window.showQuizPage = showQuizPage;
         window.showRandomTicket = showRandomTicket;
+        window.showRandomQuestion = showRandomQuestion;
         window.showFlashcardsPage = showFlashcardsPage;
         window.startFlashcards = startFlashcards;
         window.showReferencePage = showReferencePage;
         window.showExamSelectionPage = showExamSelectionPage;
         window.selectAllTickets = selectAllTickets;
         window.selectUnlearnedTickets = selectUnlearnedTickets;
+        window.selectRandomTickets = selectRandomTickets;
         window.startExamWithSelected = startExamWithSelected;
         window.toggleBookmark = toggleBookmark;
         window.toggleQuestionAnswer = toggleQuestionAnswer;
         window.showNoteInput = showNoteInput;
         window.saveNote = saveNote;
+        window.autoSaveNote = autoSaveNote;
         window.deleteNote = deleteNote;
         window.markQuestionLearned = markQuestionLearned;
         window.markQuestionLearnedSingle = markQuestionLearnedSingle;
         window.setTheme = setTheme;
         window.setFontSize = setFontSize;
+        window.toggleReminders = toggleReminders;
+        window.setReminderTime = setReminderTime;
+        window.toggleAutoSave = toggleAutoSave;
+        window.requestNotificationPermission = requestNotificationPermission;
         window.resetProgress = resetProgress;
         window.exportToTxt = exportToTxt;
         window.exportProgress = exportProgress;
         window.importProgress = importProgress;
-        // Для тестов и карточек (будут переопределяться динамически)
+        
+        // Для тестов и карточек
         window.selectQuizOption = null;
         window.submitQuizAnswer = null;
         window.skipQuizQuestion = null;
