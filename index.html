@@ -15,7 +15,7 @@
             user-select: none;
         }
 
-        :root {
+                :root {
             --bg-gradient-start: #0a0a0a;
             --bg-gradient-end: #1a1a2e;
             --text-color: white;
@@ -35,42 +35,42 @@
             --swipe-left-color: rgba(255, 68, 68, 0.2);
             --swipe-right-color: rgba(0, 255, 136, 0.2);
         }
-
+        
         body.light-theme {
-            --bg-gradient-start: #f5f7fa;
-            --bg-gradient-end: #e6e9f0;
-            --text-color: #1a1a2e;
-            --text-secondary: #4a4a6a;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --header-bg: rgba(255, 255, 255, 0.98);
-            --border-color: rgba(0, 212, 255, 0.3);
-            --progress-bg: rgba(0, 0, 0, 0.1);
+            --bg-gradient-start: #f5f7fa !important;
+            --bg-gradient-end: #e6e9f0 !important;
+            --text-color: #1a1a2e !important;
+            --text-secondary: #4a4a6a !important;
+            --card-bg: rgba(255, 255, 255, 0.95) !important;
+            --header-bg: rgba(255, 255, 255, 0.98) !important;
+            --border-color: rgba(0, 212, 255, 0.3) !important;
+            --progress-bg: rgba(0, 0, 0, 0.1) !important;
         }
-
+        
         body.neon-theme {
-            --bg-gradient-start: #000000;
-            --bg-gradient-end: #0a0a1a;
-            --text-color: #ffffff;
-            --text-secondary: #b0f0ff;
-            --card-bg: rgba(0, 20, 40, 0.95);
-            --header-bg: rgba(0, 10, 20, 0.98);
-            --border-color: rgba(0, 255, 255, 0.4);
-            --progress-bg: rgba(0, 50, 100, 0.8);
-            --accent: #00ffff;
+            --bg-gradient-start: #000000 !important;
+            --bg-gradient-end: #0a0a1a !important;
+            --text-color: #ffffff !important;
+            --text-secondary: #b0f0ff !important;
+            --card-bg: rgba(0, 20, 40, 0.95) !important;
+            --header-bg: rgba(0, 10, 20, 0.98) !important;
+            --border-color: rgba(0, 255, 255, 0.4) !important;
+            --progress-bg: rgba(0, 50, 100, 0.8) !important;
+            --accent: #00ffff !important;
         }
-
+        
         body.pastel-theme {
-            --bg-gradient-start: #ffd1dc;
-            --bg-gradient-end: #c1e1c1;
-            --text-color: #4a4a4a;
-            --text-secondary: #6b6b6b;
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --header-bg: rgba(255, 255, 255, 0.98);
-            --border-color: rgba(255, 182, 193, 0.5);
-            --progress-bg: rgba(200, 200, 200, 0.4);
-            --accent: #ff9eb5;
+            --bg-gradient-start: #ffd1dc !important;
+            --bg-gradient-end: #c1e1c1 !important;
+            --text-color: #4a4a4a !important;
+            --text-secondary: #6b6b6b !important;
+            --card-bg: rgba(255, 255, 255, 0.98) !important;
+            --header-bg: rgba(255, 255, 255, 0.98) !important;
+            --border-color: rgba(255, 182, 193, 0.5) !important;
+            --progress-bg: rgba(200, 200, 200, 0.4) !important;
+            --accent: #ff9eb5 !important;
         }
-
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
@@ -81,7 +81,7 @@
             height: -webkit-fill-available;
             position: fixed;
             width: 100%;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, background-image 0.3s ease;
             font-size: var(--base-font-size);
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
@@ -7512,17 +7512,19 @@
         }
 
         function applySettings() {
+            // Сначала удаляем все классы тем
+            document.body.classList.remove('light-theme', 'neon-theme', 'pastel-theme');
+            
+            // Затем добавляем нужный класс
             if (settings.theme === 'light') {
-                document.body.classList.remove('neon-theme', 'pastel-theme');
                 document.body.classList.add('light-theme');
             } else if (settings.theme === 'neon') {
-                document.body.classList.remove('light-theme', 'pastel-theme');
                 document.body.classList.add('neon-theme');
             } else if (settings.theme === 'pastel') {
-                document.body.classList.remove('light-theme', 'neon-theme');
                 document.body.classList.add('pastel-theme');
             } else {
-                document.body.classList.remove('light-theme', 'neon-theme', 'pastel-theme');
+                // dark тема не требует класса, это базовые переменные в :root
+                // просто убеждаемся что других классов нет
             }
             
             document.documentElement.style.setProperty('--accent', settings.accentColor);
@@ -10371,11 +10373,13 @@
                 Telegram.WebApp.expand();
                 
                 const colorScheme = Telegram.WebApp.colorScheme;
+                // Сохраняем тему в настройках
                 if (colorScheme === 'light') {
                     settings.theme = 'light';
                 } else {
                     settings.theme = 'dark';
                 }
+                // Применяем тему
                 applySettings();
             }
         }
@@ -10383,6 +10387,7 @@
         function initApp() {
             initTelegram();
             loadAllData();
+            applySettings(); // Добавьте эту строку
             showMainInterface();
             
             if (settings.reminders) {
