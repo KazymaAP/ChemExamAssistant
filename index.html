@@ -1313,27 +1313,31 @@
         // =====================================================
         // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
         // =====================================================
-        const STORAGE_KEY = 'chemExamData_v8';
-        const PROGRESS_KEY = 'chemExamProgress_v8';
-        const BOOKMARKS_KEY = 'chemExamBookmarks_v8';
-        const NOTES_KEY = 'chemExamNotes_v8';
-        const SETTINGS_KEY = 'chemExamSettings_v8';
-        const STATS_KEY = 'chemExamStats_v8';
-        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v8';
-        const HISTORY_KEY = 'chemExamHistory_v8';
-        const REMINDER_KEY = 'chemExamReminder_v8';
+        const STORAGE_KEY = 'chemExamData_v9';
+        const PROGRESS_KEY = 'chemExamProgress_v9';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v9';
+        const NOTES_KEY = 'chemExamNotes_v9';
+        const SETTINGS_KEY = 'chemExamSettings_v9';
+        const STATS_KEY = 'chemExamStats_v9';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v9';
+        const HISTORY_KEY = 'chemExamHistory_v9';
+        const REMINDER_KEY = 'chemExamReminder_v9';
 
         const TOTAL_QUESTIONS = 35;
         const TOTAL_TICKETS = 17;
         
         // Дебаунс для поиска и автосохранения
-        const debounce = (fn, delay) => {
+        function debounce(func, wait) {
             let timeout;
-            return (...args) => {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
                 clearTimeout(timeout);
-                timeout = setTimeout(() => fn(...args), delay);
+                timeout = setTimeout(later, wait);
             };
-        };
+        }
 
         // =====================================================
         // ГЛОБАЛЬНЫЕ ДАННЫЕ
@@ -1435,109 +1439,109 @@
             allQuestions = [
                 { id: 1, number: 1, type: 'theory',
                   text: "Периодический закон и периодическая система химических элементов Д.И. Менделеева. Значение для науки.",
-                  answer: `📌 Суть закона: Свойства химических элементов и образованных ими веществ находятся в периодической зависимости от заряда их атомных ядер.\n\n📌 Таблица: графическое отображение закона. Элементы расположены по периодам и группам, показывая повторяемость свойств.\n\n📌 Значение:\n1️⃣ Систематизировал все известные элементы.\n2️⃣ Предсказал открытие новых элементов (германий, галлий), описав их свойства.\n3️⃣ Сыграл главную роль в понимании строения атома.` },
+                  answer: "📌 Суть закона: Свойства химических элементов и образованных ими веществ находятся в периодической зависимости от заряда их атомных ядер.\n\n📌 Таблица: графическое отображение закона. Элементы расположены по периодам и группам, показывая повторяемость свойств.\n\n📌 Значение:\n1️⃣ Систематизировал все известные элементы.\n2️⃣ Предсказал открытие новых элементов (германий, галлий), описав их свойства.\n3️⃣ Сыграл главную роль в понимании строения атома." },
                 { id: 2, number: 2, type: 'practice',
                   text: "Напишите структурные формулы веществ: 2-метилпропановая кислота, 3,4-диметилпентановая кислота",
-                  answer: `📌 2-метилпропановая кислота:\nCH₃-CH-COOH\n     |\n     CH₃\n\n📌 3,4-диметилпентановая кислота:\nCH₃-CH-CH-CH₂-COOH\n     |   |\n     CH₃ CH₃` },
+                  answer: "📌 2-метилпропановая кислота:\nCH₃-CH-COOH\n     |\n     CH₃\n\n📌 3,4-диметилпентановая кислота:\nCH₃-CH-CH-CH₂-COOH\n     |   |\n     CH₃ CH₃" },
                 { id: 3, number: 3, type: 'theory',
                   text: "Предельные углеводороды (Алканы). Общая формула, строение. Химические свойства метана. Применение.",
-                  answer: `📌 Общая формула: CₙH₂ₙ₊₂ (метан CH₄, пропан C₃H₈).\n📌 Строение: простые связи, sp³-гибридизация.\n📌 Свойства метана: галогенирование, горение, пиролиз.\n📌 Применение: топливо, растворители, пластмассы.` },
+                  answer: "📌 Общая формула: CₙH₂ₙ₊₂ (метан CH₄, пропан C₃H₈).\n📌 Строение: простые связи, sp³-гибридизация.\n📌 Свойства метана: галогенирование, горение, пиролиз.\n📌 Применение: топливо, растворители, пластмассы." },
                 { id: 4, number: 4, type: 'practice',
                   text: "Как получить из карбида кальция 1,2-дихлорэтан?",
-                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (ацетилен) + Ca(OH)₂\n2) C₂H₂ + H₂ (катализатор) → C₂H₄ (этилен)\n3) C₂H₄ + Cl₂ → C₂H₄Cl₂ (1,2-дихлорэтан)` },
+                  answer: "1) CaC₂ + 2H₂O → C₂H₂ (ацетилен) + Ca(OH)₂\n2) C₂H₂ + H₂ (катализатор) → C₂H₄ (этилен)\n3) C₂H₄ + Cl₂ → C₂H₄Cl₂ (1,2-дихлорэтан)" },
                 { id: 5, number: 5, type: 'theory',
                   text: "Строение атомов химических элементов. Закономерности изменения свойств в зависимости от строения.",
-                  answer: `📌 Строение: ядро (протоны, нейтроны) и электроны по слоям.\n📌 В периоде (→): радиус уменьшается, металлич. свойства слабеют.\n📌 В группе (↓): радиус растёт, металлич. свойства усиливаются.` },
+                  answer: "📌 Строение: ядро (протоны, нейтроны) и электроны по слоям.\n📌 В периоде (→): радиус уменьшается, металлич. свойства слабеют.\n📌 В группе (↓): радиус растёт, металлич. свойства усиливаются." },
                 { id: 6, number: 6, type: 'practice',
                   text: "Напишите структурные формулы: 2-метилбутан, 2,2-дихлорпентан, 3,3-диметилпентан",
-                  answer: `📌 2-метилбутан: CH₃-CH(CH₃)-CH₂-CH₃\n📌 2,2-дихлорпентан: CH₃-CCl₂-CH₂-CH₂-CH₃\n📌 3,3-диметилпентан: CH₃-CH₂-C(CH₃)₂-CH₂-CH₃` },
+                  answer: "📌 2-метилбутан: CH₃-CH(CH₃)-CH₂-CH₃\n📌 2,2-дихлорпентан: CH₃-CCl₂-CH₂-CH₂-CH₃\n📌 3,3-диметилпентан: CH₃-CH₂-C(CH₃)₂-CH₂-CH₃" },
                 { id: 7, number: 7, type: 'theory',
                   text: "Непредельные углеводороды ряда этилена. Строение, свойства этилена. Применение.",
-                  answer: `📌 Общая формула: CₙH₂ₙ. Двойная связь (σ и π).\n📌 Свойства: присоединение (галогенирование, гидратация, полимеризация).\n📌 Применение: полиэтилен, трубы, плёнка, краски.` },
+                  answer: "📌 Общая формула: CₙH₂ₙ. Двойная связь (σ и π).\n📌 Свойства: присоединение (галогенирование, гидратация, полимеризация).\n📌 Применение: полиэтилен, трубы, плёнка, краски." },
                 { id: 8, number: 8, type: 'practice',
                   text: "Осуществите превращения: AlCl₃ → X → Y → Cu₂O",
-                  answer: `1) AlCl₃ → Al (электролиз расплава или вытеснение более активным металлом)\n2) 4Al + 3O₂ → 2Al₂O₃ (X=Al, Y=Al₂O₃)\n3) 2Al + 3CuO → Al₂O₃ + 3Cu, затем 4Cu + O₂ → 2Cu₂O (недостаток кислорода)` },
+                  answer: "1) AlCl₃ → Al (электролиз расплава или вытеснение более активным металлом)\n2) 4Al + 3O₂ → 2Al₂O₃ (X=Al, Y=Al₂O₃)\n3) 2Al + 3CuO → Al₂O₃ + 3Cu, затем 4Cu + O₂ → 2Cu₂O (недостаток кислорода)" },
                 { id: 9, number: 9, type: 'theory',
                   text: "Виды химической связи.",
-                  answer: `1️⃣ Ковалентная неполярная (H₂, O₂)\n2️⃣ Ковалентная полярная (HCl, H₂O)\n3️⃣ Ионная (NaCl)\n4️⃣ Металлическая\n5️⃣ Водородная` },
+                  answer: "1️⃣ Ковалентная неполярная (H₂, O₂)\n2️⃣ Ковалентная полярная (HCl, H₂O)\n3️⃣ Ионная (NaCl)\n4️⃣ Металлическая\n5️⃣ Водородная" },
                 { id: 10, number: 10, type: 'practice',
                   text: "Напишите структурные формулы: 3-метилпентен-1, 2-метил-4-изопропилгексен-1",
-                  answer: `📌 3-метилпентен-1: CH₂=CH-CH(CH₃)-CH₂-CH₃\n📌 2-метил-4-изопропилгексен-1: CH₂=C(CH₃)-CH₂-CH(CH(CH₃)₂)-CH₂-CH₃` },
+                  answer: "📌 3-метилпентен-1: CH₂=CH-CH(CH₃)-CH₂-CH₃\n📌 2-метил-4-изопропилгексен-1: CH₂=C(CH₃)-CH₂-CH(CH(CH₃)₂)-CH₂-CH₃" },
                 { id: 11, number: 11, type: 'theory',
                   text: "Аминокислоты, их строение, свойства, роль, применение.",
-                  answer: `📌 Строение: NH₂ и COOH группы.\n📌 Свойства: амфотерность, образование полипептидов.\n📌 Роль: строительные блоки белков.\n📌 Применение: пищевые добавки, лекарства.` },
+                  answer: "📌 Строение: NH₂ и COOH группы.\n📌 Свойства: амфотерность, образование полипептидов.\n📌 Роль: строительные блоки белков.\n📌 Применение: пищевые добавки, лекарства." },
                 { id: 12, number: 12, type: 'practice',
                   text: "Осуществите превращения: метан → X → Y → уксусная кислота",
-                  answer: `1) 2CH₄ → C₂H₂ + 3H₂ (пиролиз) (X = ацетилен)\n2) C₂H₂ + H₂O → CH₃COH (реакция Кучерова, Y = уксусный альдегид)\n3) CH₃COH + Ag₂O → CH₃COOH + 2Ag (окисление)` },
+                  answer: "1) 2CH₄ → C₂H₂ + 3H₂ (пиролиз) (X = ацетилен)\n2) C₂H₂ + H₂O → CH₃COH (реакция Кучерова, Y = уксусный альдегид)\n3) CH₃COH + Ag₂O → CH₃COOH + 2Ag (окисление)" },
                 { id: 13, number: 13, type: 'theory',
                   text: "Классификация химических реакций.",
-                  answer: `По числу веществ: соединения, разложения, замещения, обмена.\nПо тепловому эффекту: экзо- и эндотермические.\nПо изменению ст.окисления: ОВР и не ОВР.\nПо обратимости: обратимые и необратимые.` },
+                  answer: "По числу веществ: соединения, разложения, замещения, обмена.\nПо тепловому эффекту: экзо- и эндотермические.\nПо изменению ст.окисления: ОВР и не ОВР.\nПо обратимости: обратимые и необратимые." },
                 { id: 14, number: 14, type: 'practice',
                   text: "Из этана и неорганики получить бутан.",
-                  answer: `1) C₂H₆ + Cl₂ → C₂H₅Cl + HCl (на свету)\n2) 2C₂H₅Cl + 2Na → C₄H₁₀ + 2NaCl (реакция Вюрца)` },
+                  answer: "1) C₂H₆ + Cl₂ → C₂H₅Cl + HCl (на свету)\n2) 2C₂H₅Cl + 2Na → C₄H₁₀ + 2NaCl (реакция Вюрца)" },
                 { id: 15, number: 15, type: 'theory',
                   text: "Крахмал и целлюлоза: строение, свойства, применение.",
-                  answer: `📌 Состоят из остатков глюкозы. Крахмал – смесь линейных и разветвлённых цепей, целлюлоза – линейные волокна.\n📌 Крахмал: синеет с йодом, гидролиз до глюкозы.\n📌 Целлюлоза: нерастворима, прочная.\n📌 Применение: крахмал – клейстер, целлюлоза – бумага, ткани.` },
+                  answer: "📌 Состоят из остатков глюкозы. Крахмал – смесь линейных и разветвлённых цепей, целлюлоза – линейные волокна.\n📌 Крахмал: синеет с йодом, гидролиз до глюкозы.\n📌 Целлюлоза: нерастворима, прочная.\n📌 Применение: крахмал – клейстер, целлюлоза – бумага, ткани." },
                 { id: 16, number: 16, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₁OH",
-                  answer: `8 изомеров пентанола:\n1) пентанол-1\n2) пентанол-2\n3) пентанол-3\n4) 2-метилбутанол-1\n5) 3-метилбутанол-1\n6) 2-метилбутанол-2\n7) 3-метилбутанол-2\n8) 2,2-диметилпропанол-1` },
+                  answer: "8 изомеров пентанола:\n1) пентанол-1\n2) пентанол-2\n3) пентанол-3\n4) 2-метилбутанол-1\n5) 3-метилбутанол-1\n6) 2-метилбутанол-2\n7) 3-метилбутанол-2\n8) 2,2-диметилпропанол-1" },
                 { id: 17, number: 17, type: 'theory',
                   text: "Обратимость реакций. Химическое равновесие и его смещение. Применение.",
-                  answer: `📌 Равновесие – когда скорости прямой и обратной равны.\n📌 Принцип Ле-Шателье: при воздействии равновесие смещается в сторону ослабления воздействия.\n📌 Применение: в промышленности (синтез аммиака) подбирают условия для смещения равновесия.` },
+                  answer: "📌 Равновесие – когда скорости прямой и обратной равны.\n📌 Принцип Ле-Шателье: при воздействии равновесие смещается в сторону ослабления воздействия.\n📌 Применение: в промышленности (синтез аммиака) подбирают условия для смещения равновесия." },
                 { id: 18, number: 18, type: 'practice',
                   text: "Осуществите превращения: C₅H₁₁OH → X → Y → C₅H₅OH (циклическое)",
-                  answer: `1) Дегидрирование (отщепление H₂) → циклопентадиен C₅H₆\n2) C₅H₆ + Cl₂ → C₅H₅Cl + HCl (замещение)\n3) C₅H₅Cl + NaOH → C₅H₅OH + NaCl (гидролиз)` },
+                  answer: "1) Дегидрирование (отщепление H₂) → циклопентадиен C₅H₆\n2) C₅H₆ + Cl₂ → C₅H₅Cl + HCl (замещение)\n3) C₅H₅Cl + NaOH → C₅H₅OH + NaCl (гидролиз)" },
                 { id: 19, number: 19, type: 'theory',
                   text: "Ацетилен – строение, свойства, получение, применение.",
-                  answer: `📌 Тройная связь, реакции присоединения.\n📌 Получение: CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂\n📌 Применение: сварка, растворители, уксусная кислота, каучуки.` },
+                  answer: "📌 Тройная связь, реакции присоединения.\n📌 Получение: CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂\n📌 Применение: сварка, растворители, уксусная кислота, каучуки." },
                 { id: 20, number: 20, type: 'practice',
                   text: "Осуществите превращения: CO₂ → крахмал → глюкоза → этанол → бромэтан",
-                  answer: `1) фотосинтез (в растениях) CO₂ → крахмал\n2) (C₆H₁₀O₅)ₙ + nH₂O → nC₆H₁₂O₆ (гидролиз крахмала)\n3) C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (спиртовое брожение)\n4) C₂H₅OH + HBr → C₂H₅Br + H₂O` },
+                  answer: "1) фотосинтез (в растениях) CO₂ → крахмал\n2) (C₆H₁₀O₅)ₙ + nH₂O → nC₆H₁₂O₆ (гидролиз крахмала)\n3) C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂ (спиртовое брожение)\n4) C₂H₅OH + HBr → C₂H₅Br + H₂O" },
                 { id: 21, number: 21, type: 'theory',
                   text: "Скорость химических реакций и факторы, влияющие на неё.",
-                  answer: `Факторы: природа веществ, концентрация, температура (правило Вант-Гоффа), площадь поверхности, катализатор.` },
+                  answer: "Факторы: природа веществ, концентрация, температура (правило Вант-Гоффа), площадь поверхности, катализатор." },
                 { id: 22, number: 22, type: 'practice',
                   text: "Из пропана получить гексан",
-                  answer: `1) C₃H₈ + Cl₂ → C₃H₇Cl + HCl (1-хлорпропан)\n2) 2C₃H₇Cl + 2Na → C₆H₁₄ + 2NaCl (реакция Вюрца)` },
+                  answer: "1) C₃H₈ + Cl₂ → C₃H₇Cl + HCl (1-хлорпропан)\n2) 2C₃H₇Cl + 2Na → C₆H₁₄ + 2NaCl (реакция Вюрца)" },
                 { id: 23, number: 23, type: 'theory',
                   text: "Ароматические углеводороды. Бензол: строение, свойства, получение, применение.",
-                  answer: `📌 C₆H₆, бензольное кольцо.\n📌 Реакции замещения (галогенирование, нитрование).\n📌 Получение: из нефти, тримеризация ацетилена: 3C₂H₂ → C₆H₆.\n📌 Применение: растворитель, пластмассы, красители, лекарства.` },
+                  answer: "📌 C₆H₆, бензольное кольцо.\n📌 Реакции замещения (галогенирование, нитрование).\n📌 Получение: из нефти, тримеризация ацетилена: 3C₂H₂ → C₆H₆.\n📌 Применение: растворитель, пластмассы, красители, лекарства." },
                 { id: 24, number: 24, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₀",
-                  answer: `Алкены: пентен-1, пентен-2 (цис/транс), 2-метилбутен-1, 3-метилбутен-1, 2-метилбутен-2. Циклоалканы: циклопентан, метилциклобутан, 1,2-диметилциклопропан, этилциклопропан.` },
+                  answer: "Алкены: пентен-1, пентен-2 (цис/транс), 2-метилбутен-1, 3-метилбутен-1, 2-метилбутен-2. Циклоалканы: циклопентан, метилциклобутан, 1,2-диметилциклопропан, этилциклопропан." },
                 { id: 25, number: 25, type: 'theory',
                   text: "Теория Бутлерова химического строения органических веществ.",
-                  answer: `1) Атомы соединены по валентности.\n2) Свойства зависят от порядка связей (изомерия).\n3) Атомы влияют друг на друга.\nРазвитие: стереохимия.` },
+                  answer: "1) Атомы соединены по валентности.\n2) Свойства зависят от порядка связей (изомерия).\n3) Атомы влияют друг на друга.\nРазвитие: стереохимия." },
                 { id: 26, number: 26, type: 'practice',
                   text: "Как получить из этанола 1,2-дихлорэтан?",
-                  answer: `1) C₂H₅OH → C₂H₄ + H₂O (дегидратация, нагревание с H₂SO₄)\n2) C₂H₄ + Cl₂ → C₂H₄Cl₂` },
+                  answer: "1) C₂H₅OH → C₂H₄ + H₂O (дегидратация, нагревание с H₂SO₄)\n2) C₂H₄ + Cl₂ → C₂H₄Cl₂" },
                 { id: 27, number: 27, type: 'theory',
                   text: "Электролиз как ОВР. Электролиз расплава и раствора NaCl.",
-                  answer: `📌 Электролиз – разложение током.\n📌 Расплав NaCl: Na⁺ + e → Na; 2Cl⁻ – 2e → Cl₂.\n📌 Раствор NaCl: на катоде 2H₂O + 2e → H₂ + 2OH⁻, на аноде 2Cl⁻ → Cl₂.` },
+                  answer: "📌 Электролиз – разложение током.\n📌 Расплав NaCl: Na⁺ + e → Na; 2Cl⁻ – 2e → Cl₂.\n📌 Раствор NaCl: на катоде 2H₂O + 2e → H₂ + 2OH⁻, на аноде 2Cl⁻ → Cl₂." },
                 { id: 28, number: 28, type: 'practice',
                   text: "Напишите структурные формулы: 3-бромгексанол-2; 2-метил-3-этилпентанол-1",
-                  answer: `📌 3-бромгексанол-2: CH₃-CH₂-CH(Br)-CH(OH)-CH₂-CH₃\n📌 2-метил-3-этилпентанол-1: CH₂OH-CH(CH₃)-CH(C₂H₅)-CH₂-CH₃` },
+                  answer: "📌 3-бромгексанол-2: CH₃-CH₂-CH(Br)-CH(OH)-CH₂-CH₃\n📌 2-метил-3-этилпентанол-1: CH₂OH-CH(CH₃)-CH(C₂H₅)-CH₂-CH₃" },
                 { id: 29, number: 29, type: 'theory',
                   text: "Изомерия органических соединений и её виды.",
-                  answer: `📌 Изомеры – одинаковый состав, разное строение.\nВиды:\n1) структурная (углеродный скелет, положение функц. группы, межклассовая)\n2) пространственная (геометрическая цис/транс, оптическая)` },
+                  answer: "📌 Изомеры – одинаковый состав, разное строение.\nВиды:\n1) структурная (углеродный скелет, положение функц. группы, межклассовая)\n2) пространственная (геометрическая цис/транс, оптическая)" },
                 { id: 30, number: 30, type: 'practice',
                   text: "Осуществите превращения: Al₄C₃ → CH₄ → CH₃Br → C₂H₆ → CO₂ → CO",
-                  answer: `1) Al₄C₃ + 12H₂O → 4Al(OH)₃ + 3CH₄\n2) CH₄ + Br₂ → CH₃Br + HBr (на свету)\n3) 2CH₃Br + 2Na → C₂H₆ + 2NaBr (реакция Вюрца)\n4) 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O (горение)\n5) CO₂ + C ⇄ 2CO (при высокой температуре)` },
+                  answer: "1) Al₄C₃ + 12H₂O → 4Al(OH)₃ + 3CH₄\n2) CH₄ + Br₂ → CH₃Br + HBr (на свету)\n3) 2CH₃Br + 2Na → C₂H₆ + 2NaBr (реакция Вюрца)\n4) 2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O (горение)\n5) CO₂ + C ⇄ 2CO (при высокой температуре)" },
                 { id: 31, number: 31, type: 'theory',
                   text: "Оксиды: классификация, свойства, применение.",
-                  answer: `📌 Основные (Na₂O, CaO) – реагируют с кислотами.\n📌 Кислотные (CO₂, SO₂) – реагируют со щелочами.\n📌 Амфотерные (Al₂O₃, ZnO) – и с кислотами, и со щелочами.\n📌 Несолеобразующие (CO, NO).\nПрименение: известь, стекло, пигменты.` },
+                  answer: "📌 Основные (Na₂O, CaO) – реагируют с кислотами.\n📌 Кислотные (CO₂, SO₂) – реагируют со щелочами.\n📌 Амфотерные (Al₂O₃, ZnO) – и с кислотами, и со щелочами.\n📌 Несолеобразующие (CO, NO).\nПрименение: известь, стекло, пигменты." },
                 { id: 32, number: 32, type: 'practice',
                   text: "Осуществите превращения: карбид кальция → X → Y → хлорэтан",
-                  answer: `1) CaC₂ + 2H₂O → C₂H₂ (X = ацетилен)\n2) C₂H₂ + H₂ → C₂H₄ (Y = этилен, катализатор)\n3) C₂H₄ + HCl → C₂H₅Cl (хлорэтан)` },
+                  answer: "1) CaC₂ + 2H₂O → C₂H₂ (X = ацетилен)\n2) C₂H₂ + H₂ → C₂H₄ (Y = этилен, катализатор)\n3) C₂H₄ + HCl → C₂H₅Cl (хлорэтан)" },
                 { id: 33, number: 33, type: 'theory',
                   text: "Металлы: положение в ПС, строение атома, химические свойства, применение.",
-                  answer: `📌 Внизу слева, на внешнем уровне 1–3 e, атомы большие.\n📌 Восстановители: реагируют с неметаллами, водой, кислотами, солями.\n📌 Применение: строительство, сантехника, инструменты, электрика.` },
+                  answer: "📌 Внизу слева, на внешнем уровне 1–3 e, атомы большие.\n📌 Восстановители: реагируют с неметаллами, водой, кислотами, солями.\n📌 Применение: строительство, сантехника, инструменты, электрика." },
                 { id: 34, number: 34, type: 'practice',
                   text: "Напишите все изомеры состава C₅H₁₂",
-                  answer: `3 изомера пентана:\n1) н-пентан CH₃-CH₂-CH₂-CH₂-CH₃\n2) изопентан (2-метилбутан) CH₃-CH(CH₃)-CH₂-CH₃\n3) неопентан (2,2-диметилпропан) C(CH₃)₄` },
+                  answer: "3 изомера пентана:\n1) н-пентан CH₃-CH₂-CH₂-CH₂-CH₃\n2) изопентан (2-метилбутан) CH₃-CH(CH₃)-CH₂-CH₃\n3) неопентан (2,2-диметилпропан) C(CH₃)₄" },
                 { id: 35, number: 35, type: 'theory',
                   text: "Фенол: строение, свойства, получение, применение.",
-                  answer: `📌 C₆H₅OH – бензольное кольцо + OH.\n📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.\n📌 Получение: из каменноугольной смолы.\n📌 Применение: пластмассы, лекарства (аспирин), антисептики.` }
+                  answer: "📌 C₆H₅OH – бензольное кольцо + OH.\n📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.\n📌 Получение: из каменноугольной смолы.\n📌 Применение: пластмассы, лекарства (аспирин), антисептики." }
             ];
 
             // Формируем билеты
@@ -1566,26 +1570,19 @@
             searchIndex.clear();
             allQuestions.forEach(q => {
                 const text = (q.text + ' ' + q.answer).toLowerCase();
-                // Разбиваем на слова и индексируем с учетом окончаний
                 const words = text.split(/\W+/);
                 words.forEach(word => {
                     if (word.length < 3) return;
-                    
-                    // Индексируем основу слова (первые 5 букв)
                     const base = word.substring(0, 5);
                     if (!searchIndex.has(base)) {
                         searchIndex.set(base, new Set());
                     }
                     searchIndex.get(base).add(q.id);
-                    
-                    // Индексируем полное слово
                     if (!searchIndex.has(word)) {
                         searchIndex.set(word, new Set());
                     }
                     searchIndex.get(word).add(q.id);
                 });
-                
-                // Индексируем химические формулы
                 const formulas = q.answer.match(/[A-Z][a-z]?\d*/g);
                 if (formulas) {
                     formulas.forEach(f => {
@@ -1605,20 +1602,14 @@
             const words = query.split(/\W+/).filter(w => w.length >= 2);
             if (words.length === 0) return allQuestions;
             
-            // Находим ID вопросов для каждого слова
             const resultsPerWord = words.map(word => {
-                // Пробуем точное совпадение
                 if (searchIndex.has(word)) {
                     return searchIndex.get(word);
                 }
-                
-                // Пробуем по основе
                 const base = word.substring(0, 5);
                 if (searchIndex.has(base)) {
                     return searchIndex.get(base);
                 }
-                
-                // Ищем похожие
                 const similar = new Set();
                 for (let [key, ids] of searchIndex) {
                     if (key.includes(word) || word.includes(key)) {
@@ -1628,7 +1619,6 @@
                 return similar;
             });
             
-            // Находим пересечение для всех слов
             let result = new Set(resultsPerWord[0]);
             for (let i = 1; i < resultsPerWord.length; i++) {
                 result = new Set([...result].filter(id => resultsPerWord[i].has(id)));
@@ -1699,7 +1689,6 @@
                 const hist = localStorage.getItem(HISTORY_KEY);
                 if (hist) history = JSON.parse(hist);
                 
-                // Обновляем индекс после загрузки
                 buildSearchIndex();
                 
             } catch (e) {
@@ -1744,7 +1733,7 @@
                         icon: '/icon.png'
                     });
                 }
-                setupReminder(); // Следующее напоминание
+                setupReminder();
             }, delay);
         }
 
@@ -1802,8 +1791,8 @@
             }
         }
 
-        // Автосохранение заметок с дебаунсом
-        const autoSaveNote = debounce((questionId, text) => {
+        // ИСПРАВЛЕНО: переименована функция автосохранения
+        const debouncedAutoSave = debounce((questionId, text) => {
             if (!settings.autoSave) return;
             text = text.trim();
             if (!text) {
@@ -1814,6 +1803,10 @@
             saveAllData();
             showMessage('📝 Автосохранение', 'info');
         }, 2000);
+
+        function handleNoteInput(questionId, text) {
+            debouncedAutoSave(questionId, text);
+        }
 
         function saveNote(questionId, text) {
             text = text.trim();
@@ -1862,10 +1855,7 @@
             const q = allQuestions.find(q => q.id === questionId);
             if (!q) return;
             
-            // Удаляем дубликаты
             history = history.filter(item => item.id !== questionId);
-            
-            // Добавляем в начало
             history.unshift({
                 id: questionId,
                 number: q.number,
@@ -1873,7 +1863,6 @@
                 date: new Date().toISOString()
             });
             
-            // Оставляем только 20 последних
             if (history.length > 20) history.pop();
             
             saveAllData();
@@ -1887,17 +1876,15 @@
             userProgress.questions[questionId] = true;
             userProgress.lastViewed[questionId] = new Date().toISOString();
             
-            // Считаем время на вопрос
             const lastView = userProgress.lastViewed[questionId];
             if (lastView) {
                 const timeSpent = Math.round((now - new Date(lastView).getTime()) / 1000);
-                if (timeSpent > 0 && timeSpent < 3600) { // Не больше часа
+                if (timeSpent > 0 && timeSpent < 3600) {
                     if (!userProgress.timeSpent) userProgress.timeSpent = {};
                     userProgress.timeSpent[questionId] = (userProgress.timeSpent[questionId] || 0) + timeSpent;
                 }
             }
 
-            // Недавно просмотренные
             const recent = userProgress.recentlyViewed || [];
             const existingIndex = recent.findIndex(item => item.id === questionId);
             if (existingIndex !== -1) recent.splice(existingIndex, 1);
@@ -1905,10 +1892,8 @@
             if (recent.length > 20) recent.pop();
             userProgress.recentlyViewed = recent;
             
-            // Добавляем в историю
             addToHistory(questionId);
 
-            // Streak
             const last = userProgress.lastActive;
             const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
             if (last === yesterday) {
@@ -1918,11 +1903,9 @@
             }
             userProgress.lastActive = today;
 
-            // Время занятий
             userProgress.studyTime = (userProgress.studyTime || 0) + 5;
             stats.totalStudyTime = (stats.totalStudyTime || 0) + 5;
 
-            // Дневная активность
             if (!stats.dailyActivity) stats.dailyActivity = {};
             if (!stats.dailyActivity[today]) stats.dailyActivity[today] = 0;
             stats.dailyActivity[today]++;
@@ -2158,7 +2141,6 @@
                 })
                 .slice(0, 3);
 
-            // Статистика за сегодня
             const today = new Date().toISOString().split('T')[0];
             const todayActivity = stats.dailyActivity?.[today] || 0;
             const totalTime = userProgress.studyTime || 0;
@@ -2333,7 +2315,6 @@
                 );
             }
             
-            // Сортировка
             if (sort === 'number') {
                 filteredTickets.sort((a, b) => a.number - b.number);
             } else if (sort === 'progress') {
@@ -2414,7 +2395,6 @@
                 return;
             }
 
-            // Добавляем в историю
             addToHistory(ticket.theory.id);
             addToHistory(ticket.practice.id);
 
@@ -2440,7 +2420,6 @@
                             <span class="progress-text">${(theoryDone?1:0)+(practiceDone?1:0)}/2</span>
                         </div>
                         
-                        <!-- Вопрос 1 (теория) -->
                         <div class="question-card" id="q-${ticket.theory.id}">
                             <div class="question-header" onclick="toggleQuestionAnswer(${ticket.theory.id})">
                                 <span class="question-number">Вопрос 1 (теория) 📚</span>
@@ -2454,7 +2433,7 @@
                                     <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.theory.id})">📝 Заметка</button>
                                 </div>
                                 <div id="note-${ticket.theory.id}" class="hidden" style="margin-top:12px">
-                                    <textarea class="note-input" id="noteText-${ticket.theory.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${ticket.theory.id}, this.value)">${theoryNote?.text||''}</textarea>
+                                    <textarea class="note-input" id="noteText-${ticket.theory.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="handleNoteInput(${ticket.theory.id}, this.value)">${theoryNote?.text||''}</textarea>
                                     <div class="note-actions">
                                         <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.theory.id}, document.getElementById('noteText-${ticket.theory.id}').value)">💾 Сохранить</button>
                                         ${theoryNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.theory.id})">🗑️ Удалить</button>` : ''}
@@ -2469,7 +2448,6 @@
                             </div>
                         </div>
                         
-                        <!-- Вопрос 2 (практика) -->
                         <div class="question-card" id="q-${ticket.practice.id}">
                             <div class="question-header" onclick="toggleQuestionAnswer(${ticket.practice.id})">
                                 <span class="question-number">Вопрос 2 (практика) ⚗️</span>
@@ -2483,7 +2461,7 @@
                                     <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${ticket.practice.id})">📝 Заметка</button>
                                 </div>
                                 <div id="note-${ticket.practice.id}" class="hidden" style="margin-top:12px">
-                                    <textarea class="note-input" id="noteText-${ticket.practice.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${ticket.practice.id}, this.value)">${practiceNote?.text||''}</textarea>
+                                    <textarea class="note-input" id="noteText-${ticket.practice.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="handleNoteInput(${ticket.practice.id}, this.value)">${practiceNote?.text||''}</textarea>
                                     <div class="note-actions">
                                         <button class="btn btn-success" style="flex:1" onclick="saveNote(${ticket.practice.id}, document.getElementById('noteText-${ticket.practice.id}').value)">💾 Сохранить</button>
                                         ${practiceNote ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${ticket.practice.id})">🗑️ Удалить</button>` : ''}
@@ -2527,18 +2505,15 @@
 
             let filtered = [...theoryQuestions];
             
-            // Фильтры
             if (filter === 'completed') filtered = filtered.filter(q => userProgress.questions?.[q.id]);
             else if (filter === 'incomplete') filtered = filtered.filter(q => !userProgress.questions?.[q.id]);
             else if (filter === 'bookmarked') filtered = filtered.filter(q => bookmarks.includes(q.id));
             else if (filter === 'has-notes') filtered = filtered.filter(q => notes[q.id]);
             
-            // Поиск
             if (search) {
                 filtered = smartSearch(search).filter(q => q.type === 'theory');
             }
             
-            // Сортировка
             if (sort === 'number') {
                 filtered.sort((a, b) => a.number - b.number);
             } else if (sort === 'date') {
@@ -2555,10 +2530,6 @@
                 });
             }
 
-            renderTheoryList(filtered, filter, search, sort);
-        }
-
-        function renderTheoryList(filtered, filter, search, sort) {
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
@@ -2662,10 +2633,6 @@
                 });
             }
 
-            renderPracticeList(filtered, filter, search, sort);
-        }
-
-        function renderPracticeList(filtered, filter, search, sort) {
             const app = document.getElementById('app');
             app.innerHTML = `
                 <header class="header">
@@ -2745,10 +2712,8 @@
                 return;
             }
 
-            // Добавляем в историю
             addToHistory(questionId);
             
-            // Обновляем время просмотра
             if (!userProgress.lastViewed) userProgress.lastViewed = {};
             userProgress.lastViewed[questionId] = new Date().toISOString();
 
@@ -2760,7 +2725,6 @@
             const backPage = q.type === 'theory' ? 'showTheoryPage' : 'showPracticePage';
             const timeSpent = userProgress.timeSpent?.[q.id] || 0;
 
-            // Находим следующий и предыдущий вопросы
             const sameTypeQuestions = q.type === 'theory' ? theoryQuestions : practiceQuestions;
             const currentIndex = sameTypeQuestions.findIndex(item => item.id === q.id);
             const prevQuestion = currentIndex > 0 ? sameTypeQuestions[currentIndex - 1] : null;
@@ -2791,7 +2755,7 @@
                                 <button class="btn btn-secondary" style="flex:1" onclick="showNoteInput(${q.id})">📝 Заметка</button>
                             </div>
                             <div id="note-${q.id}" class="hidden" style="margin-top:12px">
-                                <textarea class="note-input" id="noteText-${q.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="autoSaveNote(${q.id}, this.value)">${note?.text||''}</textarea>
+                                <textarea class="note-input" id="noteText-${q.id}" rows="3" placeholder="Ваша заметка... (макс. 2000 символов)" maxlength="2000" oninput="handleNoteInput(${q.id}, this.value)">${note?.text||''}</textarea>
                                 <div class="note-actions">
                                     <button class="btn btn-success" style="flex:1" onclick="saveNote(${q.id}, document.getElementById('noteText-${q.id}').value)">💾 Сохранить</button>
                                     ${note ? `<button class="btn btn-danger" style="flex:1" onclick="deleteNote(${q.id})">🗑️ Удалить</button>` : ''}
@@ -2818,10 +2782,6 @@
             `;
         }
 
-        function autoSaveNote(questionId, text) {
-            autoSaveNote(questionId, text);
-        }
-
         function markQuestionLearnedSingle(questionId) {
             const q = allQuestions.find(q => q.id === questionId);
             if (q) {
@@ -2846,7 +2806,6 @@
             const theoryStudied = theoryQuestions.filter(q => userProgress.questions?.[q.id]).length;
             const practiceStudied = practiceQuestions.filter(q => userProgress.questions?.[q.id]).length;
 
-            // Активность за последние 7 дней
             const last7Days = [];
             for (let i=6; i>=0; i--) {
                 const d = new Date(); d.setDate(d.getDate()-i);
@@ -2855,18 +2814,15 @@
             }
             const maxAct = Math.max(...last7Days.map(d=>d.count),1);
 
-            // Статистика тестов
             const quizResults = stats.quizResults || [];
             const totalQuizTaken = quizResults.length;
             const totalQuizQuestions = quizResults.reduce((s,r) => s + r.total, 0);
             const totalQuizCorrect = quizResults.reduce((s,r) => s + r.score, 0);
             const avgPercent = totalQuizQuestions ? Math.round((totalQuizCorrect / totalQuizQuestions) * 100) : 0;
 
-            // Время изучения
             const totalTime = userProgress.studyTime || 0;
             const avgTimePerQuestion = studied ? Math.floor(totalTime / studied) : 0;
 
-            // Самые просматриваемые вопросы
             const mostViewed = Object.entries(userProgress.lastViewed || {})
                 .map(([id, date]) => ({ id: parseInt(id), date }))
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -3100,7 +3056,7 @@
             let selectedOption = null;
             let answerSubmitted = false;
             let timerInterval;
-            let timeLeft = 600; // 10 минут
+            let timeLeft = 600;
 
             const formatTime = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 
@@ -3732,7 +3688,7 @@
             let score = 0;
             let answerSubmitted = false;
             let timerInterval;
-            let timeLeft = questions.length * 60; // 1 минута на вопрос
+            let timeLeft = questions.length * 60;
 
             const formatTime = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 
@@ -3853,7 +3809,6 @@
                 Telegram.WebApp.ready();
                 Telegram.WebApp.expand();
                 
-                // Адаптация под тему Telegram
                 const colorScheme = Telegram.WebApp.colorScheme;
                 if (colorScheme === 'light') {
                     settings.theme = 'light';
@@ -3869,7 +3824,6 @@
             loadAllData();
             showMainInterface();
             
-            // Запрашиваем разрешение на уведомления, если включены напоминания
             if (settings.reminders) {
                 requestNotificationPermission();
             }
@@ -3912,7 +3866,7 @@
         window.toggleQuestionAnswer = toggleQuestionAnswer;
         window.showNoteInput = showNoteInput;
         window.saveNote = saveNote;
-        window.autoSaveNote = autoSaveNote;
+        window.handleNoteInput = handleNoteInput;
         window.deleteNote = deleteNote;
         window.markQuestionLearned = markQuestionLearned;
         window.markQuestionLearnedSingle = markQuestionLearnedSingle;
@@ -3927,7 +3881,6 @@
         window.exportProgress = exportProgress;
         window.importProgress = importProgress;
         
-        // Для тестов и карточек
         window.selectQuizOption = null;
         window.submitQuizAnswer = null;
         window.skipQuizQuestion = null;
