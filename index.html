@@ -20,10 +20,10 @@
             --bg-gradient-end: #1a1a2e;
             --text-color: white;
             --text-secondary: #b0b0b0;
-            --card-bg: rgba(26, 26, 26, 0.6);
-            --header-bg: rgba(26, 26, 26, 0.8);
-            --border-color: rgba(0, 212, 255, 0.1);
-            --progress-bg: rgba(51, 51, 51, 0.5);
+            --card-bg: rgba(26, 26, 26, 0.9);
+            --header-bg: rgba(26, 26, 26, 0.95);
+            --border-color: rgba(0, 212, 255, 0.2);
+            --progress-bg: rgba(51, 51, 51, 0.8);
             --base-font-size: 16px;
             --success: #00ff88;
             --danger: #ff4444;
@@ -39,9 +39,9 @@
             --bg-gradient-end: #e6e9f0;
             --text-color: #1a1a2e;
             --text-secondary: #4a4a6a;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --header-bg: rgba(255, 255, 255, 0.8);
-            --border-color: rgba(0, 212, 255, 0.3);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --border-color: rgba(0, 212, 255, 0.4);
             --progress-bg: rgba(0, 0, 0, 0.1);
         }
 
@@ -50,10 +50,10 @@
             --bg-gradient-end: #0a0a1a;
             --text-color: #ffffff;
             --text-secondary: #b0f0ff;
-            --card-bg: rgba(0, 20, 40, 0.8);
-            --header-bg: rgba(0, 10, 20, 0.9);
-            --border-color: rgba(0, 255, 255, 0.5);
-            --progress-bg: rgba(0, 50, 100, 0.5);
+            --card-bg: rgba(0, 20, 40, 0.95);
+            --header-bg: rgba(0, 10, 20, 0.98);
+            --border-color: rgba(0, 255, 255, 0.6);
+            --progress-bg: rgba(0, 50, 100, 0.8);
             --accent: #00ffff;
             box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
@@ -63,10 +63,10 @@
             --bg-gradient-end: #c1e1c1;
             --text-color: #4a4a4a;
             --text-secondary: #6b6b6b;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --header-bg: rgba(255, 255, 255, 0.9);
-            --border-color: rgba(255, 182, 193, 0.5);
-            --progress-bg: rgba(200, 200, 200, 0.3);
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --header-bg: rgba(255, 255, 255, 0.98);
+            --border-color: rgba(255, 182, 193, 0.6);
+            --progress-bg: rgba(200, 200, 200, 0.4);
             --accent: #ff9eb5;
         }
 
@@ -78,8 +78,11 @@
             height: 100vh;
             height: -webkit-fill-available;
             position: relative;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
             font-size: var(--base-font-size);
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         /* Частицы на фоне */
@@ -90,15 +93,15 @@
             background: var(--accent);
             border-radius: 50%;
             pointer-events: none;
-            opacity: 0.5;
+            opacity: 0.3;
             animation: float 20s infinite linear;
             z-index: 0;
         }
 
         @keyframes float {
             0% { transform: translateY(100vh) translateX(0); opacity: 0; }
-            10% { opacity: 0.5; }
-            90% { opacity: 0.5; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
             100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
         }
 
@@ -200,12 +203,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 20px var(--accent);
-            animation: glow 2s infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 20px var(--accent); }
-            50% { text-shadow: 0 0 40px var(--accent), 0 0 60px #9b59b6; }
         }
 
         .back-btn {
@@ -216,7 +213,7 @@
             font-size: 0.875rem;
             padding: 8px 12px;
             border-radius: 20px;
-            transition: all 0.3s;
+            transition: background-color 0.3s ease;
         }
 
         .back-btn:hover {
@@ -234,7 +231,7 @@
         .global-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent), #9b59b6);
-            transition: width 0.3s;
+            transition: width 0.3s ease;
             box-shadow: 0 0 10px var(--accent);
         }
 
@@ -257,7 +254,7 @@
         .xp-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--xp-color), #ff6600);
-            transition: width 0.3s;
+            transition: width 0.3s ease;
             position: relative;
             overflow: hidden;
         }
@@ -306,17 +303,18 @@
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, border-color 0.3s ease;
             animation: fadeInUp 0.5s ease;
             position: relative;
             overflow: hidden;
+            color: var(--text-color);
         }
 
         .card:hover {
             border-color: var(--accent);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 48px rgba(0,212,255,0.2), 0 0 0 1px var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0,212,255,0.2);
         }
 
         .card::before {
@@ -328,7 +326,7 @@
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s ease;
             pointer-events: none;
         }
 
@@ -354,12 +352,6 @@
             font-size: 1.5rem;
             margin-bottom: 8px;
             font-weight: 700;
-            animation: gradient 3s infinite;
-        }
-
-        @keyframes gradient {
-            0%, 100% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(10deg); }
         }
 
         h2 {
@@ -380,12 +372,6 @@
             height: 2px;
             background: linear-gradient(90deg, var(--accent), transparent);
             border-radius: 2px;
-            animation: expand 2s infinite;
-        }
-
-        @keyframes expand {
-            0%, 100% { width: 40px; }
-            50% { width: 60px; }
         }
 
         h3 {
@@ -452,7 +438,7 @@
         }
 
         .btn-secondary {
-            background: rgba(42, 42, 42, 0.8);
+            background: rgba(42, 42, 42, 0.9);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             color: white;
@@ -460,7 +446,7 @@
         }
 
         .light-theme .btn-secondary {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             color: #1a1a2e;
         }
 
@@ -530,7 +516,7 @@
 
         .stat:hover {
             background: rgba(0, 212, 255, 0.1);
-            transform: translateY(-4px) scale(1.05);
+            transform: translateY(-4px);
             border-color: var(--accent);
         }
 
@@ -613,12 +599,6 @@
             height: 2px;
             background: var(--accent);
             border-radius: 2px;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .nav-icon {
@@ -641,12 +621,12 @@
         .form-input {
             width: 100%;
             padding: 14px 16px;
-            background: rgba(42, 42, 42, 0.8);
+            background: rgba(42, 42, 42, 0.9);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            color: white;
+            color: var(--text-color);
             font-size: 1rem;
             -webkit-appearance: none;
             appearance: none;
@@ -654,7 +634,7 @@
         }
 
         .light-theme .form-input {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             color: #1a1a2e;
         }
 
@@ -674,7 +654,7 @@
             display: flex;
             flex-direction: column;
             padding: 18px;
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             border-radius: 16px;
@@ -689,7 +669,7 @@
         }
 
         .light-theme .ticket-item {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .ticket-item:nth-child(1) { animation-delay: 0.1s; }
@@ -710,19 +690,19 @@
         }
 
         .ticket-item:hover {
-            transform: translateX(8px) scale(1.02);
+            transform: translateX(8px);
             border-left-color: var(--accent);
-            background: rgba(42, 42, 42, 0.8);
+            background: rgba(42, 42, 42, 0.9);
         }
 
         .ticket-item.completed {
             border-left-color: var(--success);
-            background: linear-gradient(90deg, rgba(0, 255, 136, 0.1), rgba(42, 42, 42, 0.6));
+            background: linear-gradient(90deg, rgba(0, 255, 136, 0.1), rgba(42, 42, 42, 0.8));
         }
 
         .ticket-item.in-progress {
             border-left-color: var(--warning);
-            background: linear-gradient(90deg, rgba(255, 170, 0, 0.1), rgba(42, 42, 42, 0.6));
+            background: linear-gradient(90deg, rgba(255, 170, 0, 0.1), rgba(42, 42, 42, 0.8));
         }
 
         .ticket-header {
@@ -817,7 +797,7 @@
         }
 
         .question-card {
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             border-radius: 16px;
@@ -829,7 +809,7 @@
         }
 
         .light-theme .question-card {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .question-card:hover {
@@ -839,18 +819,18 @@
         }
 
         .question-card.practical {
-            opacity: 0.7;
-            background: rgba(26, 26, 26, 0.6);
+            opacity: 0.9;
+            background: rgba(26, 26, 26, 0.8);
             border-color: rgba(255, 68, 68, 0.2);
         }
 
         .light-theme .question-card.practical {
-            background: rgba(255, 240, 240, 0.8);
+            background: rgba(255, 240, 240, 0.9);
         }
 
         .question-header {
             padding: 16px 20px;
-            background: rgba(51, 51, 51, 0.4);
+            background: rgba(51, 51, 51, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -863,7 +843,7 @@
         }
 
         .question-header:hover {
-            background: rgba(51, 51, 51, 0.6);
+            background: rgba(51, 51, 51, 0.7);
         }
 
         .question-number {
@@ -892,7 +872,7 @@
             font-size: 0.9375rem;
             line-height: 1.6;
             border-bottom: 1px solid var(--border-color);
-            color: #e0e0e0;
+            color: var(--text-color);
         }
 
         .light-theme .question-text {
@@ -904,25 +884,25 @@
         }
 
         .answer-content {
-            background: rgba(26, 26, 26, 0.8);
+            background: rgba(26, 26, 26, 0.9);
             padding: 20px;
             border-radius: 12px;
             border-left: 3px solid var(--accent);
             font-size: 0.875rem;
             line-height: 1.6;
-            color: #d0d0d0;
+            color: var(--text-color);
             margin-top: 16px;
             box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
             white-space: pre-wrap;
         }
 
         .light-theme .answer-content {
-            background: rgba(240, 240, 255, 0.8);
+            background: rgba(240, 240, 255, 0.9);
             color: #1a1a2e;
         }
 
         .quiz-option {
-            background: rgba(42, 42, 42, 0.8);
+            background: rgba(42, 42, 42, 0.9);
             border: 2px solid var(--border-color);
             border-radius: 16px;
             padding: 16px;
@@ -935,7 +915,7 @@
         }
 
         .light-theme .quiz-option {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .quiz-option:hover {
@@ -945,18 +925,18 @@
 
         .quiz-option.selected {
             border-color: var(--accent);
-            background: rgba(0, 212, 255, 0.1);
+            background: rgba(0, 212, 255, 0.15);
             box-shadow: 0 0 20px var(--accent);
         }
 
         .quiz-option.correct {
             border-color: var(--success);
-            background: rgba(0, 255, 136, 0.1);
+            background: rgba(0, 255, 136, 0.15);
         }
 
         .quiz-option.wrong {
             border-color: var(--danger);
-            background: rgba(255, 68, 68, 0.1);
+            background: rgba(255, 68, 68, 0.15);
         }
 
         .quiz-marker {
@@ -969,7 +949,7 @@
             justify-content: center;
             font-size: 0.875rem;
             flex-shrink: 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .quiz-marker.selected {
@@ -980,7 +960,7 @@
         }
 
         .formula-block {
-            background: rgba(30, 30, 63, 0.8);
+            background: rgba(30, 30, 63, 0.9);
             padding: 16px;
             border-radius: 12px;
             margin: 12px 0;
@@ -1006,7 +986,6 @@
 
         .key-term:hover {
             background: rgba(0, 212, 255, 0.2);
-            transform: scale(1.05);
             border-color: var(--accent);
         }
 
@@ -1022,6 +1001,7 @@
             z-index: 1000;
             display: none;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            color: var(--text-color);
         }
 
         .key-term:hover + .key-term-definition {
@@ -1042,12 +1022,6 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            animation: flame 1s infinite;
-        }
-
-        @keyframes flame {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.3); }
         }
 
         .bookmark-btn {
@@ -1063,12 +1037,6 @@
         .bookmark-btn.active {
             color: var(--warning);
             transform: scale(1.2);
-            animation: star 1s infinite;
-        }
-
-        @keyframes star {
-            0%, 100% { filter: drop-shadow(0 0 5px var(--warning)); }
-            50% { filter: drop-shadow(0 0 15px var(--warning)); }
         }
 
         .search-container {
@@ -1104,18 +1072,18 @@
         .search-input {
             width: 100%;
             padding: 14px 16px 14px 48px;
-            background: rgba(42, 42, 42, 0.8);
+            background: rgba(42, 42, 42, 0.9);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
             border: 1px solid var(--border-color);
             border-radius: 30px;
-            color: white;
+            color: var(--text-color);
             font-size: 1rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .light-theme .search-input {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
             color: #1a1a2e;
         }
 
@@ -1133,12 +1101,13 @@
 
         .filter-chip {
             padding: 8px 16px;
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             border-radius: 30px;
             font-size: 0.8125rem;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid var(--border-color);
+            color: var(--text-color);
         }
 
         .filter-chip:hover {
@@ -1155,7 +1124,7 @@
 
         .sort-select {
             padding: 8px 12px;
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             color: var(--text-color);
@@ -1179,7 +1148,7 @@
             min-height: 300px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.3s, background 0.2s;
+            transition: transform 0.3s ease;
             cursor: grab;
             user-select: none;
         }
@@ -1204,6 +1173,7 @@
             background: var(--card-bg);
             border: 2px solid var(--accent);
             box-shadow: 0 0 30px var(--accent);
+            color: var(--text-color);
         }
         .flashcard-back {
             transform: rotateY(180deg);
@@ -1222,10 +1192,10 @@
         .note-input {
             width: 100%;
             padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            color: white;
+            color: var(--text-color);
             margin-top: 12px;
             font-size: 0.9rem;
         }
@@ -1265,7 +1235,7 @@
             background: rgba(0, 212, 255, 0.05);
             border-radius: 16px;
             margin-bottom: 12px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
 
@@ -1307,16 +1277,18 @@
             display: flex;
             gap: 8px;
             margin: 16px 0;
+            flex-wrap: wrap;
         }
 
         .theme-option {
             flex: 1;
+            min-width: 80px;
             padding: 12px;
             text-align: center;
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             border: 1px solid transparent;
         }
 
@@ -1360,12 +1332,6 @@
         }
         .timer.warning {
             color: var(--danger);
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .section-tabs {
@@ -1383,13 +1349,13 @@
 
         .section-tab {
             padding: 10px 20px;
-            background: rgba(42, 42, 42, 0.6);
+            background: rgba(42, 42, 42, 0.8);
             border-radius: 30px;
             font-size: 0.875rem;
             cursor: pointer;
             white-space: nowrap;
             border: 1px solid var(--border-color);
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .section-tab.active {
@@ -1422,7 +1388,7 @@
             cursor: pointer;
             padding: 8px;
             border-radius: 8px;
-            transition: background 0.3s;
+            transition: background 0.3s ease;
         }
         .checkbox-label:hover {
             background: rgba(0,212,255,0.1);
@@ -1457,8 +1423,9 @@
             text-align: center;
             font-size: 0.7rem;
             min-width: 40px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             cursor: help;
+            color: var(--text-color);
         }
         .periodic-element:hover {
             background: rgba(0,212,255,0.3);
@@ -1494,7 +1461,7 @@
             border-radius: 20px;
             padding: 6px 12px;
             font-size: 0.9rem;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             cursor: help;
         }
         .metal:hover {
@@ -1537,7 +1504,7 @@
             border-radius: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
         .recent-item:hover {
             background: rgba(0,212,255,0.1);
@@ -1563,7 +1530,7 @@
             border-radius: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .history-item:hover {
@@ -1589,12 +1556,13 @@
             background: rgba(0,212,255,0.1);
             position: relative;
             cursor: help;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 0.7rem;
+            color: var(--text-color);
         }
 
         .calendar-day:hover {
@@ -1625,7 +1593,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: pulse 1s infinite;
         }
 
         .confetti {
@@ -1678,6 +1645,7 @@
             max-width: 90%;
             max-height: 90%;
             overflow-y: auto;
+            color: var(--text-color);
         }
 
         @keyframes scaleIn {
@@ -1713,7 +1681,7 @@
             height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             border: 2px solid transparent;
         }
 
@@ -1765,7 +1733,7 @@
             font-size: 24px;
             box-shadow: 0 4px 20px var(--accent);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             z-index: 99;
             border: none;
         }
@@ -1789,7 +1757,7 @@
             aspect-ratio: 1;
             border-radius: 2px;
             background: rgba(0,212,255,0.1);
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             cursor: help;
         }
 
@@ -1817,7 +1785,7 @@
             font-size: 0.7rem;
             margin: 2px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
         }
 
         .tag:hover {
@@ -1859,17 +1827,6 @@
             input, textarea { font-size: 16px !important; }
         }
 
-        /* Анимации для достижений */
-        @keyframes unlock {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); filter: brightness(1.5); }
-            100% { transform: scale(1); }
-        }
-
-        .unlock-animation {
-            animation: unlock 0.5s ease;
-        }
-
         /* Стили для печати */
         @media print {
             .navigation, .header, .btn, .bookmark-btn {
@@ -1888,7 +1845,7 @@
         <div class="loading">
             <div class="spinner"></div>
             <h2 style="margin-top: 16px; color: var(--accent); font-size: 1.125rem;">ChemExam Assistant MEGA</h2>
-            <p style="color: #888; margin-top: 8px; font-size: 0.875rem;">Загрузка супер-фич...</p>
+            <p style="color: #888; margin-top: 8px; font-size: 0.875rem;">Загрузка 1000 тестовых вопросов...</p>
             <div style="width: 200px; margin-top: 20px;">
                 <div class="skeleton"></div>
                 <div class="skeleton" style="width: 150px;"></div>
@@ -1901,16 +1858,16 @@
         // =====================================================
         // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
         // =====================================================
-        const STORAGE_KEY = 'chemExamData_v10';
-        const PROGRESS_KEY = 'chemExamProgress_v10';
-        const BOOKMARKS_KEY = 'chemExamBookmarks_v10';
-        const NOTES_KEY = 'chemExamNotes_v10';
-        const SETTINGS_KEY = 'chemExamSettings_v10';
-        const STATS_KEY = 'chemExamStats_v10';
-        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v10';
-        const HISTORY_KEY = 'chemExamHistory_v10';
-        const GAMIFICATION_KEY = 'chemExamGamification_v10';
-        const TAGS_KEY = 'chemExamTags_v10';
+        const STORAGE_KEY = 'chemExamData_v11';
+        const PROGRESS_KEY = 'chemExamProgress_v11';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v11';
+        const NOTES_KEY = 'chemExamNotes_v11';
+        const SETTINGS_KEY = 'chemExamSettings_v11';
+        const STATS_KEY = 'chemExamStats_v11';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v11';
+        const HISTORY_KEY = 'chemExamHistory_v11';
+        const GAMIFICATION_KEY = 'chemExamGamification_v11';
+        const TAGS_KEY = 'chemExamTags_v11';
 
         const TOTAL_QUESTIONS = 35;
         const TOTAL_TICKETS = 17;
@@ -1980,8 +1937,8 @@
             level: 1,
             xpToNextLevel: 100,
             achievements: {},
-            dailyChallenges: [],
-            weeklyChallenges: [],
+            dailyChallenges: {},
+            weeklyChallenges: {},
             combo: 0,
             lastComboDate: null,
             chests: [],
@@ -2032,46 +1989,3628 @@
             { id: 'chest3', days: 30, xp: 500, items: ['legendary_badge'] }
         ];
 
+        // =====================================================
+        // 1000 ТЕСТОВЫХ ВОПРОСОВ
+        // =====================================================
         let quizQuestions = [
-            { id: 1001, question: "Какая общая формула у алканов?", options: ["CₙH₂ₙ₊₂", "CₙH₂ₙ", "CₙH₂ₙ₋₂", "CₙHₙ"], correct: 0 },
-            { id: 1002, question: "Какой тип гибридизации у атома углерода в молекуле метана?", options: ["sp³", "sp²", "sp", "не гибридизирован"], correct: 0 },
-            { id: 1003, question: "Какая реакция характерна для алкенов?", options: ["Присоединения", "Замещения", "Разложения", "Обмена"], correct: 0 },
-            { id: 1004, question: "Что такое изомеры?", options: ["Вещества с одинаковым составом, но разным строением", "Вещества с разным составом и строением", "Вещества с одинаковым строением", "Вещества с одинаковыми свойствами"], correct: 0 },
-            { id: 1005, question: "Какая формула у бензола?", options: ["C₆H₆", "C₆H₁₂", "C₆H₁₀", "C₆H₁₄"], correct: 0 },
-            { id: 1006, question: "Какой газ выделяется при взаимодействии карбида кальция с водой?", options: ["Метан", "Этилен", "Ацетилен", "Водород"], correct: 2 },
-            { id: 1007, question: "Какая кислота образуется при окислении уксусного альдегида?", options: ["Муравьиная", "Уксусная", "Пропионовая", "Масляная"], correct: 1 },
-            { id: 1008, question: "Какой тип связи в молекуле хлороводорода?", options: ["Ионная", "Ковалентная полярная", "Ковалентная неполярная", "Металлическая"], correct: 1 },
-            { id: 1009, question: "Что такое гидролиз?", options: ["Разложение водой", "Присоединение воды", "Отщепление воды", "Окисление водой"], correct: 0 },
-            { id: 1010, question: "Какая формула у глюкозы?", options: ["C₆H₁₂O₆", "C₁₂H₂₂O₁₁", "C₆H₁₀O₅", "C₆H₆"], correct: 0 }
+            // ===== БИЛЕТ 1: Периодический закон и строение атома (50 вопросов) =====
+            { id: 2001, ticket: 1, topic: "Периодический закон", 
+              question: "Как Д.И. Менделеев сформулировал периодический закон?",
+              options: [
+                "Свойства элементов зависят от их атомной массы",
+                "Свойства элементов зависят от заряда ядра",
+                "Свойства элементов периодически повторяются",
+                "Все элементы можно расположить в таблицу"
+              ], correct: 2 },
+            { id: 2002, ticket: 1, topic: "Периодический закон",
+              question: "Современная формулировка периодического закона:",
+              options: [
+                "Свойства элементов находятся в периодической зависимости от атомной массы",
+                "Свойства элементов находятся в периодической зависимости от заряда ядра",
+                "Свойства элементов находятся в периодической зависимости от числа нейтронов",
+                "Свойства элементов зависят от положения в таблице"
+              ], correct: 1 },
+            { id: 2003, ticket: 1, topic: "Периодический закон",
+              question: "Какие элементы предсказал Менделеев?",
+              options: [
+                "Германий, галлий, скандий",
+                "Уран, плутоний, нептуний",
+                "Водород, гелий, литий",
+                "Хлор, бром, иод"
+              ], correct: 0 },
+            { id: 2004, ticket: 1, topic: "Строение атома",
+              question: "Из чего состоит атомное ядро?",
+              options: [
+                "Из протонов и электронов",
+                "Из протонов и нейтронов",
+                "Из нейтронов и электронов",
+                "Только из протонов"
+              ], correct: 1 },
+            { id: 2005, ticket: 1, topic: "Строение атома",
+              question: "Что определяет порядковый номер элемента?",
+              options: [
+                "Число нейтронов",
+                "Число протонов",
+                "Атомную массу",
+                "Число электронных слоев"
+              ], correct: 1 },
+            { id: 2006, ticket: 1, topic: "Строение атома",
+              question: "Что такое изотопы?",
+              options: [
+                "Атомы с разным числом протонов",
+                "Атомы с разным числом нейтронов",
+                "Атомы с разным числом электронов",
+                "Разные химические элементы"
+              ], correct: 1 },
+            { id: 2007, ticket: 1, topic: "Периодическая система",
+              question: "Как изменяется радиус атома в периоде слева направо?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Сначала уменьшается, потом увеличивается"
+              ], correct: 1 },
+            { id: 2008, ticket: 1, topic: "Периодическая система",
+              question: "Как изменяется радиус атома в группе сверху вниз?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Сначала увеличивается, потом уменьшается"
+              ], correct: 0 },
+            { id: 2009, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы самые электроотрицательные?",
+              options: [
+                "Щелочные металлы",
+                "Галогены",
+                "Инертные газы",
+                "Переходные металлы"
+              ], correct: 1 },
+            { id: 2010, ticket: 1, topic: "Периодическая система",
+              question: "Какой элемент самый электроотрицательный?",
+              options: [
+                "Кислород",
+                "Хлор",
+                "Фтор",
+                "Азот"
+              ], correct: 2 },
+            { id: 2011, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на первом энергетическом уровне?",
+              options: [
+                "2",
+                "8",
+                "18",
+                "32"
+              ], correct: 0 },
+            { id: 2012, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на втором энергетическом уровне?",
+              options: [
+                "2",
+                "8",
+                "18",
+                "32"
+              ], correct: 1 },
+            { id: 2013, ticket: 1, topic: "Строение атома",
+              question: "Какая форма у s-орбитали?",
+              options: [
+                "Сферическая",
+                "Гантелеобразная",
+                "Клеверообразная",
+                "Нет определенной формы"
+              ], correct: 0 },
+            { id: 2014, ticket: 1, topic: "Строение атома",
+              question: "Какая форма у p-орбитали?",
+              options: [
+                "Сферическая",
+                "Гантелеобразная",
+                "Клеверообразная",
+                "Кубическая"
+              ], correct: 1 },
+            { id: 2015, ticket: 1, topic: "Периодический закон",
+              question: "В каком году Менделеев открыл периодический закон?",
+              options: [
+                "1869",
+                "1879",
+                "1889",
+                "1899"
+              ], correct: 0 },
+            { id: 2016, ticket: 1, topic: "Периодический закон",
+              question: "Сколько элементов было известно во времена Менделеева?",
+              options: [
+                "Около 30",
+                "Около 60",
+                "Около 90",
+                "Около 100"
+              ], correct: 1 },
+            { id: 2017, ticket: 1, topic: "Периодическая система",
+              question: "Сколько периодов в таблице Менделеева?",
+              options: [
+                "5",
+                "6",
+                "7",
+                "8"
+              ], correct: 2 },
+            { id: 2018, ticket: 1, topic: "Периодическая система",
+              question: "Сколько групп в таблице Менделеева?",
+              options: [
+                "8",
+                "10",
+                "16",
+                "18"
+              ], correct: 3 },
+            { id: 2019, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы относятся к s-семейству?",
+              options: [
+                "1-2 группы",
+                "3-12 группы",
+                "13-18 группы",
+                "Лантаноиды"
+              ], correct: 0 },
+            { id: 2020, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы относятся к p-семейству?",
+              options: [
+                "1-2 группы",
+                "3-12 группы",
+                "13-18 группы",
+                "Актиноиды"
+              ], correct: 2 },
+            { id: 2021, ticket: 1, topic: "Строение атома",
+              question: "Что такое электронная конфигурация?",
+              options: [
+                "Распределение электронов по орбиталям",
+                "Расположение протонов в ядре",
+                "Количество нейтронов",
+                "Схема атома"
+              ], correct: 0 },
+            { id: 2022, ticket: 1, topic: "Строение атома",
+              question: "Какова электронная конфигурация натрия?",
+              options: [
+                "1s²2s²2p⁶3s¹",
+                "1s²2s²2p⁶3s²",
+                "1s²2s²2p⁶3s²3p¹",
+                "1s²2s²2p⁶"
+              ], correct: 0 },
+            { id: 2023, ticket: 1, topic: "Строение атома",
+              question: "Какова электронная конфигурация хлора?",
+              options: [
+                "1s²2s²2p⁶3s²3p⁵",
+                "1s²2s²2p⁶3s²3p³",
+                "1s²2s²2p⁶3s²3p⁶",
+                "1s²2s²2p⁶3s¹"
+              ], correct: 0 },
+            { id: 2024, ticket: 1, topic: "Периодический закон",
+              question: "Какое значение имело открытие периодического закона?",
+              options: [
+                "Позволило систематизировать элементы",
+                "Предсказало новые элементы",
+                "Помогло понять строение атома",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2025, ticket: 1, topic: "Периодическая система",
+              question: "Какой элемент находится в 4 периоде, 1 группе?",
+              options: [
+                "Натрий",
+                "Калий",
+                "Литий",
+                "Рубидий"
+              ], correct: 1 },
+            { id: 2026, ticket: 1, topic: "Строение атома",
+              question: "Что такое валентные электроны?",
+              options: [
+                "Электроны на внешнем уровне",
+                "Все электроны атома",
+                "Электроны на внутренних уровнях",
+                "Протоны в ядре"
+              ], correct: 0 },
+            { id: 2027, ticket: 1, topic: "Строение атома",
+              question: "Сколько валентных электронов у кислорода?",
+              options: [
+                "2",
+                "4",
+                "6",
+                "8"
+              ], correct: 2 },
+            { id: 2028, ticket: 1, topic: "Периодическая система",
+              question: "Как изменяются металлические свойства в группе сверху вниз?",
+              options: [
+                "Усиливаются",
+                "Ослабевают",
+                "Не изменяются",
+                "Сначала усиливаются, потом ослабевают"
+              ], correct: 0 },
+            { id: 2029, ticket: 1, topic: "Периодическая система",
+              question: "Как изменяются неметаллические свойства в периоде слева направо?",
+              options: [
+                "Усиливаются",
+                "Ослабевают",
+                "Не изменяются",
+                "Сначала усиливаются, потом ослабевают"
+              ], correct: 0 },
+            { id: 2030, ticket: 1, topic: "Строение атома",
+              question: "Что такое массовое число?",
+              options: [
+                "Сумма протонов и нейтронов",
+                "Количество протонов",
+                "Количество нейтронов",
+                "Атомная масса в граммах"
+              ], correct: 0 },
+            { id: 2031, ticket: 1, topic: "Строение атома",
+              question: "Какой заряд имеет электрон?",
+              options: [
+                "+1",
+                "-1",
+                "0",
+                "Зависит от атома"
+              ], correct: 1 },
+            { id: 2032, ticket: 1, topic: "Строение атома",
+              question: "Какой заряд имеет протон?",
+              options: [
+                "+1",
+                "-1",
+                "0",
+                "+2"
+              ], correct: 0 },
+            { id: 2033, ticket: 1, topic: "Строение атома",
+              question: "Какой заряд имеет нейтрон?",
+              options: [
+                "+1",
+                "-1",
+                "0",
+                "Зависит от атома"
+              ], correct: 2 },
+            { id: 2034, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы называют щелочными металлами?",
+              options: [
+                "1 группа (кроме водорода)",
+                "2 группа",
+                "17 группа",
+                "18 группа"
+              ], correct: 0 },
+            { id: 2035, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы называют галогенами?",
+              options: [
+                "1 группа",
+                "2 группа",
+                "17 группа",
+                "18 группа"
+              ], correct: 2 },
+            { id: 2036, ticket: 1, topic: "Периодическая система",
+              question: "Какие элементы называют инертными газами?",
+              options: [
+                "1 группа",
+                "2 группа",
+                "17 группа",
+                "18 группа"
+              ], correct: 3 },
+            { id: 2037, ticket: 1, topic: "Строение атома",
+              question: "Что такое орбиталь?",
+              options: [
+                "Область наиболее вероятного нахождения электрона",
+                "Путь движения электрона",
+                "Энергетический уровень",
+                "Ядро атома"
+              ], correct: 0 },
+            { id: 2038, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на s-подуровне?",
+              options: [
+                "2",
+                "6",
+                "10",
+                "14"
+              ], correct: 0 },
+            { id: 2039, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на p-подуровне?",
+              options: [
+                "2",
+                "6",
+                "10",
+                "14"
+              ], correct: 1 },
+            { id: 2040, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на d-подуровне?",
+              options: [
+                "2",
+                "6",
+                "10",
+                "14"
+              ], correct: 2 },
+            { id: 2041, ticket: 1, topic: "Строение атома",
+              question: "Сколько электронов может быть на f-подуровне?",
+              options: [
+                "2",
+                "6",
+                "10",
+                "14"
+              ], correct: 3 },
+            { id: 2042, ticket: 1, topic: "Периодическая система",
+              question: "Что такое лантаноиды?",
+              options: [
+                "Элементы с 57 по 71",
+                "Элементы с 89 по 103",
+                "Элементы 1 группы",
+                "Элементы 17 группы"
+              ], correct: 0 },
+            { id: 2043, ticket: 1, topic: "Периодическая система",
+              question: "Что такое актиноиды?",
+              options: [
+                "Элементы с 57 по 71",
+                "Элементы с 89 по 103",
+                "Элементы 1 группы",
+                "Элементы 2 группы"
+              ], correct: 1 },
+            { id: 2044, ticket: 1, topic: "Строение атома",
+              question: "Какова электронная конфигурация кальция?",
+              options: [
+                "1s²2s²2p⁶3s²3p⁶4s²",
+                "1s²2s²2p⁶3s²3p⁶4s¹",
+                "1s²2s²2p⁶3s²3p⁴",
+                "1s²2s²2p⁶3s²"
+              ], correct: 0 },
+            { id: 2045, ticket: 1, topic: "Строение атома",
+              question: "Какова электронная конфигурация алюминия?",
+              options: [
+                "1s²2s²2p⁶3s²3p¹",
+                "1s²2s²2p⁶3s²3p²",
+                "1s²2s²2p⁶3s²3p³",
+                "1s²2s²2p⁶3s¹"
+              ], correct: 0 },
+            { id: 2046, ticket: 1, topic: "Периодический закон",
+              question: "Кто кроме Менделеева работал над периодической системой?",
+              options: [
+                "Лотар Мейер",
+                "Джон Дальтон",
+                "Антуан Лавуазье",
+                "Джозеф Пристли"
+              ], correct: 0 },
+            { id: 2047, ticket: 1, topic: "Строение атома",
+              question: "Что такое изобары?",
+              options: [
+                "Атомы с одинаковым массовым числом",
+                "Атомы с одинаковым числом протонов",
+                "Атомы с одинаковым числом нейтронов",
+                "Одно и то же, что изотопы"
+              ], correct: 0 },
+            { id: 2048, ticket: 1, topic: "Строение атома",
+              question: "Что такое изотоны?",
+              options: [
+                "Атомы с одинаковым числом нейтронов",
+                "Атомы с одинаковым числом протонов",
+                "Атомы с одинаковым массовым числом",
+                "Радиоактивные атомы"
+              ], correct: 0 },
+            { id: 2049, ticket: 1, topic: "Периодическая система",
+              question: "Какой элемент самый легкий?",
+              options: [
+                "Гелий",
+                "Водород",
+                "Литий",
+                "Кислород"
+              ], correct: 1 },
+            { id: 2050, ticket: 1, topic: "Периодическая система",
+              question: "Какой элемент самый тяжелый из природных?",
+              options: [
+                "Уран",
+                "Плутоний",
+                "Свинец",
+                "Ртуть"
+              ], correct: 0 },
+
+            // ===== БИЛЕТ 2: Органическая химия - Карбоновые кислоты (50 вопросов) =====
+            { id: 2051, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая общая формула карбоновых кислот?",
+              options: [
+                "R-COOH",
+                "R-COH",
+                "R-OH",
+                "R-O-R"
+              ], correct: 0 },
+            { id: 2052, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в уксусе?",
+              options: [
+                "Муравьиная",
+                "Уксусная",
+                "Лимонная",
+                "Яблочная"
+              ], correct: 1 },
+            { id: 2053, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота самая простая?",
+              options: [
+                "Уксусная",
+                "Муравьиная",
+                "Пропионовая",
+                "Масляная"
+              ], correct: 1 },
+            { id: 2054, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Формула муравьиной кислоты?",
+              options: [
+                "HCOOH",
+                "CH₃COOH",
+                "C₂H₅COOH",
+                "C₃H₇COOH"
+              ], correct: 0 },
+            { id: 2055, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Формула уксусной кислоты?",
+              options: [
+                "HCOOH",
+                "CH₃COOH",
+                "C₂H₅COOH",
+                "C₃H₇COOH"
+              ], correct: 1 },
+            { id: 2056, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота пахнет прогорклым маслом?",
+              options: [
+                "Уксусная",
+                "Муравьиная",
+                "Масляная",
+                "Лимонная"
+              ], correct: 2 },
+            { id: 2057, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как называют соли уксусной кислоты?",
+              options: [
+                "Форматы",
+                "Ацетаты",
+                "Пропионаты",
+                "Бутираты"
+              ], correct: 1 },
+            { id: 2058, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как называют соли муравьиной кислоты?",
+              options: [
+                "Форматы",
+                "Ацетаты",
+                "Пропионаты",
+                "Бензоаты"
+              ], correct: 0 },
+            { id: 2059, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая реакция характерна для карбоновых кислот?",
+              options: [
+                "Этерификация",
+                "Гидрирование",
+                "Полимеризация",
+                "Галогенирование"
+              ], correct: 0 },
+            { id: 2060, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что образуется при реакции кислоты со спиртом?",
+              options: [
+                "Сложный эфир",
+                "Простой эфир",
+                "Альдегид",
+                "Кетон"
+              ], correct: 0 },
+            { id: 2061, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется в консервировании?",
+              options: [
+                "Серная",
+                "Соляная",
+                "Уксусная",
+                "Азотная"
+              ], correct: 2 },
+            { id: 2062, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в лимонах?",
+              options: [
+                "Лимонная",
+                "Яблочная",
+                "Винная",
+                "Щавелевая"
+              ], correct: 0 },
+            { id: 2063, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в яблоках?",
+              options: [
+                "Лимонная",
+                "Яблочная",
+                "Винная",
+                "Щавелевая"
+              ], correct: 1 },
+            { id: 2064, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в винограде?",
+              options: [
+                "Лимонная",
+                "Яблочная",
+                "Винная",
+                "Щавелевая"
+              ], correct: 2 },
+            { id: 2065, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в щавеле?",
+              options: [
+                "Лимонная",
+                "Яблочная",
+                "Винная",
+                "Щавелевая"
+              ], correct: 3 },
+            { id: 2066, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое жирные кислоты?",
+              options: [
+                "Высшие карбоновые кислоты",
+                "Кислоты с длинной цепью",
+                "Кислоты, входящие в состав жиров",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2067, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота входит в состав сливочного масла?",
+              options: [
+                "Олеиновая",
+                "Пальмитиновая",
+                "Стеариновая",
+                "Масляная"
+              ], correct: 3 },
+            { id: 2068, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота входит в состав растительных масел?",
+              options: [
+                "Олеиновая",
+                "Стеариновая",
+                "Пальмитиновая",
+                "Муравьиная"
+              ], correct: 0 },
+            { id: 2069, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое мыла?",
+              options: [
+                "Соли высших карбоновых кислот",
+                "Сложные эфиры",
+                "Спирты",
+                "Альдегиды"
+              ], correct: 0 },
+            { id: 2070, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется в производстве аспирина?",
+              options: [
+                "Уксусная",
+                "Салициловая",
+                "Бензойная",
+                "Лимонная"
+              ], correct: 1 },
+            { id: 2071, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется как консервант в косметике?",
+              options: [
+                "Бензойная",
+                "Соляная",
+                "Серная",
+                "Азотная"
+              ], correct: 0 },
+            { id: 2072, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какова формула 2-метилпропановой кислоты?",
+              options: [
+                "CH₃-CH(CH₃)-COOH",
+                "CH₃-CH₂-COOH",
+                "CH₃-CH₂-CH₂-COOH",
+                "(CH₃)₃C-COOH"
+              ], correct: 0 },
+            { id: 2073, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какова формула 3,4-диметилпентановой кислоты?",
+              options: [
+                "CH₃-CH(CH₃)-CH(CH₃)-CH₂-COOH",
+                "CH₃-CH₂-CH(CH₃)-CH(CH₃)-COOH",
+                "CH₃-CH(CH₃)-CH₂-CH(CH₃)-COOH",
+                "(CH₃)₂CH-CH₂-CH₂-COOH"
+              ], correct: 1 },
+            { id: 2074, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота является двухосновной?",
+              options: [
+                "Щавелевая",
+                "Уксусная",
+                "Муравьиная",
+                "Пропионовая"
+              ], correct: 0 },
+            { id: 2075, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Формула щавелевой кислоты?",
+              options: [
+                "HOOC-COOH",
+                "HCOOH",
+                "CH₃COOH",
+                "C₆H₅COOH"
+              ], correct: 0 },
+            { id: 2076, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое ароматические кислоты?",
+              options: [
+                "Кислоты с бензольным кольцом",
+                "Пахучие кислоты",
+                "Кислоты с двойными связями",
+                "Кислоты растений"
+              ], correct: 0 },
+            { id: 2077, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Формула бензойной кислоты?",
+              options: [
+                "C₆H₅COOH",
+                "C₆H₆",
+                "C₆H₅OH",
+                "C₆H₅CHO"
+              ], correct: 0 },
+            { id: 2078, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как получают уксусную кислоту в промышленности?",
+              options: [
+                "Окислением ацетальдегида",
+                "Из нефти",
+                "Из угля",
+                "Электролизом"
+              ], correct: 0 },
+            { id: 2079, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как получают муравьиную кислоту?",
+              options: [
+                "Из оксида углерода и щелочи",
+                "Из метана",
+                "Из этилена",
+                "Из бензола"
+              ], correct: 0 },
+            { id: 2080, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое ангидриды кислот?",
+              options: [
+                "Продукты отщепления воды от кислот",
+                "Соли кислот",
+                "Эфиры кислот",
+                "Кетоны"
+              ], correct: 0 },
+            { id: 2081, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется в пищевой промышленности как E260?",
+              options: [
+                "Уксусная",
+                "Лимонная",
+                "Молочная",
+                "Яблочная"
+              ], correct: 0 },
+            { id: 2082, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется как E330?",
+              options: [
+                "Уксусная",
+                "Лимонная",
+                "Молочная",
+                "Яблочная"
+              ], correct: 1 },
+            { id: 2083, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется при консервировании огурцов?",
+              options: [
+                "Уксусная",
+                "Лимонная",
+                "Молочная",
+                "Аскорбиновая"
+              ], correct: 0 },
+            { id: 2084, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое аскорбиновая кислота?",
+              options: [
+                "Витамин C",
+                "Витамин A",
+                "Витамин B",
+                "Витамин D"
+              ], correct: 0 },
+            { id: 2085, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота содержится в квашеной капусте?",
+              options: [
+                "Молочная",
+                "Уксусная",
+                "Лимонная",
+                "Яблочная"
+              ], correct: 0 },
+            { id: 2086, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как называют реакцию образования сложных эфиров?",
+              options: [
+                "Этерификация",
+                "Гидролиз",
+                "Поликонденсация",
+                "Изомеризация"
+              ], correct: 0 },
+            { id: 2087, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое омыление?",
+              options: [
+                "Гидролиз жиров",
+                "Реакция с водой",
+                "Реакция с кислотой",
+                "Реакция со щелочью"
+              ], correct: 0 },
+            { id: 2088, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота ядовита для муравьев?",
+              options: [
+                "Муравьиная",
+                "Уксусная",
+                "Борная",
+                "Соляная"
+              ], correct: 2 },
+            { id: 2089, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется для травления стекла?",
+              options: [
+                "Плавиковая",
+                "Соляная",
+                "Серная",
+                "Азотная"
+              ], correct: 0 },
+            { id: 2090, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота входит в состав желудочного сока?",
+              options: [
+                "Соляная",
+                "Серная",
+                "Уксусная",
+                "Молочная"
+              ], correct: 0 },
+            { id: 2091, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое димеризация карбоновых кислот?",
+              options: [
+                "Образование димеров за счет водородных связей",
+                "Образование солей",
+                "Образование эфиров",
+                "Образование кетонов"
+              ], correct: 0 },
+            { id: 2092, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота самая сильная?",
+              options: [
+                "Трифторуксусная",
+                "Уксусная",
+                "Муравьиная",
+                "Пропионовая"
+              ], correct: 0 },
+            { id: 2093, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое галогенангидриды кислот?",
+              options: [
+                "Продукты замены OH на галоген",
+                "Соли с галогенами",
+                "Эфиры с галогенами",
+                "Галогенпроизводные"
+              ], correct: 0 },
+            { id: 2094, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как получают хлорангидриды кислот?",
+              options: [
+                "Действием PCl₅ на кислоты",
+                "Действием Cl₂",
+                "Действием HCl",
+                "Электролизом"
+              ], correct: 0 },
+            { id: 2095, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое амиды кислот?",
+              options: [
+                "Продукты замены OH на NH₂",
+                "Соли аммония",
+                "Амины",
+                "Нитросоединения"
+              ], correct: 0 },
+            { id: 2096, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое нитрилы?",
+              options: [
+                "Производные кислот с группой CN",
+                "Соединения с азотом",
+                "Нитропроизводные",
+                "Амины"
+              ], correct: 0 },
+            { id: 2097, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Как получают нитрилы?",
+              options: [
+                "Из амидов кислот",
+                "Из спиртов",
+                "Из альдегидов",
+                "Из алканов"
+              ], correct: 0 },
+            { id: 2098, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Какая кислота используется в производстве каучука?",
+              options: [
+                "Уксусная",
+                "Муравьиная",
+                "Акриловая",
+                "Бензойная"
+              ], correct: 2 },
+            { id: 2099, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое акриловая кислота?",
+              options: [
+                "CH₂=CH-COOH",
+                "CH₃-COOH",
+                "C₆H₅-COOH",
+                "HOOC-COOH"
+              ], correct: 0 },
+            { id: 2100, ticket: 2, topic: "Карбоновые кислоты",
+              question: "Что такое метакриловая кислота?",
+              options: [
+                "CH₂=C(CH₃)-COOH",
+                "CH₂=CH-COOH",
+                "CH₃-CH=CH-COOH",
+                "C₆H₅-COOH"
+              ], correct: 0 },
+
+            // ===== БИЛЕТ 3: Алканы (50 вопросов) =====
+            { id: 2101, ticket: 3, topic: "Алканы",
+              question: "Какая общая формула алканов?",
+              options: [
+                "CₙH₂ₙ₊₂",
+                "CₙH₂ₙ",
+                "CₙH₂ₙ₋₂",
+                "CₙHₙ"
+              ], correct: 0 },
+            { id: 2102, ticket: 3, topic: "Алканы",
+              question: "Какой тип гибридизации у атомов углерода в алканах?",
+              options: [
+                "sp³",
+                "sp²",
+                "sp",
+                "нет гибридизации"
+              ], correct: 0 },
+            { id: 2103, ticket: 3, topic: "Алканы",
+              question: "Какой угол между связями в молекуле метана?",
+              options: [
+                "109.5°",
+                "120°",
+                "180°",
+                "90°"
+              ], correct: 0 },
+            { id: 2104, ticket: 3, topic: "Алканы",
+              question: "Формула метана?",
+              options: [
+                "CH₄",
+                "C₂H₆",
+                "C₃H₈",
+                "C₄H₁₀"
+              ], correct: 0 },
+            { id: 2105, ticket: 3, topic: "Алканы",
+              question: "Формула этана?",
+              options: [
+                "CH₄",
+                "C₂H₆",
+                "C₃H₈",
+                "C₄H₁₀"
+              ], correct: 1 },
+            { id: 2106, ticket: 3, topic: "Алканы",
+              question: "Формула пропана?",
+              options: [
+                "CH₄",
+                "C₂H₆",
+                "C₃H₈",
+                "C₄H₁₀"
+              ], correct: 2 },
+            { id: 2107, ticket: 3, topic: "Алканы",
+              question: "Формула бутана?",
+              options: [
+                "C₃H₈",
+                "C₄H₁₀",
+                "C₅H₁₂",
+                "C₆H₁₄"
+              ], correct: 1 },
+            { id: 2108, ticket: 3, topic: "Алканы",
+              question: "Сколько изомеров у пентана?",
+              options: [
+                "2",
+                "3",
+                "4",
+                "5"
+              ], correct: 1 },
+            { id: 2109, ticket: 3, topic: "Алканы",
+              question: "Какая реакция характерна для алканов?",
+              options: [
+                "Замещения",
+                "Присоединения",
+                "Полимеризации",
+                "Гидратации"
+              ], correct: 0 },
+            { id: 2110, ticket: 3, topic: "Алканы",
+              question: "Что такое галогенирование алканов?",
+              options: [
+                "Замещение водорода на галоген",
+                "Присоединение галогена",
+                "Отщепление галогена",
+                "Окисление галогеном"
+              ], correct: 0 },
+            { id: 2111, ticket: 3, topic: "Алканы",
+              question: "Что образуется при горении метана?",
+              options: [
+                "CO₂ и H₂O",
+                "CO и H₂",
+                "C и H₂O",
+                "CO₂ и H₂"
+              ], correct: 0 },
+            { id: 2112, ticket: 3, topic: "Алканы",
+              question: "Что такое пиролиз алканов?",
+              options: [
+                "Разложение при нагревании",
+                "Окисление кислородом",
+                "Гидрирование",
+                "Дегидратация"
+              ], correct: 0 },
+            { id: 2113, ticket: 3, topic: "Алканы",
+              question: "Что такое крекинг алканов?",
+              options: [
+                "Расщепление углеродной цепи",
+                "Соединение молекул",
+                "Изомеризация",
+                "Циклизация"
+              ], correct: 0 },
+            { id: 2114, ticket: 3, topic: "Алканы",
+              question: "Что такое риформинг?",
+              options: [
+                "Превращение алканов в ароматические",
+                "Очистка алканов",
+                "Сжижение алканов",
+                "Полимеризация алканов"
+              ], correct: 0 },
+            { id: 2115, ticket: 3, topic: "Алканы",
+              question: "Где используется метан?",
+              options: [
+                "Как топливо",
+                "Для производства сажи",
+                "Для синтеза других веществ",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2116, ticket: 3, topic: "Алканы",
+              question: "Что такое природный газ?",
+              options: [
+                "Смесь алканов",
+                "Чистый метан",
+                "Смесь углеводородов",
+                "Все вышеперечисленное"
+              ], correct: 0 },
+            { id: 2117, ticket: 3, topic: "Алканы",
+              question: "Что такое нефть?",
+              options: [
+                "Смесь углеводородов",
+                "Чистые алканы",
+                "Смесь алканов",
+                "Органические вещества"
+              ], correct: 0 },
+            { id: 2118, ticket: 3, topic: "Алканы",
+              question: "Какой алкан используется в зажигалках?",
+              options: [
+                "Бутан",
+                "Метан",
+                "Этан",
+                "Пропан"
+              ], correct: 0 },
+            { id: 2119, ticket: 3, topic: "Алканы",
+              question: "Какой алкан используется в газовых баллонах?",
+              options: [
+                "Пропан",
+                "Метан",
+                "Этан",
+                "Бутан"
+              ], correct: 0 },
+            { id: 2120, ticket: 3, topic: "Алканы",
+              question: "Что такое гомологический ряд?",
+              options: [
+                "Ряд соединений сходных по строению",
+                "Ряд изомеров",
+                "Ряд реакций",
+                "Ряд свойств"
+              ], correct: 0 },
+            { id: 2121, ticket: 3, topic: "Алканы",
+              question: "Какая гомологическая разность в алканах?",
+              options: [
+                "CH₂",
+                "CH₃",
+                "C₂H₄",
+                "CH"
+              ], correct: 0 },
+            { id: 2122, ticket: 3, topic: "Алканы",
+              question: "Как изменяется температура кипения алканов с ростом цепи?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Сначала увеличивается, потом уменьшается"
+              ], correct: 0 },
+            { id: 2123, ticket: 3, topic: "Алканы",
+              question: "Как изменяется плотность алканов с ростом цепи?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Сначала увеличивается, потом уменьшается"
+              ], correct: 0 },
+            { id: 2124, ticket: 3, topic: "Алканы",
+              question: "Растворимы ли алканы в воде?",
+              options: [
+                "Нет",
+                "Да",
+                "Частично",
+                "Зависит от алкана"
+              ], correct: 0 },
+            { id: 2125, ticket: 3, topic: "Алканы",
+              question: "Что такое конформации алканов?",
+              options: [
+                "Различные пространственные формы",
+                "Изомеры",
+                "Гомологи",
+                "Продукты реакций"
+              ], correct: 0 },
+            { id: 2126, ticket: 3, topic: "Алканы",
+              question: "Какая конформация этана наиболее выгодна?",
+              options: [
+                "Заторможенная",
+                "Заслоненная",
+                "Все равно",
+                "Нет разницы"
+              ], correct: 0 },
+            { id: 2127, ticket: 3, topic: "Алканы",
+              question: "Что такое свободнорадикальное замещение?",
+              options: [
+                "Механизм реакции галогенирования",
+                "Тип изомерии",
+                "Способ получения",
+                "Вид гибридизации"
+              ], correct: 0 },
+            { id: 2128, ticket: 3, topic: "Алканы",
+              question: "Какие стадии включает радикальное замещение?",
+              options: [
+                "Инициирование, рост, обрыв цепи",
+                "Начало, середина, конец",
+                "Активация, реакция, дезактивация",
+                "Соединение, разложение, изомеризация"
+              ], correct: 0 },
+            { id: 2129, ticket: 3, topic: "Алканы",
+              question: "Что такое нитрование алканов?",
+              options: [
+                "Реакция с азотной кислотой",
+                "Реакция с аммиаком",
+                "Реакция с азотом",
+                "Реакция с нитратами"
+              ], correct: 0 },
+            { id: 2130, ticket: 3, topic: "Алканы",
+              question: "Что такое сульфирование алканов?",
+              options: [
+                "Реакция с серной кислотой",
+                "Реакция с серой",
+                "Реакция с сульфидами",
+                "Реакция с сульфатами"
+              ], correct: 0 },
+            { id: 2131, ticket: 3, topic: "Алканы",
+              question: "Что такое окисление алканов?",
+              options: [
+                "Взаимодействие с кислородом",
+                "Взаимодействие с водородом",
+                "Взаимодействие с водой",
+                "Взаимодействие с кислотами"
+              ], correct: 0 },
+            { id: 2132, ticket: 3, topic: "Алканы",
+              question: "Что получают при неполном окислении метана?",
+              options: [
+                "Метанол",
+                "Формальдегид",
+                "Муравьиную кислоту",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2133, ticket: 3, topic: "Алканы",
+              question: "Как получают водород из метана?",
+              options: [
+                "Конверсией с водяным паром",
+                "Электролизом",
+                "Термическим разложением",
+                "Каталитическим окислением"
+              ], correct: 0 },
+            { id: 2134, ticket: 3, topic: "Алканы",
+              question: "Что такое синтез-газ?",
+              options: [
+                "Смесь CO и H₂",
+                "Смесь CH₄ и H₂",
+                "Смесь CO₂ и H₂",
+                "Природный газ"
+              ], correct: 0 },
+            { id: 2135, ticket: 3, topic: "Алканы",
+              question: "Для чего используют синтез-газ?",
+              options: [
+                "Для синтеза метанола",
+                "Для синтеза аммиака",
+                "Как топливо",
+                "Для всего вышеперечисленного"
+              ], correct: 3 },
+            { id: 2136, ticket: 3, topic: "Алканы",
+              question: "Что такое реакция Вюрца?",
+              options: [
+                "Синтез алканов из галогеналканов",
+                "Галогенирование алканов",
+                "Окисление алканов",
+                "Изомеризация алканов"
+              ], correct: 0 },
+            { id: 2137, ticket: 3, topic: "Алканы",
+              question: "Какие условия нужны для реакции Вюрца?",
+              options: [
+                "Натрий",
+                "Кислород",
+                "Вода",
+                "Кислота"
+              ], correct: 0 },
+            { id: 2138, ticket: 3, topic: "Алканы",
+              question: "Что получают при реакции Вюрца из CH₃Br?",
+              options: [
+                "C₂H₆",
+                "CH₄",
+                "C₃H₈",
+                "C₄H₁₀"
+              ], correct: 0 },
+            { id: 2139, ticket: 3, topic: "Алканы",
+              question: "Что получают при реакции Вюрца из C₂H₅Br?",
+              options: [
+                "C₄H₁₀",
+                "C₂H₆",
+                "C₃H₈",
+                "C₅H₁₂"
+              ], correct: 0 },
+            { id: 2140, ticket: 3, topic: "Алканы",
+              question: "Что такое изомеризация алканов?",
+              options: [
+                "Превращение нормальных в разветвленные",
+                "Превращение в циклические",
+                "Превращение в непредельные",
+                "Разложение"
+              ], correct: 0 },
+            { id: 2141, ticket: 3, topic: "Алканы",
+              question: "Какой катализатор используют для изомеризации?",
+              options: [
+                "AlCl₃",
+                "Pt",
+                "Ni",
+                "Fe"
+              ], correct: 0 },
+            { id: 2142, ticket: 3, topic: "Алканы",
+              question: "Что такое дегидрирование алканов?",
+              options: [
+                "Отщепление водорода",
+                "Присоединение водорода",
+                "Отщепление углерода",
+                "Присоединение углерода"
+              ], correct: 0 },
+            { id: 2143, ticket: 3, topic: "Алканы",
+              question: "Что получают при дегидрировании бутана?",
+              options: [
+                "Бутен",
+                "Бутин",
+                "Бутадиен",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2144, ticket: 3, topic: "Алканы",
+              question: "Что такое ароматизация алканов?",
+              options: [
+                "Превращение в ароматические",
+                "Превращение в циклические",
+                "Превращение в непредельные",
+                "Окисление"
+              ], correct: 0 },
+            { id: 2145, ticket: 3, topic: "Алканы",
+              question: "Что получают при ароматизации гексана?",
+              options: [
+                "Бензол",
+                "Толуол",
+                "Ксилол",
+                "Фенол"
+              ], correct: 0 },
+            { id: 2146, ticket: 3, topic: "Алканы",
+              question: "Что такое октановое число?",
+              options: [
+                "Детонационная стойкость бензина",
+                "Содержание октана",
+                "Качество топлива",
+                "Чистота бензина"
+              ], correct: 0 },
+            { id: 2147, ticket: 3, topic: "Алканы",
+              question: "У каких алканов выше октановое число?",
+              options: [
+                "У разветвленных",
+                "У нормальных",
+                "У циклических",
+                "У непредельных"
+              ], correct: 0 },
+            { id: 2148, ticket: 3, topic: "Алканы",
+              question: "Что такое цетановое число?",
+              options: [
+                "Характеристика дизельного топлива",
+                "Содержание цетана",
+                "Качество масла",
+                "Чистота топлива"
+              ], correct: 0 },
+            { id: 2149, ticket: 3, topic: "Алканы",
+              question: "Какая реакция используется для получения сажи?",
+              options: [
+                "Неполное сгорание метана",
+                "Полное сгорание",
+                "Пиролиз",
+                "Крекинг"
+              ], correct: 0 },
+            { id: 2150, ticket: 3, topic: "Алканы",
+              question: "Где используется сажа?",
+              options: [
+                "В производстве резины",
+                "Как краситель",
+                "В типографии",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+
+            // ===== БИЛЕТ 4: Алкины, алкены (50 вопросов) =====
+            { id: 2151, ticket: 4, topic: "Алкины",
+              question: "Какая общая формула алкинов?",
+              options: [
+                "CₙH₂ₙ₊₂",
+                "CₙH₂ₙ",
+                "CₙH₂ₙ₋₂",
+                "CₙHₙ"
+              ], correct: 2 },
+            { id: 2152, ticket: 4, topic: "Алкины",
+              question: "Какой тип гибридизации у атомов углерода в ацетилене?",
+              options: [
+                "sp³",
+                "sp²",
+                "sp",
+                "нет гибридизации"
+              ], correct: 2 },
+            { id: 2153, ticket: 4, topic: "Алкины",
+              question: "Какой угол между связями в ацетилене?",
+              options: [
+                "109.5°",
+                "120°",
+                "180°",
+                "90°"
+              ], correct: 2 },
+            { id: 2154, ticket: 4, topic: "Алкины",
+              question: "Формула ацетилена?",
+              options: [
+                "C₂H₂",
+                "C₂H₄",
+                "C₂H₆",
+                "C₆H₆"
+              ], correct: 0 },
+            { id: 2155, ticket: 4, topic: "Алкины",
+              question: "Как получают ацетилен в промышленности?",
+              options: [
+                "Из карбида кальция",
+                "Из метана",
+                "Из этилена",
+                "Из бензола"
+              ], correct: 0 },
+            { id: 2156, ticket: 4, topic: "Алкины",
+              question: "Реакция получения ацетилена из карбида кальция:",
+              options: [
+                "CaC₂ + 2H₂O → C₂H₂ + Ca(OH)₂",
+                "CaC₂ + H₂ → C₂H₂ + Ca",
+                "2CH₄ → C₂H₂ + 3H₂",
+                "C₂H₄ → C₂H₂ + H₂"
+              ], correct: 0 },
+            { id: 2157, ticket: 4, topic: "Алкины",
+              question: "Какая реакция характерна для алкинов?",
+              options: [
+                "Присоединения",
+                "Замещения",
+                "Полимеризации",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2158, ticket: 4, topic: "Алкины",
+              question: "Что образуется при гидрировании ацетилена?",
+              options: [
+                "Этилен",
+                "Этан",
+                "Бензол",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2159, ticket: 4, topic: "Алкины",
+              question: "Что образуется при гидратации ацетилена (реакция Кучерова)?",
+              options: [
+                "Уксусный альдегид",
+                "Этиловый спирт",
+                "Уксусная кислота",
+                "Ацетон"
+              ], correct: 0 },
+            { id: 2160, ticket: 4, topic: "Алкины",
+              question: "Какие условия нужны для реакции Кучерова?",
+              options: [
+                "HgSO₄, H₂SO₄",
+                "Ni, t",
+                "Pt",
+                "AlCl₃"
+              ], correct: 0 },
+            { id: 2161, ticket: 4, topic: "Алкины",
+              question: "Что образуется при гидрохлорировании ацетилена?",
+              options: [
+                "Хлорэтан",
+                "Хлорэтен",
+                "Дихлорэтан",
+                "Винилхлорид"
+              ], correct: 3 },
+            { id: 2162, ticket: 4, topic: "Алкины",
+              question: "Что такое винилхлорид?",
+              options: [
+                "CH₂=CH-Cl",
+                "CH₃-CH₂-Cl",
+                "CH₂Cl-CH₂Cl",
+                "C₆H₅-Cl"
+              ], correct: 0 },
+            { id: 2163, ticket: 4, topic: "Алкины",
+              question: "Для чего используют винилхлорид?",
+              options: [
+                "Для производства ПВХ",
+                "Как растворитель",
+                "Как топливо",
+                "Как лекарство"
+              ], correct: 0 },
+            { id: 2164, ticket: 4, topic: "Алкины",
+              question: "Что образуется при тримеризации ацетилена?",
+              options: [
+                "Бензол",
+                "Циклогексан",
+                "Стирол",
+                "Толуол"
+              ], correct: 0 },
+            { id: 2165, ticket: 4, topic: "Алкины",
+              question: "Какие условия нужны для тримеризации ацетилена?",
+              options: [
+                "Активированный уголь, 600°C",
+                "Ni, t",
+                "Pt",
+                "AlCl₃"
+              ], correct: 0 },
+            { id: 2166, ticket: 4, topic: "Алкины",
+              question: "Что такое димеризация ацетилена?",
+              options: [
+                "Образование винилацетилена",
+                "Образование бутадиена",
+                "Образование бензола",
+                "Образование этилена"
+              ], correct: 0 },
+            { id: 2167, ticket: 4, topic: "Алкины",
+              question: "Что получают из винилацетилена?",
+              options: [
+                "Хлоропреновый каучук",
+                "Синтетический каучук",
+                "Пластмассу",
+                "Волокно"
+              ], correct: 0 },
+            { id: 2168, ticket: 4, topic: "Алкины",
+              question: "Какова формула винилацетилена?",
+              options: [
+                "CH₂=CH-C≡CH",
+                "CH≡C-C≡CH",
+                "CH₂=CH-CH=CH₂",
+                "C₆H₆"
+              ], correct: 0 },
+            { id: 2169, ticket: 4, topic: "Алкины",
+              question: "Что такое алкены?",
+              options: [
+                "Непредельные с двойной связью",
+                "Непредельные с тройной связью",
+                "Предельные",
+                "Ароматические"
+              ], correct: 0 },
+            { id: 2170, ticket: 4, topic: "Алкены",
+              question: "Какая общая формула алкенов?",
+              options: [
+                "CₙH₂ₙ₊₂",
+                "CₙH₂ₙ",
+                "CₙH₂ₙ₋₂",
+                "CₙHₙ"
+              ], correct: 1 },
+            { id: 2171, ticket: 4, topic: "Алкены",
+              question: "Какой тип гибридизации у атомов углерода в этилене?",
+              options: [
+                "sp³",
+                "sp²",
+                "sp",
+                "нет гибридизации"
+              ], correct: 1 },
+            { id: 2172, ticket: 4, topic: "Алкены",
+              question: "Какой угол между связями в этилене?",
+              options: [
+                "109.5°",
+                "120°",
+                "180°",
+                "90°"
+              ], correct: 1 },
+            { id: 2173, ticket: 4, topic: "Алкены",
+              question: "Формула этилена?",
+              options: [
+                "C₂H₄",
+                "C₂H₂",
+                "C₂H₆",
+                "C₃H₆"
+              ], correct: 0 },
+            { id: 2174, ticket: 4, topic: "Алкены",
+              question: "Как получают этилен в промышленности?",
+              options: [
+                "Крекингом нефтепродуктов",
+                "Из карбида кальция",
+                "Из метана",
+                "Из спирта"
+              ], correct: 0 },
+            { id: 2175, ticket: 4, topic: "Алкены",
+              question: "Какая реакция характерна для алкенов?",
+              options: [
+                "Присоединения",
+                "Замещения",
+                "Полимеризации",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2176, ticket: 4, topic: "Алкены",
+              question: "Что образуется при гидрировании этилена?",
+              options: [
+                "Этан",
+                "Ацетилен",
+                "Метан",
+                "Бензол"
+              ], correct: 0 },
+            { id: 2177, ticket: 4, topic: "Алкены",
+              question: "Что образуется при гидратации этилена?",
+              options: [
+                "Этиловый спирт",
+                "Уксусный альдегид",
+                "Уксусная кислота",
+                "Эфир"
+              ], correct: 0 },
+            { id: 2178, ticket: 4, topic: "Алкены",
+              question: "Что образуется при галогенировании этилена?",
+              options: [
+                "Дихлорэтан",
+                "Хлорэтан",
+                "Хлорэтен",
+                "Тетрахлорэтан"
+              ], correct: 0 },
+            { id: 2179, ticket: 4, topic: "Алкены",
+              question: "Что такое полиэтилен?",
+              options: [
+                "Полимер этилена",
+                "Сополимер этилена",
+                "Смесь углеводородов",
+                "Пластмасса"
+              ], correct: 0 },
+            { id: 2180, ticket: 4, topic: "Алкены",
+              question: "Какие условия нужны для полимеризации этилена?",
+              options: [
+                "Давление, температура, катализатор",
+                "Свет",
+                "Кислород",
+                "Вода"
+              ], correct: 0 },
+            { id: 2181, ticket: 4, topic: "Алкены",
+              question: "Что такое правило Марковникова?",
+              options: [
+                "Водород присоединяется к более гидрированному атому",
+                "Водород присоединяется к менее гидрированному атому",
+                "Присоединение идет против правил",
+                "Нет правил"
+              ], correct: 0 },
+            { id: 2182, ticket: 4, topic: "Алкены",
+              question: "Что образуется при присоединении HCl к пропену?",
+              options: [
+                "2-хлорпропан",
+                "1-хлорпропан",
+                "1,2-дихлорпропан",
+                "Хлорциклопропан"
+              ], correct: 0 },
+            { id: 2183, ticket: 4, topic: "Алкены",
+              question: "Что такое окисление алкенов?",
+              options: [
+                "Реакция Вагнера",
+                "Горение",
+                "Эпоксидирование",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2184, ticket: 4, topic: "Алкены",
+              question: "Что образуется при мягком окислении этилена?",
+              options: [
+                "Этиленгликоль",
+                "Уксусный альдегид",
+                "Уксусная кислота",
+                "CO₂"
+              ], correct: 0 },
+            { id: 2185, ticket: 4, topic: "Алкены",
+              question: "Что такое озонолиз алкенов?",
+              options: [
+                "Разрушение двойной связи озоном",
+                "Окисление озоном",
+                "Присоединение озона",
+                "Все вышеперечисленное"
+              ], correct: 2 },
+            { id: 2186, ticket: 4, topic: "Алкены",
+              question: "Что образуется при озонолизе этилена?",
+              options: [
+                "Формальдегид",
+                "Муравьиная кислота",
+                "CO₂",
+                "Метан"
+              ], correct: 0 },
+            { id: 2187, ticket: 4, topic: "Алкены",
+              question: "Что такое изомерия алкенов?",
+              options: [
+                "Структурная и пространственная",
+                "Только структурная",
+                "Только пространственная",
+                "Нет изомерии"
+              ], correct: 0 },
+            { id: 2188, ticket: 4, topic: "Алкены",
+              question: "Что такое цис-транс изомерия?",
+              options: [
+                "Различное расположение заместителей",
+                "Разный углеродный скелет",
+                "Разное положение двойной связи",
+                "Разная длина цепи"
+              ], correct: 0 },
+            { id: 2189, ticket: 4, topic: "Алкены",
+              question: "У каких алкенов возможна цис-транс изомерия?",
+              options: [
+                "У несимметричных",
+                "У всех",
+                "У симметричных",
+                "У циклических"
+              ], correct: 0 },
+            { id: 2190, ticket: 4, topic: "Алкены",
+              question: "Что такое диены?",
+              options: [
+                "Алкены с двумя двойными связями",
+                "Алканы с двумя связями",
+                "Алкины с двумя тройными",
+                "Циклические углеводороды"
+              ], correct: 0 },
+            { id: 2191, ticket: 4, topic: "Диены",
+              question: "Какая общая формула диенов?",
+              options: [
+                "CₙH₂ₙ₋₂",
+                "CₙH₂ₙ",
+                "CₙH₂ₙ₊₂",
+                "CₙHₙ"
+              ], correct: 0 },
+            { id: 2192, ticket: 4, topic: "Диены",
+              question: "Какой диен используется для получения каучука?",
+              options: [
+                "Бутадиен",
+                "Изопрен",
+                "Хлоропрен",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2193, ticket: 4, topic: "Диены",
+              question: "Формула бутадиена?",
+              options: [
+                "CH₂=CH-CH=CH₂",
+                "CH₂=C=CH-CH₃",
+                "CH₃-CH=CH-CH₃",
+                "C₄H₁₀"
+              ], correct: 0 },
+            { id: 2194, ticket: 4, topic: "Диены",
+              question: "Формула изопрена?",
+              options: [
+                "CH₂=C(CH₃)-CH=CH₂",
+                "CH₂=CH-CH=CH₂",
+                "CH₃-CH=CH-CH=CH₂",
+                "C₅H₈"
+              ], correct: 0 },
+            { id: 2195, ticket: 4, topic: "Диены",
+              question: "Что такое реакция Дильса-Альдера?",
+              options: [
+                "Диеновый синтез",
+                "Полимеризация диенов",
+                "Окисление диенов",
+                "Гидрирование диенов"
+              ], correct: 0 },
+            { id: 2196, ticket: 4, topic: "Каучук",
+              question: "Из чего получают натуральный каучук?",
+              options: [
+                "Из сока гевеи",
+                "Из нефти",
+                "Из угля",
+                "Из газа"
+              ], correct: 0 },
+            { id: 2197, ticket: 4, topic: "Каучук",
+              question: "Что такое вулканизация каучука?",
+              options: [
+                "Сшивание молекул серой",
+                "Нагревание",
+                "Охлаждение",
+                "Растворение"
+              ], correct: 0 },
+            { id: 2198, ticket: 4, topic: "Каучук",
+              question: "Что получают при вулканизации?",
+              options: [
+                "Резину",
+                "Эбонит",
+                "Эластомер",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2199, ticket: 4, topic: "Ацетилен",
+              question: "Где используется ацетилен?",
+              options: [
+                "Для сварки",
+                "Для синтеза органических веществ",
+                "Для получения каучука",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2200, ticket: 4, topic: "Ацетилен",
+              question: "Почему ацетилен хранят в баллонах с ацетоном?",
+              options: [
+                "Из-за взрывоопасности",
+                "Для лучшего растворения",
+                "Для чистоты",
+                "Для давления"
+              ], correct: 0 },
+
+            // ===== БИЛЕТ 5: Аминокислоты (50 вопросов) =====
+            { id: 2201, ticket: 5, topic: "Аминокислоты",
+              question: "Какие функциональные группы содержат аминокислоты?",
+              options: [
+                "Амино- и карбоксильную",
+                "Только амино-",
+                "Только карбоксильную",
+                "Гидроксильную"
+              ], correct: 0 },
+            { id: 2202, ticket: 5, topic: "Аминокислоты",
+              question: "Сколько аминокислот участвует в синтезе белков?",
+              options: [
+                "20",
+                "10",
+                "15",
+                "25"
+              ], correct: 0 },
+            { id: 2203, ticket: 5, topic: "Аминокислоты",
+              question: "Какие аминокислоты называют незаменимыми?",
+              options: [
+                "Которые не синтезируются в организме",
+                "Которые синтезируются в организме",
+                "Самые важные",
+                "Растительные"
+              ], correct: 0 },
+            { id: 2204, ticket: 5, topic: "Аминокислоты",
+              question: "Сколько незаменимых аминокислот для человека?",
+              options: [
+                "8",
+                "5",
+                "10",
+                "12"
+              ], correct: 0 },
+            { id: 2205, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое пептидная связь?",
+              options: [
+                "Связь -CO-NH-",
+                "Связь -CH₂-NH₂",
+                "Связь -COOH",
+                "Связь -NH₂"
+              ], correct: 0 },
+            { id: 2206, ticket: 5, topic: "Аминокислоты",
+              question: "Как образуется пептидная связь?",
+              options: [
+                "При взаимодействии амино- и карбоксильной групп",
+                "При полимеризации",
+                "При гидролизе",
+                "При окислении"
+              ], correct: 0 },
+            { id: 2207, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое дипептид?",
+              options: [
+                "Две аминокислоты, соединенные пептидной связью",
+                "Двойная аминокислота",
+                "Аминокислота с двумя группами",
+                "Полимер аминокислот"
+              ], correct: 0 },
+            { id: 2208, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое полипептид?",
+              options: [
+                "Много аминокислот, соединенных пептидными связями",
+                "Белок",
+                "Сложная аминокислота",
+                "Синтетическое соединение"
+              ], correct: 0 },
+            { id: 2209, ticket: 5, topic: "Аминокислоты",
+              question: "Какими свойствами обладают аминокислоты?",
+              options: [
+                "Амфотерными",
+                "Кислотными",
+                "Основными",
+                "Нейтральными"
+              ], correct: 0 },
+            { id: 2210, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое изоэлектрическая точка?",
+              options: [
+                "pH, при котором заряд молекулы равен 0",
+                "Точка плавления",
+                "Точка кипения",
+                "Концентрация"
+              ], correct: 0 },
+            { id: 2211, ticket: 5, topic: "Аминокислоты",
+              question: "В каком виде существуют аминокислоты в кристаллах?",
+              options: [
+                "В виде биполярных ионов",
+                "В нейтральной форме",
+                "В виде солей",
+                "В виде эфиров"
+              ], correct: 0 },
+            { id: 2212, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое цвиттер-ион?",
+              options: [
+                "Биполярный ион",
+                "Нейтральная молекула",
+                "Положительный ион",
+                "Отрицательный ион"
+              ], correct: 0 },
+            { id: 2213, ticket: 5, topic: "Аминокислоты",
+              question: "Какая реакция характерна для аминокислот?",
+              options: [
+                "Образование пептидов",
+                "Этерификация",
+                "Образование солей",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2214, ticket: 5, topic: "Аминокислоты",
+              question: "Что образуется при взаимодействии аминокислоты со спиртом?",
+              options: [
+                "Сложный эфир",
+                "Пептид",
+                "Соль",
+                "Амин"
+              ], correct: 0 },
+            { id: 2215, ticket: 5, topic: "Аминокислоты",
+              question: "Что образуется при взаимодействии аминокислоты с кислотой?",
+              options: [
+                "Соль",
+                "Сложный эфир",
+                "Пептид",
+                "Амид"
+              ], correct: 0 },
+            { id: 2216, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое реакция нингидриновая?",
+              options: [
+                "Качественная реакция на аминокислоты",
+                "Синтез аминокислот",
+                "Гидролиз аминокислот",
+                "Окисление аминокислот"
+              ], correct: 0 },
+            { id: 2217, ticket: 5, topic: "Аминокислоты",
+              question: "Какой цвет дает нингидрин с аминокислотами?",
+              options: [
+                "Фиолетовый",
+                "Красный",
+                "Синий",
+                "Желтый"
+              ], correct: 0 },
+            { id: 2218, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое дезаминирование?",
+              options: [
+                "Отщепление аминогруппы",
+                "Присоединение аминогруппы",
+                "Замещение аминогруппы",
+                "Окисление аминогруппы"
+              ], correct: 0 },
+            { id: 2219, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое декарбоксилирование?",
+              options: [
+                "Отщепление карбоксильной группы",
+                "Присоединение CO₂",
+                "Окисление карбоксила",
+                "Восстановление карбоксила"
+              ], correct: 0 },
+            { id: 2220, ticket: 5, topic: "Аминокислоты",
+              question: "Что образуется при декарбоксилировании аминокислот?",
+              options: [
+                "Амины",
+                "Альдегиды",
+                "Кетоны",
+                "Спирты"
+              ], correct: 0 },
+            { id: 2221, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое трансаминирование?",
+              options: [
+                "Перенос аминогруппы",
+                "Обмен аминокислотами",
+                "Синтез аминокислот",
+                "Распад аминокислот"
+              ], correct: 0 },
+            { id: 2222, ticket: 5, topic: "Аминокислоты",
+              question: "Какой витамин участвует в трансаминировании?",
+              options: [
+                "B6",
+                "C",
+                "B12",
+                "A"
+              ], correct: 0 },
+            { id: 2223, ticket: 5, topic: "Аминокислоты",
+              question: "Какая аминокислота содержит серу?",
+              options: [
+                "Цистеин",
+                "Глицин",
+                "Аланин",
+                "Валин"
+              ], correct: 0 },
+            { id: 2224, ticket: 5, topic: "Аминокислоты",
+              question: "Какая аминокислота самая простая?",
+              options: [
+                "Глицин",
+                "Аланин",
+                "Валин",
+                "Лейцин"
+              ], correct: 0 },
+            { id: 2225, ticket: 5, topic: "Аминокислоты",
+              question: "Формула глицина?",
+              options: [
+                "NH₂-CH₂-COOH",
+                "CH₃-CH(NH₂)-COOH",
+                "NH₂-CH₂-CH₂-COOH",
+                "HO-CH₂-CH(NH₂)-COOH"
+              ], correct: 0 },
+            { id: 2226, ticket: 5, topic: "Аминокислоты",
+              question: "Формула аланина?",
+              options: [
+                "CH₃-CH(NH₂)-COOH",
+                "NH₂-CH₂-COOH",
+                "CH₃-CH₂-CH(NH₂)-COOH",
+                "HO-CH₂-CH(NH₂)-COOH"
+              ], correct: 0 },
+            { id: 2227, ticket: 5, topic: "Аминокислоты",
+              question: "Какая аминокислота является нейромедиатором?",
+              options: [
+                "Глутаминовая",
+                "Глицин",
+                "Аспарагиновая",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2228, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое глутамат натрия?",
+              options: [
+                "Усилитель вкуса",
+                "Лекарство",
+                "Витамин",
+                "Консервант"
+              ], correct: 0 },
+            { id: 2229, ticket: 5, topic: "Аминокислоты",
+              question: "Какую аминокислоту используют в спортивном питании?",
+              options: [
+                "BCAA",
+                "Глицин",
+                "Глутамин",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2230, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое BCAA?",
+              options: [
+                "Аминокислоты с разветвленной цепью",
+                "Витамины",
+                "Белки",
+                "Ферменты"
+              ], correct: 0 },
+            { id: 2231, ticket: 5, topic: "Аминокислоты",
+              question: "Какие аминокислоты входят в BCAA?",
+              options: [
+                "Лейцин, изолейцин, валин",
+                "Глицин, аланин, пролин",
+                "Лизин, аргинин, гистидин",
+                "Фенилаланин, тирозин, триптофан"
+              ], correct: 0 },
+            { id: 2232, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое оптическая изомерия аминокислот?",
+              options: [
+                "Существование D и L форм",
+                "Разное строение",
+                "Разный состав",
+                "Разные свойства"
+              ], correct: 0 },
+            { id: 2233, ticket: 5, topic: "Аминокислоты",
+              question: "Какие аминокислоты входят в состав белков?",
+              options: [
+                "L-формы",
+                "D-формы",
+                "Обе формы",
+                "Только рацематы"
+              ], correct: 0 },
+            { id: 2234, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое рацемизация?",
+              options: [
+                "Превращение L в D форму",
+                "Разложение аминокислот",
+                "Синтез аминокислот",
+                "Полимеризация"
+              ], correct: 0 },
+            { id: 2235, ticket: 5, topic: "Аминокислоты",
+              question: "Как получают аминокислоты в промышленности?",
+              options: [
+                "Микробиологическим синтезом",
+                "Химическим синтезом",
+                "Гидролизом белков",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2236, ticket: 5, topic: "Аминокислоты",
+              question: "Где используют аминокислоты?",
+              options: [
+                "В медицине",
+                "В пищевой промышленности",
+                "В сельском хозяйстве",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2237, ticket: 5, topic: "Аминокислоты",
+              question: "Какая аминокислота используется для лечения депрессии?",
+              options: [
+                "Триптофан",
+                "Глицин",
+                "Глутамин",
+                "Цистеин"
+              ], correct: 0 },
+            { id: 2238, ticket: 5, topic: "Аминокислоты",
+              question: "Из какой аминокислоты образуется серотонин?",
+              options: [
+                "Триптофана",
+                "Тирозина",
+                "Фенилаланина",
+                "Глицина"
+              ], correct: 0 },
+            { id: 2239, ticket: 5, topic: "Аминокислоты",
+              question: "Из какой аминокислоты образуется дофамин?",
+              options: [
+                "Тирозина",
+                "Триптофана",
+                "Фенилаланина",
+                "Глицина"
+              ], correct: 0 },
+            { id: 2240, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое гомоцистеин?",
+              options: [
+                "Промежуточный продукт метаболизма",
+                "Аминокислота",
+                "Витамин",
+                "Гормон"
+              ], correct: 0 },
+            { id: 2241, ticket: 5, topic: "Аминокислоты",
+              question: "Повышенный уровень гомоцистеина связан с риском:",
+              options: [
+                "Сердечно-сосудистых заболеваний",
+                "Рака",
+                "Диабета",
+                "Ожирения"
+              ], correct: 0 },
+            { id: 2242, ticket: 5, topic: "Аминокислоты",
+              question: "Какие витамины снижают гомоцистеин?",
+              options: [
+                "B9, B12, B6",
+                "C, E, A",
+                "D, K",
+                "Все витамины"
+              ], correct: 0 },
+            { id: 2243, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое креатин?",
+              options: [
+                "Производное аминокислот",
+                "Белок",
+                "Витамин",
+                "Гормон"
+              ], correct: 0 },
+            { id: 2244, ticket: 5, topic: "Аминокислоты",
+              question: "Из каких аминокислот синтезируется креатин?",
+              options: [
+                "Глицина, аргинина, метионина",
+                "Лейцина, изолейцина, валина",
+                "Лизина, пролина",
+                "Фенилаланина, тирозина"
+              ], correct: 0 },
+            { id: 2245, ticket: 5, topic: "Аминокислоты",
+              question: "Для чего используют креатин?",
+              options: [
+                "Для увеличения силы и выносливости",
+                "Для похудения",
+                "Для лечения",
+                "Для сна"
+              ], correct: 0 },
+            { id: 2246, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое таурин?",
+              options: [
+                "Аминокислота, содержащая серу",
+                "Витамин",
+                "Белок",
+                "Углевод"
+              ], correct: 0 },
+            { id: 2247, ticket: 5, topic: "Аминокислоты",
+              question: "Где содержится таурин?",
+              options: [
+                "В энергетических напитках",
+                "В мясе",
+                "В рыбе",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2248, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое GABA?",
+              options: [
+                "Гамма-аминомасляная кислота",
+                "Белок",
+                "Фермент",
+                "Гормон"
+              ], correct: 0 },
+            { id: 2249, ticket: 5, topic: "Аминокислоты",
+              question: "Какова роль GABA в организме?",
+              options: [
+                "Тормозной нейромедиатор",
+                "Возбуждающий нейромедиатор",
+                "Гормон роста",
+                "Витамин"
+              ], correct: 0 },
+            { id: 2250, ticket: 5, topic: "Аминокислоты",
+              question: "Что такое бета-аланин?",
+              options: [
+                "Аминокислота для повышения выносливости",
+                "Витамин группы B",
+                "Белок",
+                "Углевод"
+              ], correct: 0 },
+
+            // ===== БИЛЕТ 6: Классификация реакций (50 вопросов) =====
+            { id: 2251, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по числу реагентов?",
+              options: [
+                "Соединения, разложения, замещения, обмена",
+                "Окислительно-восстановительные",
+                "Экзо- и эндотермические",
+                "Обратимые и необратимые"
+              ], correct: 0 },
+            { id: 2252, ticket: 6, topic: "Классификация реакций",
+              question: "Какая реакция называется реакцией соединения?",
+              options: [
+                "Из нескольких веществ образуется одно",
+                "Из одного образуется несколько",
+                "Атомы обмениваются местами",
+                "Вещества обмениваются составными частями"
+              ], correct: 0 },
+            { id: 2253, ticket: 6, topic: "Классификация реакций",
+              question: "Пример реакции соединения:",
+              options: [
+                "2H₂ + O₂ → 2H₂O",
+                "2H₂O → 2H₂ + O₂",
+                "Zn + 2HCl → ZnCl₂ + H₂",
+                "AgNO₃ + NaCl → AgCl↓ + NaNO₃"
+              ], correct: 0 },
+            { id: 2254, ticket: 6, topic: "Классификация реакций",
+              question: "Какая реакция называется реакцией разложения?",
+              options: [
+                "Из одного вещества образуется несколько",
+                "Из нескольких образуется одно",
+                "Обмен атомами",
+                "Обмен ионами"
+              ], correct: 0 },
+            { id: 2255, ticket: 6, topic: "Классификация реакций",
+              question: "Пример реакции разложения:",
+              options: [
+                "2HgO → 2Hg + O₂",
+                "2H₂ + O₂ → 2H₂O",
+                "Fe + S → FeS",
+                "NaOH + HCl → NaCl + H₂O"
+              ], correct: 0 },
+            { id: 2256, ticket: 6, topic: "Классификация реакций",
+              question: "Какая реакция называется реакцией замещения?",
+              options: [
+                "Атом простого вещества замещает атом в сложном",
+                "Обмен ионами",
+                "Разложение на простые",
+                "Соединение простых"
+              ], correct: 0 },
+            { id: 2257, ticket: 6, topic: "Классификация реакций",
+              question: "Пример реакции замещения:",
+              options: [
+                "Zn + 2HCl → ZnCl₂ + H₂",
+                "2H₂ + O₂ → 2H₂O",
+                "2HgO → 2Hg + O₂",
+                "AgNO₃ + NaCl → AgCl↓ + NaNO₃"
+              ], correct: 0 },
+            { id: 2258, ticket: 6, topic: "Классификация реакций",
+              question: "Какая реакция называется реакцией обмена?",
+              options: [
+                "Вещества обмениваются составными частями",
+                "Атомы замещаются",
+                "Вещества соединяются",
+                "Вещества разлагаются"
+              ], correct: 0 },
+            { id: 2259, ticket: 6, topic: "Классификация реакций",
+              question: "Пример реакции обмена:",
+              options: [
+                "AgNO₃ + NaCl → AgCl↓ + NaNO₃",
+                "Zn + 2HCl → ZnCl₂ + H₂",
+                "2H₂ + O₂ → 2H₂O",
+                "2HgO → 2Hg + O₂"
+              ], correct: 0 },
+            { id: 2260, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по тепловому эффекту?",
+              options: [
+                "Экзо- и эндотермические",
+                "Обратимые и необратимые",
+                "Окислительные и восстановительные",
+                "Гомогенные и гетерогенные"
+              ], correct: 0 },
+            { id: 2261, ticket: 6, topic: "Классификация реакций",
+              question: "Какие реакции называют экзотермическими?",
+              options: [
+                "С выделением тепла",
+                "С поглощением тепла",
+                "Без теплового эффекта",
+                "С изменением температуры"
+              ], correct: 0 },
+            { id: 2262, ticket: 6, topic: "Классификация реакций",
+              question: "Какие реакции называют эндотермическими?",
+              options: [
+                "С поглощением тепла",
+                "С выделением тепла",
+                "Без теплового эффекта",
+                "С охлаждением"
+              ], correct: 0 },
+            { id: 2263, ticket: 6, topic: "Классификация реакций",
+              question: "Пример экзотермической реакции:",
+              options: [
+                "Горение",
+                "Фотосинтез",
+                "Разложение CaCO₃",
+                "Испарение воды"
+              ], correct: 0 },
+            { id: 2264, ticket: 6, topic: "Классификация реакций",
+              question: "Пример эндотермической реакции:",
+              options: [
+                "Фотосинтез",
+                "Горение",
+                "Нейтрализация",
+                "Взрыв"
+              ], correct: 0 },
+            { id: 2265, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по обратимости?",
+              options: [
+                "Обратимые и необратимые",
+                "Экзо- и эндотермические",
+                "Гомогенные и гетерогенные",
+                "Каталитические и некаталитические"
+              ], correct: 0 },
+            { id: 2266, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое обратимые реакции?",
+              options: [
+                "Которые идут в обоих направлениях",
+                "Которые идут до конца",
+                "Которые требуют катализатора",
+                "Которые идут на свету"
+              ], correct: 0 },
+            { id: 2267, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое необратимые реакции?",
+              options: [
+                "Которые идут до конца",
+                "Которые идут в обоих направлениях",
+                "Которые нельзя остановить",
+                "Которые взрываются"
+              ], correct: 0 },
+            { id: 2268, ticket: 6, topic: "Классификация реакций",
+              question: "Пример обратимой реакции:",
+              options: [
+                "N₂ + 3H₂ ⇄ 2NH₃",
+                "2H₂ + O₂ → 2H₂O",
+                "NaOH + HCl → NaCl + H₂O",
+                "2Mg + O₂ → 2MgO"
+              ], correct: 0 },
+            { id: 2269, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по изменению степеней окисления?",
+              options: [
+                "ОВР и не ОВР",
+                "Кислотно-основные",
+                "Обратимые",
+                "Каталитические"
+              ], correct: 0 },
+            { id: 2270, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое ОВР?",
+              options: [
+                "Окислительно-восстановительные реакции",
+                "Органические вещества",
+                "Обратимые реакции",
+                "Основные вещества"
+              ], correct: 0 },
+            { id: 2271, ticket: 6, topic: "Классификация реакций",
+              question: "Что происходит в ОВР?",
+              options: [
+                "Изменение степеней окисления",
+                "Обмен ионами",
+                "Образование осадка",
+                "Выделение газа"
+              ], correct: 0 },
+            { id: 2272, ticket: 6, topic: "Классификация реакций",
+              question: "Пример ОВР:",
+              options: [
+                "2Na + Cl₂ → 2NaCl",
+                "NaOH + HCl → NaCl + H₂O",
+                "CaO + CO₂ → CaCO₃",
+                "AgNO₃ + NaCl → AgCl↓ + NaNO₃"
+              ], correct: 0 },
+            { id: 2273, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по фазовому составу?",
+              options: [
+                "Гомогенные и гетерогенные",
+                "Обратимые и необратимые",
+                "Экзо- и эндотермические",
+                "Каталитические"
+              ], correct: 0 },
+            { id: 2274, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое гомогенные реакции?",
+              options: [
+                "В одной фазе",
+                "В разных фазах",
+                "С катализатором",
+                "Без катализатора"
+              ], correct: 0 },
+            { id: 2275, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое гетерогенные реакции?",
+              options: [
+                "В разных фазах",
+                "В одной фазе",
+                "С катализатором",
+                "На поверхности"
+              ], correct: 0 },
+            { id: 2276, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по участию катализатора?",
+              options: [
+                "Каталитические и некаталитические",
+                "Ферментативные",
+                "Гомогенные",
+                "Гетерогенные"
+              ], correct: 0 },
+            { id: 2277, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое катализатор?",
+              options: [
+                "Ускоряет реакцию, но не расходуется",
+                "Замедляет реакцию",
+                "Участвует в реакции",
+                "Изменяет продукты"
+              ], correct: 0 },
+            { id: 2278, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое ингибитор?",
+              options: [
+                "Замедляет реакцию",
+                "Ускоряет реакцию",
+                "Не влияет",
+                "Останавливает реакцию"
+              ], correct: 0 },
+            { id: 2279, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое ферменты?",
+              options: [
+                "Биологические катализаторы",
+                "Витамины",
+                "Гормоны",
+                "Белки"
+              ], correct: 0 },
+            { id: 2280, ticket: 6, topic: "Классификация реакций",
+              question: "Как классифицируют реакции по механизму?",
+              options: [
+                "Радикальные, ионные",
+                "ОВР",
+                "Обратимые",
+                "Каталитические"
+              ], correct: 0 },
+            { id: 2281, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое радикальные реакции?",
+              options: [
+                "С участием свободных радикалов",
+                "С ионами",
+                "С катализатором",
+                "На свету"
+              ], correct: 0 },
+            { id: 2282, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое ионные реакции?",
+              options: [
+                "С участием ионов",
+                "С радикалами",
+                "В растворах",
+                "С кислотами"
+              ], correct: 0 },
+            { id: 2283, ticket: 6, topic: "Классификация реакций",
+              question: "Пример радикальной реакции:",
+              options: [
+                "Хлорирование метана на свету",
+                "Реакция нейтрализации",
+                "Гидратация этилена",
+                "Этерификация"
+              ], correct: 0 },
+            { id: 2284, ticket: 6, topic: "Классификация реакций",
+              question: "Пример ионной реакции:",
+              options: [
+                "NaOH + HCl → NaCl + H₂O",
+                "CH₄ + Cl₂ → CH₃Cl + HCl",
+                "2H₂ + O₂ → 2H₂O",
+                "N₂ + 3H₂ → 2NH₃"
+              ], correct: 0 },
+            { id: 2285, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое фотохимические реакции?",
+              options: [
+                "Идут под действием света",
+                "Идут с выделением света",
+                "Фотографические",
+                "Светящиеся"
+              ], correct: 0 },
+            { id: 2286, ticket: 6, topic: "Классификация реакций",
+              question: "Пример фотохимической реакции:",
+              options: [
+                "Фотосинтез",
+                "Горение",
+                "Ржавление",
+                "Брожение"
+              ], correct: 0 },
+            { id: 2287, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое термические реакции?",
+              options: [
+                "Идут при нагревании",
+                "Идут с выделением тепла",
+                "Горение",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2288, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое электрохимические реакции?",
+              options: [
+                "Связаны с электричеством",
+                "Электролиз",
+                "В гальванических элементах",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2289, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое реакции полимеризации?",
+              options: [
+                "Образование полимеров",
+                "Разложение полимеров",
+                "Соединение мономеров",
+                "Образование макромолекул"
+              ], correct: 0 },
+            { id: 2290, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое реакции поликонденсации?",
+              options: [
+                "С выделением побочных продуктов",
+                "Без выделения продуктов",
+                "Соединение мономеров",
+                "Образование полимеров"
+              ], correct: 0 },
+            { id: 2291, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое гидролиз?",
+              options: [
+                "Разложение водой",
+                "Соединение с водой",
+                "Отщепление воды",
+                "Присоединение воды"
+              ], correct: 0 },
+            { id: 2292, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое гидратация?",
+              options: [
+                "Присоединение воды",
+                "Отщепление воды",
+                "Разложение водой",
+                "Растворение в воде"
+              ], correct: 0 },
+            { id: 2293, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое дегидратация?",
+              options: [
+                "Отщепление воды",
+                "Присоединение воды",
+                "Разложение водой",
+                "Обезвоживание"
+              ], correct: 0 },
+            { id: 2294, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое гидрирование?",
+              options: [
+                "Присоединение водорода",
+                "Отщепление водорода",
+                "Реакция с водородом",
+                "Окисление водородом"
+              ], correct: 0 },
+            { id: 2295, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое дегидрирование?",
+              options: [
+                "Отщепление водорода",
+                "Присоединение водорода",
+                "Реакция с водородом",
+                "Восстановление"
+              ], correct: 0 },
+            { id: 2296, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое галогенирование?",
+              options: [
+                "Присоединение галогена",
+                "Отщепление галогена",
+                "Реакция с галогенами",
+                "Замещение галогеном"
+              ], correct: 0 },
+            { id: 2297, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое нитрование?",
+              options: [
+                "Введение нитрогруппы",
+                "Реакция с азотной кислотой",
+                "Окисление азотом",
+                "Восстановление азота"
+              ], correct: 0 },
+            { id: 2298, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое сульфирование?",
+              options: [
+                "Введение сульфогруппы",
+                "Реакция с серной кислотой",
+                "Окисление серой",
+                "Восстановление серы"
+              ], correct: 0 },
+            { id: 2299, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое алкилирование?",
+              options: [
+                "Введение алкильной группы",
+                "Удаление алкильной группы",
+                "Замещение алкилом",
+                "Присоединение алкена"
+              ], correct: 0 },
+            { id: 2300, ticket: 6, topic: "Классификация реакций",
+              question: "Что такое ацилирование?",
+              options: [
+                "Введение ацильной группы",
+                "Удаление ацила",
+                "Реакция с кислотами",
+                "Образование сложных эфиров"
+              ], correct: 0 },
+
+            // ===== БИЛЕТ 7: Крахмал и целлюлоза (50 вопросов) =====
+            { id: 2301, ticket: 7, topic: "Крахмал",
+              question: "Из чего состоит крахмал?",
+              options: [
+                "Из остатков глюкозы",
+                "Из фруктозы",
+                "Из сахарозы",
+                "Из мальтозы"
+              ], correct: 0 },
+            { id: 2302, ticket: 7, topic: "Крахмал",
+              question: "Какие полисахариды входят в состав крахмала?",
+              options: [
+                "Амилоза и амилопектин",
+                "Целлюлоза и гемицеллюлоза",
+                "Гликоген и декстрин",
+                "Инулин и пектин"
+              ], correct: 0 },
+            { id: 2303, ticket: 7, topic: "Крахмал",
+              question: "Какая формула крахмала?",
+              options: [
+                "(C₆H₁₀O₅)ₙ",
+                "C₆H₁₂O₆",
+                "C₁₂H₂₂O₁₁",
+                "C₆H₆O"
+              ], correct: 0 },
+            { id: 2304, ticket: 7, topic: "Крахмал",
+              question: "Где содержится крахмал?",
+              options: [
+                "В растениях",
+                "В животных",
+                "В грибах",
+                "В бактериях"
+              ], correct: 0 },
+            { id: 2305, ticket: 7, topic: "Крахмал",
+              question: "В каких растениях много крахмала?",
+              options: [
+                "Картофель, кукуруза, рис",
+                "Яблоки, груши",
+                "Мясо, рыба",
+                "Грибы"
+              ], correct: 0 },
+            { id: 2306, ticket: 7, topic: "Крахмал",
+              question: "Как крахмал реагирует с йодом?",
+              options: [
+                "Синее окрашивание",
+                "Красное окрашивание",
+                "Желтое окрашивание",
+                "Не реагирует"
+              ], correct: 0 },
+            { id: 2307, ticket: 7, topic: "Крахмал",
+              question: "Почему крахмал синеет с йодом?",
+              options: [
+                "Образуется комплекс включения",
+                "Химическая реакция",
+                "Окисление",
+                "Восстановление"
+              ], correct: 0 },
+            { id: 2308, ticket: 7, topic: "Крахмал",
+              question: "Растворим ли крахмал в холодной воде?",
+              options: [
+                "Нет",
+                "Да",
+                "Частично",
+                "Только в горячей"
+              ], correct: 0 },
+            { id: 2309, ticket: 7, topic: "Крахмал",
+              question: "Что происходит с крахмалом в горячей воде?",
+              options: [
+                "Клейстеризуется",
+                "Растворяется",
+                "Разлагается",
+                "Осаждается"
+              ], correct: 0 },
+            { id: 2310, ticket: 7, topic: "Крахмал",
+              question: "Что такое клейстер?",
+              options: [
+                "Вязкий раствор крахмала",
+                "Жидкий крахмал",
+                "Сухой крахмал",
+                "Клей"
+              ], correct: 0 },
+            { id: 2311, ticket: 7, topic: "Крахмал",
+              question: "Что происходит при гидролизе крахмала?",
+              options: [
+                "Образуется глюкоза",
+                "Образуется мальтоза",
+                "Образуются декстрины",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2312, ticket: 7, topic: "Крахмал",
+              question: "Что такое декстрины?",
+              options: [
+                "Продукты неполного гидролиза крахмала",
+                "Изомеры крахмала",
+                "Полисахариды",
+                "Моносахариды"
+              ], correct: 0 },
+            { id: 2313, ticket: 7, topic: "Крахмал",
+              question: "Где используют декстрины?",
+              options: [
+                "Как клей",
+                "В пищевой промышленности",
+                "В текстильной промышленности",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2314, ticket: 7, topic: "Крахмал",
+              question: "Что такое патока?",
+              options: [
+                "Продукт гидролиза крахмала",
+                "Сироп",
+                "Сахар",
+                "Мед"
+              ], correct: 0 },
+            { id: 2315, ticket: 7, topic: "Крахмал",
+              question: "Где используют патоку?",
+              options: [
+                "В кондитерском деле",
+                "В медицине",
+                "В технике",
+                "В строительстве"
+              ], correct: 0 },
+            { id: 2316, ticket: 7, topic: "Крахмал",
+              question: "Что такое глюкозный сироп?",
+              options: [
+                "Продукт полного гидролиза крахмала",
+                "Смесь сахаров",
+                "Мед",
+                "Патока"
+              ], correct: 0 },
+            { id: 2317, ticket: 7, topic: "Крахмал",
+              question: "Как получают глюкозу из крахмала?",
+              options: [
+                "Кислотным или ферментативным гидролизом",
+                "Окислением",
+                "Восстановлением",
+                "Изомеризацией"
+              ], correct: 0 },
+            { id: 2318, ticket: 7, topic: "Крахмал",
+              question: "Какие ферменты расщепляют крахмал?",
+              options: [
+                "Амилазы",
+                "Протеазы",
+                "Липазы",
+                "Нуклеазы"
+              ], correct: 0 },
+            { id: 2319, ticket: 7, topic: "Крахмал",
+              question: "Где в организме человека расщепляется крахмал?",
+              options: [
+                "Во рту и кишечнике",
+                "В желудке",
+                "В печени",
+                "В крови"
+              ], correct: 0 },
+            { id: 2320, ticket: 7, topic: "Крахмал",
+              question: "Что такое модифицированный крахмал?",
+              options: [
+                "Крахмал с измененными свойствами",
+                "Искусственный крахмал",
+                "Синтетический крахмал",
+                "Очищенный крахмал"
+              ], correct: 0 },
+            { id: 2321, ticket: 7, topic: "Крахмал",
+              question: "Где используют модифицированный крахмал?",
+              options: [
+                "В пищевой промышленности",
+                "В фармацевтике",
+                "В косметике",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2322, ticket: 7, topic: "Целлюлоза",
+              question: "Из чего состоит целлюлоза?",
+              options: [
+                "Из остатков глюкозы",
+                "Из фруктозы",
+                "Из сахарозы",
+                "Из мальтозы"
+              ], correct: 0 },
+            { id: 2323, ticket: 7, topic: "Целлюлоза",
+              question: "Какая формула целлюлозы?",
+              options: [
+                "(C₆H₁₀O₅)ₙ",
+                "C₆H₁₂O₆",
+                "C₁₂H₂₂O₁₁",
+                "C₆H₆O"
+              ], correct: 0 },
+            { id: 2324, ticket: 7, topic: "Целлюлоза",
+              question: "Чем отличается целлюлоза от крахмала?",
+              options: [
+                "Строением и связями",
+                "Составом",
+                "Формулой",
+                "Ничем"
+              ], correct: 0 },
+            { id: 2325, ticket: 7, topic: "Целлюлоза",
+              question: "Какие связи в целлюлозе?",
+              options: [
+                "β-1,4-гликозидные",
+                "α-1,4-гликозидные",
+                "α-1,6-гликозидные",
+                "Пептидные"
+              ], correct: 0 },
+            { id: 2326, ticket: 7, topic: "Целлюлоза",
+              question: "Где содержится целлюлоза?",
+              options: [
+                "В клеточных стенках растений",
+                "В животных",
+                "В грибах",
+                "В бактериях"
+              ], correct: 0 },
+            { id: 2327, ticket: 7, topic: "Целлюлоза",
+              question: "Растворима ли целлюлоза в воде?",
+              options: [
+                "Нет",
+                "Да",
+                "Частично",
+                "В горячей"
+              ], correct: 0 },
+            { id: 2328, ticket: 7, topic: "Целлюлоза",
+              question: "В чем растворяется целлюлоза?",
+              options: [
+                "В реактиве Швейцера",
+                "В воде",
+                "В спирте",
+                "В бензине"
+              ], correct: 0 },
+            { id: 2329, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое реактив Швейцера?",
+              options: [
+                "Аммиачный раствор гидроксида меди",
+                "Концентрированная серная кислота",
+                "Соляная кислота",
+                "Щелочь"
+              ], correct: 0 },
+            { id: 2330, ticket: 7, topic: "Целлюлоза",
+              question: "Что происходит при гидролизе целлюлозы?",
+              options: [
+                "Образуется глюкоза",
+                "Образуется целлобиоза",
+                "Труднее, чем крахмал",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2331, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое целлобиоза?",
+              options: [
+                "Дисахарид из двух глюкоз",
+                "Продукт гидролиза целлюлозы",
+                "Промежуточный продукт",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2332, ticket: 7, topic: "Целлюлоза",
+              question: "Какие ферменты расщепляют целлюлозу?",
+              options: [
+                "Целлюлазы",
+                "Амилазы",
+                "Протеазы",
+                "Липазы"
+              ], correct: 0 },
+            { id: 2333, ticket: 7, topic: "Целлюлоза",
+              question: "Почему человек не переваривает целлюлозу?",
+              options: [
+                "Нет ферментов целлюлаз",
+                "Она нерастворима",
+                "Она ядовита",
+                "Она не нужна"
+              ], correct: 0 },
+            { id: 2334, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое клетчатка?",
+              options: [
+                "Пищевые волокна (целлюлоза)",
+                "Лекарство",
+                "Витамин",
+                "Минерал"
+              ], correct: 0 },
+            { id: 2335, ticket: 7, topic: "Целлюлоза",
+              question: "Для чего нужна клетчатка в питании?",
+              options: [
+                "Для пищеварения",
+                "Для энергии",
+                "Для строительства клеток",
+                "Для иммунитета"
+              ], correct: 0 },
+            { id: 2336, ticket: 7, topic: "Целлюлоза",
+              question: "Что получают из целлюлозы?",
+              options: [
+                "Бумагу",
+                "Ткани",
+                "Пластмассы",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2337, ticket: 7, topic: "Целлюлоза",
+              question: "Как получают бумагу?",
+              options: [
+                "Из древесной целлюлозы",
+                "Из хлопка",
+                "Из льна",
+                "Из синтетики"
+              ], correct: 0 },
+            { id: 2338, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое вискоза?",
+              options: [
+                "Искусственное волокно из целлюлозы",
+                "Синтетическое волокно",
+                "Натуральное волокно",
+                "Пластмасса"
+              ], correct: 0 },
+            { id: 2339, ticket: 7, topic: "Целлюлоза",
+              question: "Как получают вискозу?",
+              options: [
+                "Обработкой целлюлозы щелочью и CS₂",
+                "Плавлением",
+                "Экструзией",
+                "Полимеризацией"
+              ], correct: 0 },
+            { id: 2340, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое ацетатное волокно?",
+              options: [
+                "Из ацетилцеллюлозы",
+                "Из вискозы",
+                "Из нейлона",
+                "Из лавсана"
+              ], correct: 0 },
+            { id: 2341, ticket: 7, topic: "Целлюлоза",
+              question: "Как получают ацетилцеллюлозу?",
+              options: [
+                "Этерификацией целлюлозы уксусной кислотой",
+                "Гидролизом",
+                "Окислением",
+                "Восстановлением"
+              ], correct: 0 },
+            { id: 2342, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое нитроцеллюлоза?",
+              options: [
+                "Эфир целлюлозы и азотной кислоты",
+                "Взрывчатое вещество",
+                "Коллоксилин",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2343, ticket: 7, topic: "Целлюлоза",
+              question: "Где используют нитроцеллюлозу?",
+              options: [
+                "В производстве бездымного пороха",
+                "В лаках",
+                "В пластмассах",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2344, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое целлофан?",
+              options: [
+                "Пленка из вискозы",
+                "Полиэтилен",
+                "Полипропилен",
+                "Лавсан"
+              ], correct: 0 },
+            { id: 2345, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое карбоксиметилцеллюлоза (КМЦ)?",
+              options: [
+                "Эфир целлюлозы",
+                "Загуститель",
+                "Пищевая добавка E466",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2346, ticket: 7, topic: "Целлюлоза",
+              question: "Где используют КМЦ?",
+              options: [
+                "В пищевой промышленности",
+                "В косметике",
+                "В лекарствах",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2347, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое микрокристаллическая целлюлоза?",
+              options: [
+                "Очищенная целлюлоза",
+                "Пищевая добавка E460",
+                "Наполнитель в таблетках",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2348, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое лигнин?",
+              options: [
+                "Вещество в древесине",
+                "Полисахарид",
+                "Белок",
+                "Смола"
+              ], correct: 0 },
+            { id: 2349, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое гемицеллюлоза?",
+              options: [
+                "Смесь полисахаридов",
+                "Часть целлюлозы",
+                "Продукт гидролиза",
+                "Смола"
+              ], correct: 0 },
+            { id: 2350, ticket: 7, topic: "Целлюлоза",
+              question: "Что такое пектин?",
+              options: [
+                "Полисахарид в фруктах",
+                "Желирующее вещество",
+                "Пищевая добавка E440",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+
+            // ===== БИЛЕТ 8: Изомеры пентанола (50 вопросов) =====
+            { id: 2351, ticket: 8, topic: "Изомеры пентанола",
+              question: "Сколько изомеров у пентанола?",
+              options: [
+                "8",
+                "3",
+                "5",
+                "10"
+              ], correct: 0 },
+            { id: 2352, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула пентанола-1?",
+              options: [
+                "CH₃-CH₂-CH₂-CH₂-CH₂OH",
+                "CH₃-CH₂-CH₂-CHOH-CH₃",
+                "CH₃-CH₂-CHOH-CH₂-CH₃",
+                "(CH₃)₂CH-CH₂-CH₂OH"
+              ], correct: 0 },
+            { id: 2353, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула пентанола-2?",
+              options: [
+                "CH₃-CH₂-CH₂-CHOH-CH₃",
+                "CH₃-CH₂-CH₂-CH₂-CH₂OH",
+                "CH₃-CH₂-CHOH-CH₂-CH₃",
+                "CH₃-CHOH-CH₂-CH₂-CH₃"
+              ], correct: 0 },
+            { id: 2354, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула пентанола-3?",
+              options: [
+                "CH₃-CH₂-CHOH-CH₂-CH₃",
+                "CH₃-CH₂-CH₂-CHOH-CH₃",
+                "CH₃-CHOH-CH₂-CH₂-CH₃",
+                "CH₃-CH₂-CH₂-CH₂-CH₂OH"
+              ], correct: 0 },
+            { id: 2355, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула 2-метилбутанола-1?",
+              options: [
+                "CH₃-CH₂-CH(CH₃)-CH₂OH",
+                "CH₃-CH(CH₃)-CH₂-CH₂OH",
+                "(CH₃)₂CH-CH₂-CH₂OH",
+                "CH₃-CH₂-CH₂-CH(CH₃)OH"
+              ], correct: 0 },
+            { id: 2356, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула 3-метилбутанола-1?",
+              options: [
+                "(CH₃)₂CH-CH₂-CH₂OH",
+                "CH₃-CH₂-CH(CH₃)-CH₂OH",
+                "CH₃-CH(CH₃)-CH₂-CH₂OH",
+                "CH₃-CH₂-CH₂-CH(CH₃)OH"
+              ], correct: 0 },
+            { id: 2357, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула 2-метилбутанола-2?",
+              options: [
+                "CH₃-CH₂-C(OH)(CH₃)-CH₃",
+                "CH₃-CH(OH)-CH(CH₃)-CH₃",
+                "(CH₃)₂C(OH)-CH₂-CH₃",
+                "CH₃-CH₂-CH(OH)-CH(CH₃)"
+              ], correct: 0 },
+            { id: 2358, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула 3-метилбутанола-2?",
+              options: [
+                "CH₃-CH(OH)-CH(CH₃)-CH₃",
+                "CH₃-CH₂-C(OH)(CH₃)-CH₃",
+                "(CH₃)₂CH-CH(OH)-CH₃",
+                "CH₃-CH₂-CH(OH)-CH(CH₃)"
+              ], correct: 0 },
+            { id: 2359, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая формула 2,2-диметилпропанола-1?",
+              options: [
+                "(CH₃)₃C-CH₂OH",
+                "CH₃-CH₂-C(CH₃)₂OH",
+                "(CH₃)₂C(OH)-CH₂-CH₃",
+                "CH₃-C(OH)(CH₃)-CH₂-CH₃"
+              ], correct: 0 },
+            { id: 2360, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой изомер пентанола имеет третичный атом углерода?",
+              options: [
+                "2-метилбутанол-2",
+                "Пентанол-1",
+                "Пентанол-2",
+                "3-метилбутанол-1"
+              ], correct: 0 },
+            { id: 2361, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой изомер пентанола имеет четвертичный атом углерода?",
+              options: [
+                "2,2-диметилпропанол-1",
+                "2-метилбутанол-2",
+                "3-метилбутанол-2",
+                "Пентанол-3"
+              ], correct: 0 },
+            { id: 2362, ticket: 8, topic: "Изомеры пентанола",
+              question: "Сколько первичных спиртов среди изомеров пентанола?",
+              options: [
+                "4",
+                "2",
+                "3",
+                "5"
+              ], correct: 0 },
+            { id: 2363, ticket: 8, topic: "Изомеры пентанола",
+              question: "Сколько вторичных спиртов среди изомеров пентанола?",
+              options: [
+                "3",
+                "2",
+                "4",
+                "1"
+              ], correct: 0 },
+            { id: 2364, ticket: 8, topic: "Изомеры пентанола",
+              question: "Сколько третичных спиртов среди изомеров пентанола?",
+              options: [
+                "1",
+                "2",
+                "3",
+                "0"
+              ], correct: 0 },
+            { id: 2365, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола имеет самую низкую температуру кипения?",
+              options: [
+                "2,2-диметилпропанол-1",
+                "Пентанол-1",
+                "Пентанол-2",
+                "3-метилбутанол-1"
+              ], correct: 0 },
+            { id: 2366, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола имеет самую высокую температуру кипения?",
+              options: [
+                "Пентанол-1",
+                "2,2-диметилпропанол-1",
+                "2-метилбутанол-2",
+                "3-метилбутанол-2"
+              ], correct: 0 },
+            { id: 2367, ticket: 8, topic: "Изомеры пентанола",
+              question: "Почему пентанол-1 кипит выше разветвленных изомеров?",
+              options: [
+                "Из-за водородных связей",
+                "Из-за большей массы",
+                "Из-за полярности",
+                "Из-за линейной структуры"
+              ], correct: 0 },
+            { id: 2368, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какие изомеры пентанола оптически активны?",
+              options: [
+                "Имеющие хиральный центр",
+                "Все",
+                "Никакие",
+                "Только первичные"
+              ], correct: 0 },
+            { id: 2369, ticket: 8, topic: "Изомеры пентанола",
+              question: "У каких изомеров пентанола есть хиральный центр?",
+              options: [
+                "Пентанол-2, 3-метилбутанол-2",
+                "Пентанол-1",
+                "2,2-диметилпропанол-1",
+                "2-метилбутанол-1"
+              ], correct: 0 },
+            { id: 2370, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое хиральный центр?",
+              options: [
+                "Атом углерода с четырьмя разными заместителями",
+                "Асимметрический атом",
+                "Центр оптической активности",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2371, ticket: 8, topic: "Изомеры пентанола",
+              question: "Как называются изомеры, различающиеся положением OH-группы?",
+              options: [
+                "Структурные",
+                "Пространственные",
+                "Оптические",
+                "Геометрические"
+              ], correct: 0 },
+            { id: 2372, ticket: 8, topic: "Изомеры пентанола",
+              question: "Как называются изомеры, различающиеся углеродным скелетом?",
+              options: [
+                "Скелетные",
+                "Положения",
+                "Межклассовые",
+                "Геометрические"
+              ], correct: 0 },
+            { id: 2373, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какие межклассовые изомеры есть у пентанола?",
+              options: [
+                "Простые эфиры",
+                "Альдегиды",
+                "Кетоны",
+                "Кислоты"
+              ], correct: 0 },
+            { id: 2374, ticket: 8, topic: "Изомеры пентанола",
+              question: "Формула простого эфира, изомерного пентанолу?",
+              options: [
+                "C₅H₁₁OH и C₂H₅-O-C₃H₇",
+                "C₅H₁₁OH и CH₃-O-C₄H₉",
+                "C₅H₁₁OH и C₅H₁₁-O-C₅H₁₁",
+                "C₅H₁₁OH и C₆H₁₄O"
+              ], correct: 0 },
+            { id: 2375, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая общая формула предельных одноатомных спиртов?",
+              options: [
+                "CₙH₂ₙ₊₂O",
+                "CₙH₂ₙO",
+                "CₙH₂ₙ₋₂O",
+                "CₙH₂ₙ₊₂O₂"
+              ], correct: 0 },
+            { id: 2376, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая молекулярная масса пентанола?",
+              options: [
+                "88",
+                "74",
+                "60",
+                "102"
+              ], correct: 0 },
+            { id: 2377, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола наиболее летуч?",
+              options: [
+                "2,2-диметилпропанол-1",
+                "Пентанол-1",
+                "Пентанол-2",
+                "3-метилбутанол-2"
+              ], correct: 0 },
+            { id: 2378, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола лучше растворяется в воде?",
+              options: [
+                "Все примерно одинаково",
+                "Пентанол-1",
+                "2,2-диметилпропанол-1",
+                "2-метилбутанол-2"
+              ], correct: 1 },
+            { id: 2379, ticket: 8, topic: "Изомеры пентанола",
+              question: "Почему спирты лучше растворяются в воде, чем алканы?",
+              options: [
+                "Из-за водородных связей",
+                "Из-за меньшей массы",
+                "Из-за полярности",
+                "Из-за реакционной способности"
+              ], correct: 0 },
+            { id: 2380, ticket: 8, topic: "Изомеры пентанола",
+              question: "Как изменяется растворимость спиртов с ростом цепи?",
+              options: [
+                "Уменьшается",
+                "Увеличивается",
+                "Не изменяется",
+                "Сначала увеличивается, потом уменьшается"
+              ], correct: 0 },
+            { id: 2381, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какая реакция характерна для всех изомеров пентанола?",
+              options: [
+                "Этерификация",
+                "Дегидратация",
+                "Окисление",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2382, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что образуется при окислении первичных спиртов?",
+              options: [
+                "Альдегиды",
+                "Кетоны",
+                "Кислоты",
+                "Простые эфиры"
+              ], correct: 0 },
+            { id: 2383, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что образуется при окислении вторичных спиртов?",
+              options: [
+                "Кетоны",
+                "Альдегиды",
+                "Кислоты",
+                "Простые эфиры"
+              ], correct: 0 },
+            { id: 2384, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что образуется при окислении третичных спиртов?",
+              options: [
+                "С разрушением цепи",
+                "Альдегиды",
+                "Кетоны",
+                "Кислоты"
+              ], correct: 0 },
+            { id: 2385, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что образуется при дегидратации пентанола-1?",
+              options: [
+                "Пентен-1",
+                "Пентен-2",
+                "Смесь пентенов",
+                "Циклопентан"
+              ], correct: 2 },
+            { id: 2386, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какое правило выполняется при дегидратации?",
+              options: [
+                "Правило Зайцева",
+                "Правило Марковникова",
+                "Правило Вант-Гоффа",
+                "Правило Ле-Шателье"
+              ], correct: 0 },
+            { id: 2387, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что гласит правило Зайцева?",
+              options: [
+                "Водород отщепляется от менее гидрированного атома",
+                "Водород отщепляется от более гидрированного",
+                "Образуется наиболее замещенный алкен",
+                "Образуется наименее замещенный алкен"
+              ], correct: 2 },
+            { id: 2388, ticket: 8, topic: "Изомеры пентанола",
+              question: "Как получают спирты в промышленности?",
+              options: [
+                "Гидратацией алкенов",
+                "Окислением алканов",
+                "Гидролизом галогеналканов",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2389, ticket: 8, topic: "Изомеры пентанола",
+              question: "Как получают пентанол-1 в промышленности?",
+              options: [
+                "Оксосинтезом",
+                "Гидратацией пентена",
+                "Из природного газа",
+                "Из нефти"
+              ], correct: 0 },
+            { id: 2390, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое оксосинтез?",
+              options: [
+                "Получение спиртов из алкенов, CO и H₂",
+                "Окисление алканов",
+                "Гидрирование альдегидов",
+                "Восстановление кислот"
+              ], correct: 0 },
+            { id: 2391, ticket: 8, topic: "Изомеры пентанола",
+              question: "Где используют изомеры пентанола?",
+              options: [
+                "Как растворители",
+                "В производстве эфиров",
+                "В парфюмерии",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2392, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола имеет запах?",
+              options: [
+                "Все",
+                "Только изоамиловый спирт",
+                "Только пентанол-1",
+                "Только третичные"
+              ], correct: 1 },
+            { id: 2393, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое изоамиловый спирт?",
+              options: [
+                "3-метилбутанол-1",
+                "2-метилбутанол-1",
+                "Пентанол-3",
+                "2-метилбутанол-2"
+              ], correct: 0 },
+            { id: 2394, ticket: 8, topic: "Изомеры пентанола",
+              question: "Где содержится изоамиловый спирт?",
+              options: [
+                "В сивушных маслах",
+                "В эфирных маслах",
+                "Во фруктах",
+                "В вине"
+              ], correct: 0 },
+            { id: 2395, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое сивушные масла?",
+              options: [
+                "Побочные продукты спиртового брожения",
+                "Отходы нефтепереработки",
+                "Эфирные масла",
+                "Смазочные масла"
+              ], correct: 0 },
+            { id: 2396, ticket: 8, topic: "Изомеры пентанола",
+              question: "Какой из изомеров пентанола наиболее токсичен?",
+              options: [
+                "Изоамиловый спирт",
+                "Пентанол-1",
+                "Пентанол-2",
+                "2,2-диметилпропанол-1"
+              ], correct: 0 },
+            { id: 2397, ticket: 8, topic: "Изомеры пентанола",
+              question: "Почему нельзя пить технический спирт?",
+              options: [
+                "Содержит сивушные масла",
+                "Он ядовит",
+                "Может вызвать слепоту",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2398, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое амиловый спирт?",
+              options: [
+                "Смесь изомеров пентанола",
+                "Пентанол-1",
+                "Изоамиловый спирт",
+                "Вторичный пентанол"
+              ], correct: 0 },
+            { id: 2399, ticket: 8, topic: "Изомеры пентанола",
+              question: "Где используют амиловый спирт?",
+              options: [
+                "Как растворитель",
+                "В производстве амилацетата",
+                "В экстракции",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2400, ticket: 8, topic: "Изомеры пентанола",
+              question: "Что такое амилацетат?",
+              options: [
+                "Сложный эфир уксусной кислоты и амилового спирта",
+                "Растворитель",
+                "Искусственный запах груши",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+
+            // ===== БИЛЕТ 9: Химическое равновесие (50 вопросов) =====
+            { id: 2401, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое химическое равновесие?",
+              options: [
+                "Состояние, когда скорости прямой и обратной реакций равны",
+                "Когда реакция остановилась",
+                "Когда все вещества прореагировали",
+                "Когда нет продуктов"
+              ], correct: 0 },
+            { id: 2402, ticket: 9, topic: "Химическое равновесие",
+              question: "Какие реакции называют обратимыми?",
+              options: [
+                "Которые идут в обоих направлениях",
+                "Которые идут до конца",
+                "Которые нельзя обратить",
+                "Которые взрываются"
+              ], correct: 0 },
+            { id: 2403, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое константа равновесия?",
+              options: [
+                "Отношение констант скоростей прямой и обратной реакций",
+                "Постоянная величина",
+                "Скорость реакции",
+                "Концентрация"
+              ], correct: 0 },
+            { id: 2404, ticket: 9, topic: "Химическое равновесие",
+              question: "Как записывается константа равновесия для реакции aA + bB ⇄ cC + dD?",
+              options: [
+                "K = [C]^c[D]^d / [A]^a[B]^b",
+                "K = [A]^a[B]^b / [C]^c[D]^d",
+                "K = [C][D] / [A][B]",
+                "K = [A][B] / [C][D]"
+              ], correct: 0 },
+            { id: 2405, ticket: 9, topic: "Химическое равновесие",
+              question: "От чего зависит константа равновесия?",
+              options: [
+                "От температуры",
+                "От концентрации",
+                "От давления",
+                "От катализатора"
+              ], correct: 0 },
+            { id: 2406, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое принцип Ле-Шателье?",
+              options: [
+                "Если на систему воздействовать, равновесие смещается в сторону ослабления воздействия",
+                "Равновесие всегда восстанавливается",
+                "Скорости равны",
+                "Концентрации равны"
+              ], correct: 0 },
+            { id: 2407, ticket: 9, topic: "Химическое равновесие",
+              question: "Как влияет повышение температуры на равновесие?",
+              options: [
+                "Смещает в сторону эндотермической реакции",
+                "Смещает в сторону экзотермической",
+                "Не влияет",
+                "Зависит от реакции"
+              ], correct: 0 },
+            { id: 2408, ticket: 9, topic: "Химическое равновесие",
+              question: "Как влияет повышение давления на равновесие?",
+              options: [
+                "Смещает в сторону меньшего объема",
+                "Смещает в сторону большего объема",
+                "Не влияет",
+                "Зависит от реакции"
+              ], correct: 0 },
+            { id: 2409, ticket: 9, topic: "Химическое равновесие",
+              question: "Как влияет увеличение концентрации реагента?",
+              options: [
+                "Смещает в сторону продуктов",
+                "Смещает в сторону реагентов",
+                "Не влияет",
+                "Зависит от реакции"
+              ], correct: 0 },
+            { id: 2410, ticket: 9, topic: "Химическое равновесие",
+              question: "Как влияет катализатор на равновесие?",
+              options: [
+                "Не влияет, только ускоряет достижение",
+                "Смещает в сторону продуктов",
+                "Смещает в сторону реагентов",
+                "Зависит от катализатора"
+              ], correct: 0 },
+            { id: 2411, ticket: 9, topic: "Химическое равновесие",
+              question: "Для какой реакции повышение давления сместит равновесие вправо?",
+              options: [
+                "N₂ + 3H₂ ⇄ 2NH₃",
+                "CaCO₃ ⇄ CaO + CO₂",
+                "H₂ + I₂ ⇄ 2HI",
+                "2HI ⇄ H₂ + I₂"
+              ], correct: 0 },
+            { id: 2412, ticket: 9, topic: "Химическое равновесие",
+              question: "Для какой реакции повышение давления не влияет на равновесие?",
+              options: [
+                "H₂ + I₂ ⇄ 2HI",
+                "N₂ + 3H₂ ⇄ 2NH₃",
+                "2NO + O₂ ⇄ 2NO₂",
+                "CaCO₃ ⇄ CaO + CO₂"
+              ], correct: 0 },
+            { id: 2413, ticket: 9, topic: "Химическое равновесие",
+              question: "Для какой реакции повышение температуры сместит равновесие вправо?",
+              options: [
+                "Эндотермической",
+                "Экзотермической",
+                "Любой",
+                "Никакой"
+              ], correct: 0 },
+            { id: 2414, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое динамическое равновесие?",
+              options: [
+                "Прямая и обратная реакции идут одновременно",
+                "Равновесие движется",
+                "Реакция не идет",
+                "Скорость меняется"
+              ], correct: 0 },
+            { id: 2415, ticket: 9, topic: "Химическое равновесие",
+              question: "Как влияет увеличение давления на равновесие в реакции с участием газов?",
+              options: [
+                "Смещает в сторону меньшего числа молекул",
+                "Смещает в сторону большего числа молекул",
+                "Не влияет",
+                "Зависит от температуры"
+              ], correct: 0 },
+            { id: 2416, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое степень превращения?",
+              options: [
+                "Доля прореагировавшего вещества",
+                "Количество продукта",
+                "Скорость реакции",
+                "Концентрация"
+              ], correct: 0 },
+            { id: 2417, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое выход продукта?",
+              options: [
+                "Отношение полученного продукта к теоретическому",
+                "Количество продукта",
+                "Скорость образования",
+                "Концентрация"
+              ], correct: 0 },
+            { id: 2418, ticket: 9, topic: "Химическое равновесие",
+              question: "Как увеличить выход продукта в обратимой реакции?",
+              options: [
+                "Удалять продукт",
+                "Увеличивать концентрацию реагентов",
+                "Подбирать температуру",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2419, ticket: 9, topic: "Химическое равновесие",
+              question: "Почему в промышленности не всегда достигают равновесия?",
+              options: [
+                "Из-за скорости процесса",
+                "Из-за затрат",
+                "Из-за оборудования",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2420, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое оптимальные условия процесса?",
+              options: [
+                "Компромисс между скоростью и выходом",
+                "Максимальная температура",
+                "Максимальное давление",
+                "Максимальная концентрация"
+              ], correct: 0 },
+            { id: 2421, ticket: 9, topic: "Химическое равновесие",
+              question: "Какие условия оптимальны для синтеза аммиака?",
+              options: [
+                "400-500°C, 100-1000 атм, катализатор",
+                "Комнатная температура, 1 атм",
+                "1000°C, 1 атм",
+                "0°C, вакуум"
+              ], correct: 0 },
+            { id: 2422, ticket: 9, topic: "Химическое равновесие",
+              question: "Почему для синтеза аммиака не используют очень низкую температуру?",
+              options: [
+                "Очень мала скорость",
+                "Равновесие не смещается",
+                "Катализатор не работает",
+                "Реакция не идет"
+              ], correct: 0 },
+            { id: 2423, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое термодинамическая вероятность?",
+              options: [
+                "Возможность протекания реакции",
+                "Скорость реакции",
+                "Выход продукта",
+                "Равновесие"
+              ], correct: 0 },
+            { id: 2424, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое кинетический контроль?",
+              options: [
+                "Когда продукт определяется скоростью реакции",
+                "Когда продукт определяется равновесием",
+                "Когда реакция медленная",
+                "Когда реакция быстрая"
+              ], correct: 0 },
+            { id: 2425, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое термодинамический контроль?",
+              options: [
+                "Когда продукт определяется равновесием",
+                "Когда продукт определяется скоростью",
+                "Когда реакция эндотермична",
+                "Когда реакция экзотермична"
+              ], correct: 0 },
+            { id: 2426, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое энергия активации?",
+              options: [
+                "Энергия, необходимая для начала реакции",
+                "Тепловой эффект",
+                "Энергия связи",
+                "Энергия Гиббса"
+              ], correct: 0 },
+            { id: 2427, ticket: 9, topic: "Химическое равновесие",
+              question: "Как катализатор влияет на энергию активации?",
+              options: [
+                "Понижает ее",
+                "Повышает ее",
+                "Не влияет",
+                "Изменяет знак"
+              ], correct: 0 },
+            { id: 2428, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое энергия Гиббса?",
+              options: [
+                "Мера термодинамической возможности реакции",
+                "Свободная энергия",
+                "ΔG = ΔH - TΔS",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2429, ticket: 9, topic: "Химическое равновесие",
+              question: "Если ΔG < 0, то реакция:",
+              options: [
+                "Возможна",
+                "Невозможна",
+                "В равновесии",
+                "Эндотермична"
+              ], correct: 0 },
+            { id: 2430, ticket: 9, topic: "Химическое равновесие",
+              question: "Если ΔG = 0, то система:",
+              options: [
+                "В равновесии",
+                "Не реагирует",
+                "В неустойчивом состоянии",
+                "Замерла"
+              ], correct: 0 },
+            { id: 2431, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое энтропия?",
+              options: [
+                "Мера беспорядка",
+                "Теплота",
+                "Энергия",
+                "Работа"
+              ], correct: 0 },
+            { id: 2432, ticket: 9, topic: "Химическое равновесие",
+              question: "Как изменяется энтропия при нагревании?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Зависит от вещества"
+              ], correct: 0 },
+            { id: 2433, ticket: 9, topic: "Химическое равновесие",
+              question: "Как изменяется энтропия при плавлении?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Зависит от вещества"
+              ], correct: 0 },
+            { id: 2434, ticket: 9, topic: "Химическое равновесие",
+              question: "Как изменяется энтропия при конденсации?",
+              options: [
+                "Уменьшается",
+                "Увеличивается",
+                "Не изменяется",
+                "Зависит от вещества"
+              ], correct: 0 },
+            { id: 2435, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое энтальпия?",
+              options: [
+                "Теплосодержание",
+                "Тепловой эффект",
+                "Внутренняя энергия",
+                "Работа"
+              ], correct: 0 },
+            { id: 2436, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое закон Гесса?",
+              options: [
+                "Тепловой эффект не зависит от пути реакции",
+                "Теплота постоянна",
+                "Энергия сохраняется",
+                "Масса сохраняется"
+              ], correct: 0 },
+            { id: 2437, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое стандартная энтальпия образования?",
+              options: [
+                "Тепловой эффект образования 1 моль из простых веществ",
+                "Теплота сгорания",
+                "Теплота реакции",
+                "Энергия связи"
+              ], correct: 0 },
+            { id: 2438, ticket: 9, topic: "Химическое равновесие",
+              question: "Чему равна энтальпия образования простых веществ?",
+              options: [
+                "0",
+                "1",
+                "100",
+                "Зависит от вещества"
+              ], correct: 0 },
+            { id: 2439, ticket: 9, topic: "Химическое равновесие",
+              question: "Как рассчитать тепловой эффект реакции?",
+              options: [
+                "ΣΔH(продуктов) - ΣΔH(реагентов)",
+                "ΣΔH(реагентов) - ΣΔH(продуктов)",
+                "ΣΔH(продуктов) + ΣΔH(реагентов)",
+                "ΔH(продуктов) / ΔH(реагентов)"
+              ], correct: 0 },
+            { id: 2440, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое энергия связи?",
+              options: [
+                "Энергия разрыва связи",
+                "Энергия образования связи",
+                "Среднее значение",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2441, ticket: 9, topic: "Химическое равновесие",
+              question: "Какая связь самая прочная?",
+              options: [
+                "Тройная",
+                "Двойная",
+                "Одинарная",
+                "Ионная"
+              ], correct: 0 },
+            { id: 2442, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое ионизационный потенциал?",
+              options: [
+                "Энергия отрыва электрона",
+                "Энергия присоединения электрона",
+                "Потенциал ионизации",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2443, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое сродство к электрону?",
+              options: [
+                "Энергия присоединения электрона",
+                "Энергия отрыва электрона",
+                "Электроотрицательность",
+                "Потенциал"
+              ], correct: 0 },
+            { id: 2444, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое электроотрицательность?",
+              options: [
+                "Способность притягивать электроны",
+                "Способность отдавать электроны",
+                "Заряд ядра",
+                "Размер атома"
+              ], correct: 0 },
+            { id: 2445, ticket: 9, topic: "Химическое равновесие",
+              question: "Как изменяется электроотрицательность в периоде?",
+              options: [
+                "Увеличивается",
+                "Уменьшается",
+                "Не изменяется",
+                "Сначала увеличивается, потом уменьшается"
+              ], correct: 0 },
+            { id: 2446, ticket: 9, topic: "Химическое равновесие",
+              question: "Как изменяется электроотрицательность в группе?",
+              options: [
+                "Уменьшается",
+                "Увеличивается",
+                "Не изменяется",
+                "Сначала уменьшается, потом увеличивается"
+              ], correct: 0 },
+            { id: 2447, ticket: 9, topic: "Химическое равновесие",
+              question: "У какого элемента самая высокая электроотрицательность?",
+              options: [
+                "Фтор",
+                "Кислород",
+                "Хлор",
+                "Азот"
+              ], correct: 0 },
+            { id: 2448, ticket: 9, topic: "Химическое равновесие",
+              question: "Что такое полярность связи?",
+              options: [
+                "Смещение электронной плотности",
+                "Наличие зарядов",
+                "Разность электроотрицательностей",
+                "Все вышеперечисленное"
+              ], correct: 3 },
+            { id: 2449, ticket: 9, topic: "Химическое равновесие",
+              question: "Какая связь неполярная?",
+              options: [
+                "Cl₂",
+                "HCl",
+                "NaCl",
+                "H₂O"
+              ], correct: 0 },
+            { id: 2450, ticket: 9, topic: "Химическое равновесие",
+              question: "Какая связь полярная?",
+              options: [
+                "HCl",
+                "Cl₂",
+                "O₂",
+                "N₂"
+              ], correct: 0 }
         ];
-
-        // Состояние текущей страницы
-        let currentPageState = { name: 'main', params: {} };
-        let openedAnswers = new Set();
-
-        // Кеши для фильтров
-        let cachedTheoryFiltered = null;
-        let cachedPracticeFiltered = null;
-        let lastFilterParams = { theory: null, practice: null };
-
-        // Индекс для быстрого поиска
-        let searchIndex = new Map();
-
-        // Словарь терминов
-        const termDefinitions = {
-            'алкан': 'Предельный углеводород, общая формула CₙH₂ₙ₊₂',
-            'алкен': 'Непредельный углеводород с двойной связью, формула CₙH₂ₙ',
-            'алкин': 'Непредельный углеводород с тройной связью, формула CₙH₂ₙ₋₂',
-            'изомер': 'Вещества с одинаковым составом, но разным строением',
-            'полимер': 'Вещество с большой молекулярной массой, состоящее из повторяющихся звеньев',
-            'гидролиз': 'Разложение вещества водой',
-            'электролиз': 'Разложение вещества электрическим током',
-            'катализатор': 'Вещество, ускоряющее реакцию, но не расходующееся в ней',
-            'метан': 'Простейший алкан, CH₄',
-            'этилен': 'Простейший алкен, C₂H₄',
-            'ацетилен': 'Простейший алкин, C₂H₂',
-            'бензол': 'Ароматический углеводород, C₆H₆'
-        };
 
         // =====================================================
         // ИНИЦИАЛИЗАЦИЯ ДАННЫХ
@@ -2389,7 +5928,6 @@
         function playSound(type) {
             if (!settings.sound) return;
             
-            // Используем Web Audio API для генерации простых звуков
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
@@ -2453,7 +5991,6 @@
         function addXP(amount, reason) {
             gamification.xp += amount;
             
-            // Проверка повышения уровня
             while (gamification.xp >= gamification.xpToNextLevel) {
                 gamification.xp -= gamification.xpToNextLevel;
                 gamification.level++;
@@ -2463,7 +6000,6 @@
                 playSound('levelup');
                 vibrate([200, 100, 200]);
                 
-                // Создаем конфетти
                 for (let i = 0; i < 50; i++) {
                     createConfetti();
                 }
@@ -2567,7 +6103,6 @@
                 playSound('correct');
                 vibrate(50);
                 
-                // Проверка ачивки коллекционера
                 if (bookmarks.length >= 20) {
                     checkAchievement('collector');
                 }
@@ -2596,7 +6131,6 @@
             } else {
                 notes[questionId] = { text, date: new Date().toISOString() };
                 
-                // Проверка ачивки писателя
                 if (Object.keys(notes).length >= 10) {
                     checkAchievement('writer');
                 }
@@ -2678,7 +6212,6 @@
             userProgress.questions[questionId] = true;
             userProgress.lastViewed[questionId] = new Date().toISOString();
             
-            // Считаем время на вопрос
             const lastView = userProgress.lastViewed[questionId];
             if (lastView) {
                 const timeSpent = Math.round((now - new Date(lastView).getTime()) / 1000);
@@ -2686,14 +6219,12 @@
                     if (!userProgress.timeSpent) userProgress.timeSpent = {};
                     userProgress.timeSpent[questionId] = (userProgress.timeSpent[questionId] || 0) + timeSpent;
                     
-                    // Проверка ачивки спидстера
                     if (timeSpent < 10) {
                         checkAchievement('speedster');
                     }
                 }
             }
 
-            // Недавно просмотренные
             const recent = userProgress.recentlyViewed || [];
             const existingIndex = recent.findIndex(item => item.id === questionId);
             if (existingIndex !== -1) recent.splice(existingIndex, 1);
@@ -2703,18 +6234,15 @@
             
             addToHistory(questionId);
 
-            // Streak
             const last = userProgress.lastActive;
             const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
             if (last === yesterday) {
                 userProgress.streak = (userProgress.streak || 0) + 1;
                 
-                // Обновляем лучший streak
                 if (userProgress.streak > stats.bestStreak) {
                     stats.bestStreak = userProgress.streak;
                 }
                 
-                // Комбо
                 if (userProgress.lastActive === yesterday) {
                     gamification.combo++;
                     gamification.lastComboDate = today;
@@ -2731,40 +6259,32 @@
             }
             userProgress.lastActive = today;
 
-            // Время занятий
             userProgress.studyTime = (userProgress.studyTime || 0) + 5;
             stats.totalStudyTime = (stats.totalStudyTime || 0) + 5;
             
-            // Обновляем самую длинную сессию
             const currentSession = 5;
             if (currentSession > stats.longestSession) {
                 stats.longestSession = currentSession;
             }
 
-            // Дневная активность
             if (!stats.dailyActivity) stats.dailyActivity = {};
             if (!stats.dailyActivity[today]) stats.dailyActivity[today] = 0;
             stats.dailyActivity[today]++;
             
-            // Проверка марафона
             if (stats.dailyActivity[today] >= 10) {
                 checkAchievement('marathon');
             }
             
-            // Почасовая активность
             stats.hourlyActivity[hour] = (stats.hourlyActivity[hour] || 0) + 1;
             
-            // Проверка ночной совы (после полуночи)
             if (hour >= 0 && hour < 4) {
                 checkAchievement('nightOwl');
             }
             
-            // Проверка ранней пташки (до 6 утра)
             if (hour >= 4 && hour < 6) {
                 checkAchievement('earlyBird');
             }
 
-            // Добавляем XP
             addXP(10, 'изучение вопроса');
 
             checkAchievements();
@@ -2798,7 +6318,6 @@
                 
                 showToast(`🏆 Достижение: ${achievement.title}`, 'success');
                 
-                // Создаем конфетти
                 for (let i = 0; i < 30; i++) {
                     createConfetti();
                 }
@@ -2828,10 +6347,10 @@
                     else if (a.id === 'collector') achieved = totalBookmarks >= 20;
                     else if (a.id === 'writer') achieved = totalNotes >= 10;
                     else if (a.id === 'perfectionist') achieved = checkPerfectionist();
-                    else if (a.id === 'nightOwl') achieved = false; // Проверяется отдельно
-                    else if (a.id === 'earlyBird') achieved = false; // Проверяется отдельно
-                    else if (a.id === 'marathon') achieved = false; // Проверяется отдельно
-                    else if (a.id === 'speedster') achieved = false; // Проверяется отдельно
+                    else if (a.id === 'nightOwl') achieved = false;
+                    else if (a.id === 'earlyBird') achieved = false;
+                    else if (a.id === 'marathon') achieved = false;
+                    else if (a.id === 'speedster') achieved = false;
 
                     if (achieved) {
                         gamification.achievements[a.id] = { date: new Date().toISOString() };
@@ -2852,9 +6371,6 @@
             const today = new Date().toISOString().split('T')[0];
             
             dailyChallenges.forEach(challenge => {
-                if (!gamification.dailyChallenges[today]) {
-                    gamification.dailyChallenges = {};
-                }
                 if (!gamification.dailyChallenges[today]) {
                     gamification.dailyChallenges[today] = {};
                 }
@@ -3069,8 +6585,8 @@
                     level: 1,
                     xpToNextLevel: 100,
                     achievements: {},
-                    dailyChallenges: [],
-                    weeklyChallenges: [],
+                    dailyChallenges: {},
+                    weeklyChallenges: {},
                     combo: 0,
                     lastComboDate: null,
                     chests: [],
@@ -3347,7 +6863,6 @@
                 ${renderNavigation('Главная')}
             `;
             
-            // Создаем частицы
             createParticles();
         }
 
@@ -4496,7 +8011,6 @@
                             playSound('correct');
                             vibrate(50);
                             
-                            // Проверка времени ответа для ачивки
                             const answerTime = (Date.now() - startTime) / 1000;
                             if (answerTime < 10) {
                                 checkAchievement('speedster');
@@ -4531,10 +8045,8 @@
                 stats.quizResults.push({ date: new Date().toISOString(), score, total: shuffled.length, percentage: percent });
                 if (stats.quizResults.length > 30) stats.quizResults.shift();
                 
-                // Добавляем XP
                 addXP(score * 10, 'тест');
                 
-                // Проверка ачивки перфекциониста
                 if (percent === 100) {
                     checkAchievement('perfectionist');
                 }
@@ -5162,7 +8674,6 @@
                 stats.quizResults.push({ date: new Date().toISOString(), score, total: questions.length, percentage: percent });
                 if (stats.quizResults.length > 30) stats.quizResults.shift();
                 
-                // Добавляем XP
                 addXP(score * 20, 'экзамен');
                 
                 saveAllData();
@@ -5238,18 +8749,15 @@
                 requestNotificationPermission();
             }
             
-            // Создаем частицы
             createParticles();
         }
 
-        // Запуск
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initApp);
         } else {
             initApp();
         }
 
-        // Экспорт глобальных функций
         window.showMainInterface = showMainInterface;
         window.showTicketsPage = showTicketsPage;
         window.showTicket = showTicket;
