@@ -15,12 +15,13 @@
             user-select: none;
         }
 
-                :root {
-            --bg-gradient-start: #0a0a0a;
-            --bg-gradient-end: #1a1a2e;
-            --text-color: white;
+        /* ===== ТЕМЫ ===== */
+        /* Темная тема (по умолчанию) */
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: white;
             --text-secondary: #b0b0b0;
-            --card-bg: rgba(26, 26, 26, 0.9);
+            --card-bg: rgba(26, 26, 26, 0.95);
             --header-bg: rgba(26, 26, 26, 0.98);
             --border-color: rgba(0, 212, 255, 0.15);
             --progress-bg: rgba(51, 51, 51, 0.8);
@@ -35,22 +36,20 @@
             --swipe-left-color: rgba(255, 68, 68, 0.2);
             --swipe-right-color: rgba(0, 255, 136, 0.2);
         }
-        
+
         body.light-theme {
-            --bg-gradient-start: #f5f7fa !important;
-            --bg-gradient-end: #e6e9f0 !important;
-            --text-color: #1a1a2e !important;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e6e9f0 100%) !important;
+            color: #1a1a2e !important;
             --text-secondary: #4a4a6a !important;
             --card-bg: rgba(255, 255, 255, 0.95) !important;
             --header-bg: rgba(255, 255, 255, 0.98) !important;
             --border-color: rgba(0, 212, 255, 0.3) !important;
             --progress-bg: rgba(0, 0, 0, 0.1) !important;
         }
-        
+
         body.neon-theme {
-            --bg-gradient-start: #000000 !important;
-            --bg-gradient-end: #0a0a1a !important;
-            --text-color: #ffffff !important;
+            background: linear-gradient(135deg, #000000 0%, #0a0a1a 100%) !important;
+            color: white !important;
             --text-secondary: #b0f0ff !important;
             --card-bg: rgba(0, 20, 40, 0.95) !important;
             --header-bg: rgba(0, 10, 20, 0.98) !important;
@@ -58,11 +57,10 @@
             --progress-bg: rgba(0, 50, 100, 0.8) !important;
             --accent: #00ffff !important;
         }
-        
+
         body.pastel-theme {
-            --bg-gradient-start: #ffd1dc !important;
-            --bg-gradient-end: #c1e1c1 !important;
-            --text-color: #4a4a4a !important;
+            background: linear-gradient(135deg, #ffd1dc 0%, #c1e1c1 100%) !important;
+            color: #4a4a4a !important;
             --text-secondary: #6b6b6b !important;
             --card-bg: rgba(255, 255, 255, 0.98) !important;
             --header-bg: rgba(255, 255, 255, 0.98) !important;
@@ -70,25 +68,19 @@
             --progress-bg: rgba(200, 200, 200, 0.4) !important;
             --accent: #ff9eb5 !important;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            color: var(--text-color);
             overflow-x: hidden;
             overflow-y: hidden;
             height: 100vh;
             height: -webkit-fill-available;
             position: fixed;
             width: 100%;
-            transition: background-color 0.3s ease, background-image 0.3s ease;
+            transition: background 0.3s ease;
             font-size: var(--base-font-size);
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Частицы на фоне */
         .particle {
             position: fixed;
             width: 2px;
@@ -137,8 +129,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            height: -webkit-fill-available;
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            background: inherit;
             color: var(--text-color);
         }
 
@@ -162,7 +153,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
-            padding: 10px 14px;
+            padding: 8px 14px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -175,7 +166,6 @@
             align-items: center;
             max-width: 800px;
             margin: 0 auto;
-            width: 100%;
         }
 
         .logo-text {
@@ -194,7 +184,6 @@
             font-size: 0.8rem;
             padding: 6px 10px;
             border-radius: 16px;
-            transition: background-color 0.2s;
         }
 
         .back-btn:active {
@@ -209,6 +198,7 @@
             bottom: 0;
             left: 0;
         }
+
         .global-progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--accent), #9b59b6);
@@ -266,12 +256,7 @@
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 12px;
-            transition: transform 0.2s, border-color 0.2s;
             color: var(--text-color);
-        }
-
-        .card:active {
-            transform: scale(0.99);
         }
 
         h1 {
@@ -315,9 +300,7 @@
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s;
             width: 100%;
-            touch-action: manipulation;
             min-height: 40px;
         }
 
@@ -337,8 +320,8 @@
         }
 
         .light-theme .btn-secondary {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1a1a2e;
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #1a1a2e !important;
         }
 
         .btn-success {
@@ -356,22 +339,25 @@
             min-height: 36px;
         }
 
-        .grid {
+        .grid-2 {
             display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
             margin-top: 12px;
         }
 
-        .grid-2 {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
         .grid-3 {
+            display: grid;
             grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .grid-4 {
+            display: grid;
             grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .stats-grid {
@@ -419,8 +405,6 @@
             border-top: 1px solid var(--border-color);
             padding: 6px 8px;
             z-index: 100;
-            transform: translateZ(0);
-            will-change: transform;
         }
 
         .nav-content {
@@ -443,8 +427,6 @@
             color: #888;
             cursor: pointer;
             font-size: 0.6rem;
-            transition: color 0.2s;
-            flex: 0 1 auto;
             border-radius: 8px;
             min-width: 50px;
         }
@@ -481,17 +463,13 @@
         }
 
         .light-theme .form-input {
-            background: rgba(255, 255, 255, 0.9);
-            color: #1a1a2e;
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #1a1a2e !important;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--accent);
-        }
-
-        textarea.form-input {
-            min-height: 80px;
         }
 
         .ticket-item {
@@ -500,7 +478,6 @@
             border-radius: 12px;
             margin-bottom: 8px;
             border-left: 4px solid #333;
-            transition: transform 0.2s;
             cursor: pointer;
         }
 
@@ -590,10 +567,6 @@
             border: 1px solid var(--border-color);
         }
 
-        .question-card:active {
-            border-color: var(--accent);
-        }
-
         .question-header {
             padding: 12px 14px;
             background: rgba(51, 51, 51, 0.5);
@@ -630,7 +603,6 @@
             border-radius: 10px;
             border-left: 3px solid var(--accent);
             font-size: 0.85rem;
-            line-height: 1.5;
             color: var(--text-color);
             margin-top: 12px;
             white-space: pre-wrap;
@@ -658,7 +630,7 @@
             height: 20px;
             border-radius: 50%;
             border: 2px solid currentColor;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.8rem;
@@ -681,10 +653,6 @@
             margin: 2px;
             border: 1px dashed var(--border-color);
             cursor: help;
-        }
-
-        .key-term:active {
-            background: rgba(0, 212, 255, 0.2);
         }
 
         .hidden {
@@ -743,6 +711,7 @@
             display: none;
             padding: 4px;
         }
+
         .search-input:not(:placeholder-shown) + .search-clear {
             display: block;
         }
@@ -791,14 +760,12 @@
             font-size: 0.85rem;
         }
 
-        /* Flashcard с неоновыми эффектами */
         .flashcard-container {
             perspective: 1000px;
             margin: 16px 0;
-            touch-action: pan-y pinch-zoom;
             position: relative;
         }
-        
+
         .flashcard {
             width: 100%;
             min-height: 250px;
@@ -806,18 +773,16 @@
             transform-style: preserve-3d;
             transition: transform 0.3s;
             cursor: grab;
-            user-select: none;
         }
-        
+
         .flashcard.dragging {
             transition: none;
-            cursor: grabbing;
         }
-        
+
         .flashcard.flipped {
             transform: rotateY(180deg);
         }
-        
+
         .flashcard-front, .flashcard-back {
             position: absolute;
             width: 100%;
@@ -833,21 +798,21 @@
             border: 2px solid var(--accent);
             color: var(--text-color);
         }
-        
+
         .flashcard-back {
             transform: rotateY(180deg);
         }
-        
-        /* Эффекты свайпа */
+
         .flashcard.swipe-left {
             transform: translateX(-30px) rotate(-2deg);
+            box-shadow: -20px 0 30px -10px rgba(255, 68, 68, 0.5);
         }
-        
+
         .flashcard.swipe-right {
             transform: translateX(30px) rotate(2deg);
+            box-shadow: 20px 0 30px -10px rgba(0, 255, 136, 0.5);
         }
-        
-        /* Неоновое освещение для свайпа */
+
         .flashcard-container::before,
         .flashcard-container::after {
             content: '';
@@ -861,30 +826,17 @@
             z-index: 10;
             border-radius: 16px;
         }
-        
+
         .flashcard-container.swiping-left::before {
-            content: '';
             left: 0;
             background: linear-gradient(90deg, var(--swipe-left-color), transparent);
             opacity: 1;
-            box-shadow: inset 20px 0 30px -10px rgba(255, 68, 68, 0.5);
         }
-        
+
         .flashcard-container.swiping-right::after {
-            content: '';
             right: 0;
             background: linear-gradient(-90deg, var(--swipe-right-color), transparent);
             opacity: 1;
-            box-shadow: inset -20px 0 30px -10px rgba(0, 255, 136, 0.5);
-        }
-        
-        /* Дополнительное свечение для карточки */
-        .flashcard.swipe-left {
-            box-shadow: -20px 0 30px -10px rgba(255, 68, 68, 0.5);
-        }
-        
-        .flashcard.swipe-right {
-            box-shadow: 20px 0 30px -10px rgba(0, 255, 136, 0.5);
         }
 
         .note-input {
@@ -924,10 +876,6 @@
             background: rgba(0, 212, 255, 0.05);
             border-radius: 12px;
             margin-bottom: 8px;
-        }
-
-        .achievement:active {
-            background: rgba(0, 212, 255, 0.1);
         }
 
         .achievement-icon {
@@ -1037,6 +985,7 @@
             color: var(--warning);
             font-family: monospace;
         }
+
         .timer.warning {
             color: var(--danger);
         }
@@ -1057,6 +1006,7 @@
             overflow-y: auto;
             padding-right: 8px;
         }
+
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -1066,9 +1016,11 @@
             border-radius: 6px;
             font-size: 0.85rem;
         }
+
         .checkbox-label:active {
             background: rgba(0,212,255,0.1);
         }
+
         .checkbox-label input[type="checkbox"] {
             width: 16px;
             height: 16px;
@@ -1094,15 +1046,12 @@
             font-size: 0.85rem;
         }
 
-        .recent-item:active {
-            background: rgba(0,212,255,0.1);
-        }
-
         .note-actions {
             display: flex;
             gap: 6px;
             margin-top: 6px;
         }
+
         .note-actions .btn {
             padding: 6px 10px;
             font-size: 0.75rem;
@@ -1118,10 +1067,6 @@
             margin-bottom: 6px;
             cursor: pointer;
             font-size: 0.85rem;
-        }
-
-        .history-item:active {
-            background: rgba(0,212,255,0.1);
         }
 
         .history-time {
@@ -1285,15 +1230,10 @@
             margin: 2px;
         }
 
-        .tag:active {
-            background: rgba(0,212,255,0.2);
-        }
-
-        /* Уменьшенные отступы для компактности */
         .main-content::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .main-content::-webkit-scrollbar-thumb {
             background: var(--accent);
             border-radius: 2px;
@@ -1329,21 +1269,20 @@
         // =====================================================
         // ГЛОБАЛЬНЫЕ КОНСТАНТЫ
         // =====================================================
-        const STORAGE_KEY = 'chemExamData_v13';
-        const PROGRESS_KEY = 'chemExamProgress_v13';
-        const BOOKMARKS_KEY = 'chemExamBookmarks_v13';
-        const NOTES_KEY = 'chemExamNotes_v13';
-        const SETTINGS_KEY = 'chemExamSettings_v13';
-        const STATS_KEY = 'chemExamStats_v13';
-        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v13';
-        const HISTORY_KEY = 'chemExamHistory_v13';
-        const GAMIFICATION_KEY = 'chemExamGamification_v13';
-        const TAGS_KEY = 'chemExamTags_v13';
+        const STORAGE_KEY = 'chemExamData_v15';
+        const PROGRESS_KEY = 'chemExamProgress_v15';
+        const BOOKMARKS_KEY = 'chemExamBookmarks_v15';
+        const NOTES_KEY = 'chemExamNotes_v15';
+        const SETTINGS_KEY = 'chemExamSettings_v15';
+        const STATS_KEY = 'chemExamStats_v15';
+        const QUIZ_RESULTS_KEY = 'chemExamQuizResults_v15';
+        const HISTORY_KEY = 'chemExamHistory_v15';
+        const GAMIFICATION_KEY = 'chemExamGamification_v15';
+        const TAGS_KEY = 'chemExamTags_v15';
 
         const TOTAL_QUESTIONS = 35;
         const TOTAL_TICKETS = 17;
         
-        // Дебаунс для поиска и автосохранения
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -1365,20 +1304,20 @@
         let practiceQuestions = [];
 
         let userProgress = {
-            questions: {},        // id -> true/false
-            lastViewed: {},       // id -> ISO date
+            questions: {},
+            lastViewed: {},
             streak: 0,
             lastActive: null,
             studyTime: 0,
             achievements: {},
-            recentlyViewed: [],   // { id, date } - максимум 20
-            timeSpent: {}         // id -> время в секундах
+            recentlyViewed: [],
+            timeSpent: {}
         };
 
         let bookmarks = [];
         let notes = {};
-        let history = [];         // История просмотров (максимум 20)
-        let tags = {};            // id -> [теги]
+        let history = [];
+        let tags = {};
 
         let settings = {
             theme: 'dark',
@@ -1418,18 +1357,10 @@
 
         let reminderTimeout = null;
         let searchIndex = new Map();
-
-        // Состояние текущей страницы
         let currentPageState = { name: 'main', params: {} };
         let openedAnswers = new Set();
-        let activeNavItem = 'Главная'; // Для отслеживания активной навигации
+        let activeNavItem = 'Главная';
 
-        // Кеши для фильтров
-        let cachedTheoryFiltered = null;
-        let cachedPracticeFiltered = null;
-        let lastFilterParams = { theory: null, practice: null };
-
-        // Достижения
         const achievements = [
             { id: 'novice', title: 'Новичок', desc: 'Изучил 5 вопросов', icon: '🌱', target: 5, xp: 50 },
             { id: 'expert', title: 'Знаток', desc: 'Изучил 15 вопросов', icon: '📚', target: 15, xp: 150 },
@@ -1447,7 +1378,6 @@
             { id: 'speedster', title: 'Спидстер', desc: 'Ответил за 10 секунд', icon: '⚡', target: 1, xp: 100 }
         ];
 
-        // Ежедневные задания
         const dailyChallenges = [
             { id: 'daily1', title: 'Изучи 3 вопроса', icon: '📚', target: 3, xp: 30 },
             { id: 'daily2', title: 'Сделай 1 тест', icon: '🧪', target: 1, xp: 50 },
@@ -1456,7 +1386,6 @@
             { id: 'daily5', title: 'Повтори 5 вопросов', icon: '🔄', target: 5, xp: 40 }
         ];
 
-        // Еженедельные челленджи
         const weeklyChallenges = [
             { id: 'weekly1', title: 'Изучи 20 вопросов', icon: '📚', target: 20, xp: 200 },
             { id: 'weekly2', title: 'Сделай 5 тестов', icon: '🧪', target: 5, xp: 250 },
@@ -1464,14 +1393,12 @@
             { id: 'weekly4', title: 'Набери 500 XP', icon: '⭐', target: 500, xp: 400 }
         ];
 
-        // Сундуки с наградами
         const chests = [
             { id: 'chest1', days: 5, xp: 100, items: ['streak_bonus'] },
             { id: 'chest2', days: 15, xp: 300, items: ['rare_badge'] },
             { id: 'chest3', days: 30, xp: 500, items: ['legendary_badge'] }
         ];
 
-        // Словарь терминов
         const termDefinitions = {
             'алкан': 'Предельный углеводород, общая формула CₙH₂ₙ₊₂',
             'алкен': 'Непредельный углеводород с двойной связью, формула CₙH₂ₙ',
@@ -1487,7 +1414,7 @@
             'бензол': 'Ароматический углеводород, C₆H₆'
         };
 
-        // =====================================================
+                // =====================================================
         // 1000 ТЕСТОВЫХ ВОПРОСОВ (здесь будут все вопросы)
         // =====================================================
         let quizQuestions = [
@@ -7236,7 +7163,7 @@
         ];
 
         window.quizQuestions = quizQuestions;
-        console.log('Всего загружено тестовых вопросов:', quizQuestions.length);
+
 
         // =====================================================
         // ИНИЦИАЛИЗАЦИЯ ДАННЫХ
@@ -7350,7 +7277,6 @@
                   answer: "📌 C₆H₅OH – бензольное кольцо + OH.\n📌 Свойства: слабая кислота, с бромной водой белый осадок, ядовит.\n📌 Получение: из каменноугольной смолы.\n📌 Применение: пластмассы, лекарства (аспирин), антисептики." }
             ];
 
-            // Формируем билеты
             tickets = [];
             for (let i = 0; i < TOTAL_TICKETS; i++) {
                 const theoryIdx = i * 2;
@@ -7365,13 +7291,9 @@
             theoryQuestions = allQuestions.filter(q => q.type === 'theory');
             practiceQuestions = allQuestions.filter(q => q.type === 'practice');
             
-            // Строим индекс для поиска
             buildSearchIndex();
         }
 
-        // =====================================================
-        // ПОИСКОВЫЙ ИНДЕКС
-        // =====================================================
         function buildSearchIndex() {
             searchIndex.clear();
             allQuestions.forEach(q => {
@@ -7389,15 +7311,6 @@
                     }
                     searchIndex.get(word).add(q.id);
                 });
-                const formulas = q.answer.match(/[A-Z][a-z]?\d*/g);
-                if (formulas) {
-                    formulas.forEach(f => {
-                        if (!searchIndex.has(f)) {
-                            searchIndex.set(f, new Set());
-                        }
-                        searchIndex.get(f).add(q.id);
-                    });
-                }
             });
         }
 
@@ -7416,13 +7329,7 @@
                 if (searchIndex.has(base)) {
                     return searchIndex.get(base);
                 }
-                const similar = new Set();
-                for (let [key, ids] of searchIndex) {
-                    if (key.includes(word) || word.includes(key)) {
-                        ids.forEach(id => similar.add(id));
-                    }
-                }
-                return similar;
+                return new Set();
             });
             
             let result = new Set(resultsPerWord[0]);
@@ -7433,9 +7340,6 @@
             return allQuestions.filter(q => result.has(q.id));
         }
 
-        // =====================================================
-        // СОХРАНЕНИЕ / ЗАГРУЗКА
-        // =====================================================
         function saveAllData() {
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify({ allQuestions, tickets, theoryQuestions, practiceQuestions }));
@@ -7485,7 +7389,6 @@
                 const stg = localStorage.getItem(SETTINGS_KEY);
                 if (stg) {
                     settings = JSON.parse(stg);
-                    applySettings();
                 }
 
                 const st = localStorage.getItem(STATS_KEY);
@@ -7504,6 +7407,7 @@
                 if (tgs) tags = JSON.parse(tgs);
                 
                 buildSearchIndex();
+                applySettings();
                 
             } catch (e) {
                 console.error('Ошибка загрузки', e);
@@ -7512,19 +7416,14 @@
         }
 
         function applySettings() {
-            // Сначала удаляем все классы тем
             document.body.classList.remove('light-theme', 'neon-theme', 'pastel-theme');
             
-            // Затем добавляем нужный класс
             if (settings.theme === 'light') {
                 document.body.classList.add('light-theme');
             } else if (settings.theme === 'neon') {
                 document.body.classList.add('neon-theme');
             } else if (settings.theme === 'pastel') {
                 document.body.classList.add('pastel-theme');
-            } else {
-                // dark тема не требует класса, это базовые переменные в :root
-                // просто убеждаемся что других классов нет
             }
             
             document.documentElement.style.setProperty('--accent', settings.accentColor);
@@ -7536,9 +7435,6 @@
             }
         }
 
-        // =====================================================
-        // ЧАСТИЦЫ НА ФОНЕ
-        // =====================================================
         function createParticles() {
             for (let i = 0; i < 20; i++) {
                 const particle = document.createElement('div');
@@ -7550,60 +7446,35 @@
             }
         }
 
-        // =====================================================
-        // ЗВУКИ И ВИБРАЦИЯ
-        // =====================================================
         function playSound(type) {
             if (!settings.sound) return;
             
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            
-            oscillator.type = 'sine';
-            
-            switch(type) {
-                case 'correct':
-                    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                
+                if (type === 'correct') {
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.value = 0.1;
                     oscillator.start();
                     oscillator.stop(audioCtx.currentTime + 0.15);
-                    break;
-                case 'wrong':
-                    oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                } else if (type === 'wrong') {
+                    oscillator.frequency.value = 300;
+                    gainNode.gain.value = 0.1;
                     oscillator.start();
                     oscillator.stop(audioCtx.currentTime + 0.2);
-                    break;
-                case 'achievement':
-                    oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                } else if (type === 'achievement') {
+                    oscillator.frequency.value = 600;
+                    gainNode.gain.value = 0.1;
                     oscillator.start();
                     oscillator.stop(audioCtx.currentTime + 0.3);
-                    break;
-                case 'levelup':
-                    for (let i = 0; i < 3; i++) {
-                        setTimeout(() => {
-                            const osc = audioCtx.createOscillator();
-                            const gain = audioCtx.createGain();
-                            osc.connect(gain);
-                            gain.connect(audioCtx.destination);
-                            osc.frequency.value = 400 + i * 200;
-                            gain.gain.value = 0.1;
-                            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                            osc.start();
-                            osc.stop(audioCtx.currentTime + 0.1);
-                        }, i * 80);
-                    }
-                    break;
-            }
+                }
+            } catch (e) {}
         }
 
         function vibrate(pattern) {
@@ -7613,9 +7484,6 @@
             }
         }
 
-        // =====================================================
-        // СИСТЕМА XP И УРОВНЕЙ
-        // =====================================================
         function addXP(amount, reason) {
             gamification.xp += amount;
             
@@ -7625,7 +7493,7 @@
                 gamification.xpToNextLevel = Math.floor(gamification.xpToNextLevel * 1.5);
                 
                 showLevelUp(gamification.level);
-                playSound('levelup');
+                playSound('achievement');
                 vibrate([150, 80, 150]);
                 
                 for (let i = 0; i < 30; i++) {
@@ -7664,9 +7532,6 @@
             setTimeout(() => confetti.remove(), 4000);
         }
 
-        // =====================================================
-        // TOAST УВЕДОМЛЕНИЯ
-        // =====================================================
         function showToast(text, type = 'info') {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -7679,9 +7544,6 @@
             }, 2500);
         }
 
-        // =====================================================
-        // НАПОМИНАНИЯ
-        // =====================================================
         function setupReminder() {
             if (reminderTimeout) clearTimeout(reminderTimeout);
             
@@ -7716,9 +7578,6 @@
             }
         }
 
-        // =====================================================
-        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // =====================================================
         function showMessage(text, type = 'info') {
             showToast(text, type);
         }
@@ -7975,10 +7834,6 @@
                     else if (a.id === 'collector') achieved = totalBookmarks >= 20;
                     else if (a.id === 'writer') achieved = totalNotes >= 10;
                     else if (a.id === 'perfectionist') achieved = checkPerfectionist();
-                    else if (a.id === 'nightOwl') achieved = false;
-                    else if (a.id === 'earlyBird') achieved = false;
-                    else if (a.id === 'marathon') achieved = false;
-                    else if (a.id === 'speedster') achieved = false;
 
                     if (achieved) {
                         gamification.achievements[a.id] = { date: new Date().toISOString() };
@@ -8089,9 +7944,6 @@
             });
         }
 
-        // =====================================================
-        // ТЕГИ
-        // =====================================================
         function addTag(questionId, tag) {
             if (!tags[questionId]) tags[questionId] = [];
             if (!tags[questionId].includes(tag)) {
@@ -8117,9 +7969,6 @@
             return allQuestions.filter(q => ids.includes(q.id));
         }
 
-        // =====================================================
-        // ЭКСПОРТ/ИМПОРТ
-        // =====================================================
         function exportToTxt() {
             let content = 'ЭКЗАМЕНАЦИОННЫЕ ВОПРОСЫ ПО ХИМИИ (ПОЛНЫЙ СПИСОК)\n\n';
             allQuestions.sort((a,b)=>a.number-b.number).forEach(q => {
@@ -8185,7 +8034,7 @@
         }
 
         function resetProgress() {
-            if (confirm('Сбросить весь прогресс (изученные, заметки, избранное, статистику)?')) {
+            if (confirm('Сбросить весь прогресс?')) {
                 userProgress = {
                     questions: {},
                     lastViewed: {},
@@ -8260,7 +8109,7 @@
         }
 
         function renderNavigation(activePage) {
-            activeNavItem = activePage; // Сохраняем активную страницу
+            activeNavItem = activePage;
             const pages = [
                 { name: 'Главная', icon: '🏠', func: 'showMainInterface' },
                 { name: 'Билеты', icon: '📋', func: 'showTicketsPage' },
@@ -8285,9 +8134,6 @@
             `;
         }
 
-        // =====================================================
-        // ВЫДЕЛЕНИЕ ТЕРМИНОВ
-        // =====================================================
         function highlightTerms(text) {
             if (!text) return text;
             
@@ -8302,9 +8148,6 @@
             return result;
         }
 
-        // =====================================================
-        // ГЛАВНАЯ СТРАНИЦА
-        // =====================================================
         function showMainInterface() {
             currentPageState = { name: 'main', params: {} };
             loadAllData();
@@ -8349,9 +8192,9 @@
                     <div class="header-content">
                         <div class="logo-text">🧪 ChemExam</div>
                         <div style="display: flex; gap: 6px;">
-                            <span class="streak-badge" title="Дней подряд">🔥 ${userProgress.streak || 0}</span>
-                            <span class="level-badge" title="Уровень">⭐ ${gamification.level}</span>
-                            ${history.length > 0 ? '<span class="notification-badge" style="position: relative;">' + history.length + '</span>' : ''}
+                            <span class="streak-badge">🔥 ${userProgress.streak || 0}</span>
+                            <span class="level-badge">⭐ ${gamification.level}</span>
+                            ${history.length > 0 ? '<span class="notification-badge">' + history.length + '</span>' : ''}
                         </div>
                     </div>
                     <div class="global-progress">
@@ -8409,7 +8252,7 @@
                             <div class="stat-label">Ачивки</div>
                         </div>
                         <div class="stat" onclick="showChallengesPage()">
-                            <div class="stat-value">${Object.keys(gamification.dailyChallenges?.[new Date().toISOString().split('T')[0]] || {}).length}</div>
+                            <div class="stat-value">${Object.keys(gamification.dailyChallenges?.[today] || {}).length}</div>
                             <div class="stat-label">Задания</div>
                         </div>
                         <div class="stat">
@@ -8487,7 +8330,7 @@
                         </div>
                     </div>` : ''}
                     
-                    <button class="floating-button" onclick="scrollToTop()" title="Наверх">⬆️</button>
+                    <button class="floating-button" onclick="scrollToTop()">⬆️</button>
                 </main>
                 ${renderNavigation('Главная')}
             `;
@@ -8534,9 +8377,6 @@
             showQuestionDetail(allQuestions[randomIndex].id);
         }
 
-        // =====================================================
-        // СТРАНИЦА ДОСТИЖЕНИЙ
-        // =====================================================
         function showAchievementsPage() {
             currentPageState = { name: 'achievements', params: {} };
             loadAllData();
@@ -8587,10 +8427,7 @@
                                 else if (a.id==='collector') prog = bookmarks.length;
                                 else if (a.id==='writer') prog = Object.keys(notes).length;
                                 else if (a.id==='perfectionist') prog = checkPerfectionist() ? 1 : 0;
-                                else if (a.id==='nightOwl') prog = stats.hourlyActivity.slice(0,4).reduce((s,v) => s + v, 0) > 0 ? 1 : 0;
-                                else if (a.id==='earlyBird') prog = stats.hourlyActivity.slice(4,6).reduce((s,v) => s + v, 0) > 0 ? 1 : 0;
-                                else if (a.id==='marathon') prog = Math.max(...Object.values(stats.dailyActivity || {})) || 0;
-                                else if (a.id==='speedster') prog = Object.values(userProgress.timeSpent || {}).some(t => t < 10) ? 1 : 0;
+                                else prog = 0;
                                 
                                 const perc = Math.min(100, (prog/a.target)*100);
                                 const achieved = gamification.achievements?.[a.id];
@@ -8613,9 +8450,6 @@
             `;
         }
 
-        // =====================================================
-        // СТРАНИЦА ЗАДАНИЙ
-        // =====================================================
         function showChallengesPage() {
             currentPageState = { name: 'challenges', params: {} };
             loadAllData();
@@ -8711,9 +8545,6 @@
             `;
         }
 
-        // =====================================================
-        // СТРАНИЦА HEATMAP
-        // =====================================================
         function showHeatmapPage() {
             currentPageState = { name: 'heatmap', params: {} };
             loadAllData();
@@ -8772,9 +8603,6 @@
             return cells.join('');
         }
 
-        // =====================================================
-        // СТРАНИЦА БИЛЕТОВ
-        // =====================================================
         function showTicketsPage(filter = 'all', sort = 'number') {
             currentPageState = { name: 'tickets', params: { filter, sort } };
             loadAllData();
@@ -8867,9 +8695,6 @@
             `;
         }
 
-        // =====================================================
-        // ДЕТАЛЬНЫЙ БИЛЕТ
-        // =====================================================
         function showTicket(ticketNumber) {
             currentPageState = { name: 'ticket', params: { ticketNumber } };
             loadAllData();
@@ -8980,9 +8805,6 @@
             }
         }
 
-        // =====================================================
-        // СТРАНИЦА ТЕОРИИ
-        // =====================================================
         function showTheoryPage(filter = 'all', search = '', sort = 'number') {
             currentPageState = { name: 'theory', params: { filter, search, sort } };
             loadAllData();
@@ -9089,9 +8911,6 @@
             showTheoryPage(currentPageState.params.filter, '', currentPageState.params.sort);
         }
 
-        // =====================================================
-        // СТРАНИЦА ПРАКТИКИ
-        // =====================================================
         function showPracticePage(filter = 'all', search = '', sort = 'number') {
             currentPageState = { name: 'practice', params: { filter, search, sort } };
             loadAllData();
@@ -9184,9 +9003,6 @@
             showPracticePage(currentPageState.params.filter, '', currentPageState.params.sort);
         }
 
-        // =====================================================
-        // ДЕТАЛЬНЫЙ ПРОСМОТР ВОПРОСА
-        // =====================================================
         function showQuestionDetail(questionId) {
             currentPageState = { name: 'detail', params: { questionId } };
             loadAllData();
@@ -9287,9 +9103,6 @@
             }
         }
 
-        // =====================================================
-        // СТАТИСТИКА
-        // =====================================================
         function showStatsPage() {
             currentPageState = { name: 'stats', params: {} };
             loadAllData();
@@ -9411,9 +9224,6 @@
             `;
         }
 
-        // =====================================================
-        // НАСТРОЙКИ
-        // =====================================================
         function showSettingsPage() {
             currentPageState = { name: 'settings', params: {} };
             loadAllData();
@@ -9561,14 +9371,17 @@
             saveAllData();
         }
 
-        // =====================================================
-        // ТЕСТЫ
-        // =====================================================
         function showQuizPage() {
             currentPageState = { name: 'quiz', params: {} };
             loadAllData();
 
             const shuffled = [...quizQuestions].sort(()=>Math.random()-0.5).slice(0,10);
+            if (shuffled.length === 0) {
+                showToast('Нет тестовых вопросов', 'info');
+                showMainInterface();
+                return;
+            }
+            
             let currentIndex = 0;
             let score = 0;
             let selectedOption = null;
@@ -9604,9 +9417,9 @@
                         <div class="progress-bar" style="margin-bottom:16px"><div class="progress-fill" style="width:${progress}%"></div></div>
                         <div class="card">
                             <h3>Вопрос ${currentIndex+1}/${shuffled.length}</h3>
-                            <p style="font-size:0.9rem;margin:16px 0">${q.question}</p>
+                            <p style="font-size:0.9rem;margin:16px 0">${q.question || 'Вопрос не загружен'}</p>
                             <div style="margin-top:16px">
-                                ${q.options.map((opt,idx)=>`
+                                ${(q.options || []).map((opt,idx)=>`
                                     <div class="quiz-option ${selectedOption===idx?'selected':''}" onclick="window.selectQuizOption(${idx})">
                                         <span class="quiz-marker ${selectedOption===idx?'selected':''}">${String.fromCharCode(65+idx)}</span>
                                         <span>${opt}</span>
@@ -9725,9 +9538,6 @@
             showQuestion();
         }
 
-        // =====================================================
-        // КАРТОЧКИ С НЕОНОВЫМИ ЭФФЕКТАМИ
-        // =====================================================
         function showFlashcardsPage(category = 'all', mode = 'unlearned') {
             currentPageState = { name: 'flashcards', params: { category, mode } };
             loadAllData();
@@ -9905,9 +9715,6 @@
             renderCard();
         }
 
-        // =====================================================
-        // СПРАВОЧНИК
-        // =====================================================
         function showReferencePage() {
             currentPageState = { name: 'reference', params: {} };
             loadAllData();
@@ -9918,33 +9725,33 @@
             const anions = ['Cl⁻', 'Br⁻', 'I⁻', 'S²⁻', 'OH⁻', 'SO₄²⁻', 'CO₃²⁻', 'PO₄³⁻'];
 
             function renderPeriodicTable() {
-                let html = '<div class="periodic-table" style="font-size:0.7rem">';
+                let html = '<div class="periodic-table" style="font-size:0.7rem; display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px;">';
                 for (let period = 1; period <= 7; period++) {
                     for (let group = 1; group <= 18; group++) {
                         const el = elements.find(e => e.period === period && e.group === group);
                         if (el) {
-                            html += `<div class="periodic-element" title="${el.name}">`;
-                            html += `<div class="periodic-element-symbol">${el.symbol}</div>`;
-                            html += `<div class="periodic-element-number">${el.number}</div>`;
+                            html += `<div class="periodic-element" title="${el.name}" style="background: rgba(0,212,255,0.1); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px; text-align: center;">`;
+                            html += `<div class="periodic-element-symbol" style="font-weight: bold; color: var(--accent);">${el.symbol}</div>`;
+                            html += `<div class="periodic-element-number" style="font-size:0.6rem; color: var(--text-secondary);">${el.number}</div>`;
                             html += `</div>`;
                         } else {
-                            html += `<div class="periodic-element" style="background:transparent; border:none;"></div>`;
+                            html += `<div style="background: transparent; border: none;"></div>`;
                         }
                     }
                 }
                 html += '</div>';
 
                 const lanthanides = elements.filter(e => e.number >= 57 && e.number <= 71);
-                html += '<h4 style="margin-top:12px; font-size:0.9rem">Лантаноиды</h4><div class="lanthanide-row" style="font-size:0.7rem">';
+                html += '<h4 style="margin-top:12px; font-size:0.9rem">Лантаноиды</h4><div class="lanthanide-row" style="display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px;">';
                 lanthanides.forEach(el => {
-                    html += `<div class="periodic-element" title="${el.name}"><div class="periodic-element-symbol">${el.symbol}</div><div class="periodic-element-number">${el.number}</div></div>`;
+                    html += `<div class="periodic-element" title="${el.name}" style="background: rgba(0,212,255,0.1); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px; text-align: center;"><div class="periodic-element-symbol" style="font-weight: bold; color: var(--accent);">${el.symbol}</div><div class="periodic-element-number" style="font-size:0.6rem; color: var(--text-secondary);">${el.number}</div></div>`;
                 });
                 html += '</div>';
 
                 const actinides = elements.filter(e => e.number >= 89 && e.number <= 103);
-                html += '<h4 style="font-size:0.9rem">Актиноиды</h4><div class="actinide-row" style="font-size:0.7rem">';
+                html += '<h4 style="font-size:0.9rem">Актиноиды</h4><div class="actinide-row" style="display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px;">';
                 actinides.forEach(el => {
-                    html += `<div class="periodic-element" title="${el.name}"><div class="periodic-element-symbol">${el.symbol}</div><div class="periodic-element-number">${el.number}</div></div>`;
+                    html += `<div class="periodic-element" title="${el.name}" style="background: rgba(0,212,255,0.1); border: 1px solid var(--border-color); border-radius: 4px; padding: 2px; text-align: center;"><div class="periodic-element-symbol" style="font-weight: bold; color: var(--accent);">${el.symbol}</div><div class="periodic-element-number" style="font-size:0.6rem; color: var(--text-secondary);">${el.number}</div></div>`;
                 });
                 html += '</div>';
 
@@ -9967,21 +9774,21 @@
 
                     <div class="card">
                         <h2>⚡ Ряд активности</h2>
-                        <div class="activity-series" style="gap:4px">
-                            ${activitySeries.map(m => `<span class="metal" style="padding:4px 8px; font-size:0.8rem">${m}</span>`).join('')}
+                        <div class="activity-series" style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${activitySeries.map(m => `<span class="metal" style="background: rgba(255,170,0,0.1); border: 1px solid var(--warning); border-radius: 20px; padding: 4px 8px; font-size:0.8rem">${m}</span>`).join('')}
                         </div>
                     </div>
 
                     <div class="card">
                         <h2>💧 Растворимость</h2>
-                        <div class="solubility-table" style="font-size:0.7rem">
-                            <table>
+                        <div class="solubility-table" style="font-size:0.7rem; overflow-x: auto;">
+                            <table style="border-collapse: collapse; width: 100%;">
                                 <thead>
-                                    <tr><th>Катион \\ Анион</th>${anions.map(a => `<th>${a}</th>`).join('')}</tr>
+                                    <tr><th style="border: 1px solid #333; padding: 4px;">Катион \\ Анион</th>${anions.map(a => `<th style="border: 1px solid #333; padding: 4px;">${a}</th>`).join('')}</tr>
                                 </thead>
                                 <tbody>
                                     ${cations.map(c => {
-                                        return `<tr><td><b>${c}</b></td>${
+                                        return `<tr><td style="border: 1px solid #333; padding: 4px;"><b>${c}</b></td>${
                                             anions.map(a => {
                                                 let sol = getSolubility(c, a);
                                                 let cls = '';
@@ -9989,7 +9796,7 @@
                                                 else if (sol === 'М') cls = 'solubility-M';
                                                 else if (sol === 'Н') cls = 'solubility-N';
                                                 else cls = 'solubility-unknown';
-                                                return `<td class="${cls}">${sol}</td>`;
+                                                return `<td style="border: 1px solid #333; padding: 4px;" class="${cls}">${sol}</td>`;
                                             }).join('')
                                         }</tr>`;
                                     }).join('')}
@@ -10151,9 +9958,6 @@
             return '?';
         }
 
-        // =====================================================
-        // ЭКЗАМЕН С ВЫБОРОМ БИЛЕТОВ
-        // =====================================================
         function showExamSelectionPage() {
             currentPageState = { name: 'examselect', params: {} };
             loadAllData();
@@ -10364,22 +10168,10 @@
             showQuestion();
         }
 
-        // =====================================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // =====================================================
         function initTelegram() {
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 Telegram.WebApp.ready();
                 Telegram.WebApp.expand();
-                
-                const colorScheme = Telegram.WebApp.colorScheme;
-                // Сохраняем тему в настройках
-                if (colorScheme === 'light') {
-                    settings.theme = 'light';
-                } else {
-                    settings.theme = 'dark';
-                }
-                // Применяем тему
                 applySettings();
             }
         }
@@ -10387,7 +10179,6 @@
         function initApp() {
             initTelegram();
             loadAllData();
-            applySettings(); // Добавьте эту строку
             showMainInterface();
             
             if (settings.reminders) {
