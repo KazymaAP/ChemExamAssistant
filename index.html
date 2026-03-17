@@ -1427,6 +1427,7 @@
         let activeNavItem = 'Главная';
         let activeQuizInterval = null;
         let activeExamInterval = null;
+        let dataLoaded = false;
 
         const achievements = [
             { id: 'novice', title: 'Новичок', desc: 'Изучил 5 вопросов', icon: '🌱', target: 5, xp: 50 },
@@ -1696,7 +1697,8 @@
             } catch (e) { console.error('Ошибка сохранения', e); }
         }, 120);
 
-        function loadAllData() {
+        function loadAllData(force = false) {
+            if (dataLoaded && !force) return;
             try {
                 const saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
@@ -1771,10 +1773,14 @@
 
                 buildSearchIndex();
                 applySettings();
+                dataLoaded = true;
                 
             } catch (e) {
                 console.error('Общая ошибка загрузки', e);
                 initData();
+                buildSearchIndex();
+                applySettings();
+                dataLoaded = true;
             }
         }
 
@@ -2606,6 +2612,69 @@
         }
 
         // ========== ГЛАВНАЯ ==========
+
+        function getLastViewedQuestion() {
+            const recent = userProgress.recentlyViewed || [];
+            for (const item of recent) {
+                const q = allQuestions.find(q => q.id === item.id);
+                if (q) return q;
+            }
+            return null;
+        }
+
+        function getWeakQuestions(limit = 10) {
+            const scored = allQuestions.map(q => {
+                const timeSpent = userProgress.timeSpent?.[q.id] || 0;
+                const isLearned = !!userProgress.questions?.[q.id];
+                const misses = (stats.questionMistakes?.[q.id] || 0);
+                const score = (misses * 5) + Math.min(5, Math.floor(timeSpent / 30)) + (isLearned ? 0 : 2);
+                return { q, score, misses, timeSpent, isLearned };
+            }).filter(item => item.score > 0);
+
+            scored.sort((a, b) => b.score - a.score);
+            return scored.slice(0, limit);
+        }
+
+        function showWeakQuestionsPage() {
+            currentPageState = { name: 'weak', params: {} };
+            loadAllData();
+
+            const weak = getWeakQuestions(12);
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <header class="header">
+                    <div class="header-content">
+                        <button class="back-btn" onclick="showMainInterface()">← Назад</button>
+                        <div class="logo-text">🎯 Слабые темы</div>
+                        <div style="width:60px"></div>
+                    </div>
+                </header>
+                <main class="main-content scroll-container">
+                    <div class="card">
+                        <h1>🎯 Повторение сложного</h1>
+                        <p>Список составлен по времени изучения, невыученным вопросам и ошибкам в экзамене.</p>
+                    </div>
+                    ${weak.length ? weak.map(item => `
+                        <div class="ticket-item ${item.isLearned ? 'completed' : 'in-progress'}" onclick="showQuestionDetail(${item.q.id})">
+                            <div class="ticket-header">
+                                <span class="ticket-number">${item.q.type==='theory'?'📚':'⚗️'} Вопрос ${item.q.number}</span>
+                                <span class="ticket-status ${item.isLearned ? 'completed' : 'in-progress'}">${item.isLearned ? 'Выучен' : 'Невыучен'}</span>
+                            </div>
+                            <p style="margin:0">${escapeHtml(item.q.text)}</p>
+                            <div class="ticket-progress">
+                                <span class="progress-text">Ошибки: ${item.misses}</span>
+                                <span class="progress-text">Время: ${item.timeSpent}с</span>
+                                <span class="progress-text">Сложность: ${item.score}</span>
+                            </div>
+                        </div>
+                    `).join('') : `
+                        <div class="card"><p>Пока нет данных для анализа слабых тем. Решите тест/экзамен и вернитесь сюда.</p></div>
+                    `}
+                </main>
+                ${renderNavigation('Главная')}
+            `;
+        }
+
         function showMainInterface() {
             currentPageState = { name: 'main', params: {} };
             loadAllData();
@@ -2769,6 +2838,8 @@
                     <div class="card">
                         <h3>🚀 Действия</h3>
                         <div class="grid-2">
+                            ${getLastViewedQuestion() ? `<button class="btn btn-primary" onclick="showQuestionDetail(${getLastViewedQuestion().id})">▶️ Продолжить: вопрос ${getLastViewedQuestion().number}</button>` : ''}
+                            <button class="btn btn-secondary" onclick="showWeakQuestionsPage()">🎯 Слабые темы</button>
                             <button class="btn btn-primary" onclick="showTicketsPage()">📋 Билеты</button>
                             <button class="btn btn-secondary" onclick="showTheoryPage()">📚 Теория</button>
                             <button class="btn btn-secondary" onclick="showPracticePage()">⚗️ Практика</button>
@@ -4633,6 +4704,10 @@
                     }
                 };
                 window.examNext = () => {
+                    if (!answerSubmitted) {
+                        if (!stats.questionMistakes) stats.questionMistakes = {};
+                        stats.questionMistakes[q.id] = (stats.questionMistakes[q.id] || 0) + 1;
+                    }
                     currentIndex++;
                     answerSubmitted = false;
                     showQuestion();
@@ -4753,6 +4828,7 @@
         window.showQuizPage = showQuizPage;
         window.showRandomTicket = showRandomTicket;
         window.showRandomQuestion = showRandomQuestion;
+        window.showWeakQuestionsPage = showWeakQuestionsPage;
         window.showFlashcardsPage = showFlashcardsPage;
         window.startFlashcards = startFlashcards;
         window.showReferencePage = showReferencePage;
