@@ -1,0 +1,15 @@
+{
+  "name": "chemexam-assistant",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write .",
+    "test": "node tests/smoke.mjs"
+  },
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "prettier": "^3.4.2"
+  }
+}
