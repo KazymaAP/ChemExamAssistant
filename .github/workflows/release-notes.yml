@@ -1,0 +1,10 @@
+name: Release Notes Draft
+on:
+  workflow_dispatch:
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Generate release notes from CHANGELOG.md" > release-notes.txt
+      - run: cat release-notes.txt

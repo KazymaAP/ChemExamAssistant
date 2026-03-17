@@ -1,0 +1,8 @@
+name: Bundle Size
+on: [pull_request]
+jobs:
+  size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/bundle-size.mjs

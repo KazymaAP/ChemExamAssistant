@@ -1,0 +1,22 @@
+{
+  "name": "chemexam-assistant",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write .",
+    "test": "node tests/smoke.mjs",
+    "size": "node scripts/bundle-size.mjs",
+    "prepare": "echo \"husky hooks are in .husky/\""
+  },
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "prettier": "^3.4.2"
+  },
+  "lint-staged": {
+    "*.{js,mjs,json,md,css,html}": [
+      "prettier --write"
+    ]
+  }
+}
