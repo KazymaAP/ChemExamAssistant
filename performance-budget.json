@@ -1,0 +1,6 @@
+{
+  "lcpMs": 2500,
+  "inpMs": 200,
+  "fidMs": 100,
+  "maxBundleKb": 300
+}
